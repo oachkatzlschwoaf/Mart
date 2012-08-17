@@ -7,3 +7,10 @@ vendor
 bin
 composer.phar
 web/uploads/
+app/bootstrap*
+vendor/*
+*/logs/*
+*/cache/*
+web/uploads/*
+web/bundles/*
+app/config/parameters.ini
