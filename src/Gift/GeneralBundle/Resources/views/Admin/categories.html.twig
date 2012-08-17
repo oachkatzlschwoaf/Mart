@@ -1,0 +1,32 @@
+<h3>Categories</h3>
+
+<style>
+    table thead td { background: #BBB; font-weight: bold; }
+</style>
+
+<table style="width: 100%">
+    <thead>
+        <td style="width: 5%">Id</td>
+        <td style="width: 5%">Rotation</td>
+        <td style="width: 10%">Name</td>
+        <td style="width: 25%">Tags</td>
+        <td style="width: 5%">Edit</td>
+        <td style="width: 5%">Delete</td>
+    </thead>
+    <tbody>
+        {% for cat in categories %}
+            <tr>
+                <td>{{ cat.id }}</td>
+                <td {% if cat.rotation %}style="background: #f5da96"{% endif %} >{{ cat.rotation }}</td>
+                <td>{{ cat.name }}</td>
+                <td>{{ cat.tags }}</td>
+                <td><a href="{{ path("adminEditCategory", { cid: cat.id }) }}">Edit</a></td>
+                <td><a href="{{ path("adminDeleteCategory", { cid: cat.id }) }}">Delete</a></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="background: gray; height: 3px"></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

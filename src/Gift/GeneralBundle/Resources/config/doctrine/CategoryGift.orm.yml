@@ -1,0 +1,18 @@
+Gift\GeneralBundle\Entity\CategoryGift:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\CategoryGiftRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        category_id:
+            type: integer
+        gift_id:
+            type: integer
+    lifecycleCallbacks: {  }
+    uniqueConstraints:
+        cat_gift_idx:
+            columns: category_id,gift_id

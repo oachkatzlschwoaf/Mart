@@ -1,0 +1,67 @@
+GiftGeneralBundle_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: GiftGeneralBundle:Default:index }
+
+# Admin
+
+admin:
+    pattern: /admin 
+    defaults: { _controller: GiftGeneralBundle:Admin:admin }
+
+adminAddGift:
+    pattern: /admin/gift/add
+    defaults: { _controller: GiftGeneralBundle:Admin:gift }
+
+adminEditGift:
+    pattern: /admin/gift/{gid}/edit
+    defaults: { _controller: GiftGeneralBundle:Admin:gift }
+
+adminGifts:
+    pattern: /admin/gifts
+    defaults: { _controller: GiftGeneralBundle:Admin:gifts }
+
+adminDeleteGift:
+    pattern: /admin/gift/{gid}/delete
+    defaults: { _controller: GiftGeneralBundle:Admin:deleteGift }
+
+adminAddCategory:
+    pattern: /admin/category/add
+    defaults: { _controller: GiftGeneralBundle:Admin:category }
+
+adminEditCategory:
+    pattern: /admin/category/{cid}/edit
+    defaults: { _controller: GiftGeneralBundle:Admin:category }
+
+adminCategories:
+    pattern: /admin/categories
+    defaults: { _controller: GiftGeneralBundle:Admin:categories }
+
+adminDeleteCategory:
+    pattern: /admin/category/{cid}/delete
+    defaults: { _controller: GiftGeneralBundle:Admin:deleteCategory }
+
+# API
+
+apiGifts:
+    pattern: /api/gifts
+    defaults: { _controller: GiftGeneralBundle:Default:gifts }
+
+apiCategories:
+    pattern: /api/categories
+    defaults: { _controller: GiftGeneralBundle:Default:categories }
+
+saveCategoryGift:
+    pattern: /api/category/{cid}/gift/{gid}/save
+    defaults: { _controller: GiftGeneralBundle:Default:saveCategoryGift }
+    requirements:
+        _method:  POST
+
+apiCategoryGifts:
+    pattern: /api/category/{cid}/gifts
+    defaults: { _controller: GiftGeneralBundle:Default:categoryGifts }
+
+removeCategoryGift:
+    pattern: /api/category/{cid}/gift/{gid}/remove
+    defaults: { _controller: GiftGeneralBundle:Default:removeCategoryGift }
+    requirements:
+        _method:  POST

@@ -1,0 +1,14 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: null
+    database_name: GIFT
+    database_user: root
+    database_password: rjirftcn
+    mailer_transport: smtp
+    mailer_host: localhost
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: 76aca5d1bb4a4841c7442b848dc360fdf5e61a1f
+    database_path: null

@@ -1,0 +1,22 @@
+Gift\GeneralBundle\Entity\Gift:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\GiftRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        title:
+            type: string
+            length: 255
+        tags:
+            type: string
+            length: 255
+        created_at:
+            type: datetime
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]

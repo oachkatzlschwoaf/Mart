@@ -1,0 +1,10 @@
+{% if cid %}
+    <h3>Edit Category - {{ cid }}</h3>
+{% else %}
+    <h3>Create Category</h3>
+{% endif %}
+
+<form action="{% if cid %}{{ path("adminEditCategory", {'cid': cid}) }}{% else %}{{ path("adminAddCategory") }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
+    {{ form_widget(form) }}
+    <input type="submit" value="Done" />
+</form>

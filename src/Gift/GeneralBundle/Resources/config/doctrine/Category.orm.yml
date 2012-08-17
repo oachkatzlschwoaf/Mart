@@ -1,0 +1,21 @@
+Gift\GeneralBundle\Entity\Category:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\CategoryRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        name:
+            type: string
+            length: 255
+        tags:
+            type: string
+            length: 255
+        rotation:
+            type: string
+            length: 255
+            nullable: true
+    lifecycleCallbacks: {  }

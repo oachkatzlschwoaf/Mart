@@ -1,0 +1,16 @@
+{% if gid %}
+    <h3>Edit Gift - {{ gid }}</h3>
+{% else %}
+    <h3>Create Gift</h3>
+{% endif %}
+
+{% if gid %}
+    <img src="{{ asset(gift.getImageWebPath()) }}" style="float: left; border: 1px solid gray; margin: 10px" />
+    <img src="{{ asset(gift.getThumbWebPath()) }}" style="float: left; border: 1px solid gray; margin: 10px" />
+    <div style="clear: both" />
+{% endif %}
+
+<form action="{% if gid %}{{ path("adminEditGift", {'gid': gid}) }}{% else %}{{ path("adminAddGift") }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
+    {{ form_widget(form) }}
+    <input type="submit" value="Done" />
+</form>

@@ -1,0 +1,10 @@
+Gift\GeneralBundle\Entity\Gift:
+    properties:
+        title:
+            - NotBlank: ~
+        image_upload:
+            - File:
+                mimeTypes: [ image/png ]
+        thumbnail_upload:
+            - File:
+                mimeTypes: [ image/png ]
