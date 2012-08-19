@@ -7,7 +7,7 @@ vendor
 bin
 composer.phar
 vendor/*
-web/uploads/
+web/uploads
 web/uploads/*
 web/bundles/*
 app/config/parameters.yml
