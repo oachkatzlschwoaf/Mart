@@ -6,11 +6,8 @@ build/
 vendor
 bin
 composer.phar
-web/uploads/
-app/bootstrap*
 vendor/*
-*/logs/*
-*/cache/*
+web/uploads/
 web/uploads/*
 web/bundles/*
-app/config/parameters.ini
+app/config/parameters.yml

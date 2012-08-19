@@ -123,9 +123,11 @@ foreach my $g (@$gifts) {
 }
 
 my %cat_gifts;
+my %categories;
 
 foreach my $c (@$cats) {
     my @tags = split(',', $c->{'tags'});
+    $categories{ $c->{'id'} } = 1;
 
     foreach my $tag (@tags) {
         if (defined( $tag_gifts{$tag} )) {
@@ -142,7 +144,7 @@ print "\nGenerate category <-> gifts";
 print "\n================================\n";
 
 my %old_pairs;
-foreach my $cid (keys %cat_gifts) {
+foreach my $cid (keys %categories) {
     print "\ncategory: $cid";
 
     my $pairs = getGiftsInCategory($cid); 

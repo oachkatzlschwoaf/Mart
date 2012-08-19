@@ -141,19 +141,7 @@ class DefaultController extends Controller
 
         $answer = array('error' => 'cannot find category or gift');
 
-        # Lookup cateogry
-        $rep = $this->getDoctrine()
-            ->getRepository('GiftGeneralBundle:Category');
-
-        $category = $rep->find($cid);
-
-        # Lookup gift
-        $rep = $this->getDoctrine()
-            ->getRepository('GiftGeneralBundle:Gift');
-
-        $gift = $rep->find($gid);
-
-        if ($category && $gift) {
+        if ($cid && $gid) {
 
             # Is exist?
             $rep = $this->getDoctrine()
