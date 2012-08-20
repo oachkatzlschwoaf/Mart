@@ -71,7 +71,6 @@ Gift\GeneralBundle\Entity\User:
             type: datetime
         balance:
             type: integer
-            default: 0
     lifecycleCallbacks: 
         prePersist: [ processPrePersist ]
         postPersist: [ processPostPersist ]

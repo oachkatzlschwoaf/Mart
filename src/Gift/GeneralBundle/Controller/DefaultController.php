@@ -98,6 +98,8 @@ class DefaultController extends Controller
                     $user->setRegionId( $uinfo->location->region->id );
                     $user->setRegionName( $uinfo->location->region->name );
 
+                    $user->setBalance(0); # Default balance value for newbie
+
                     $em->persist($user);
                     $em->flush();
 
