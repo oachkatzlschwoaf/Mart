@@ -57,3 +57,21 @@ swiftmailer:
     username:  %mailer_user%
     password:  %mailer_password%
     spool:     { type: memory }
+
+# Parameters
+parameters:
+    social_api.networks:
+        mm:
+            api_url: 'http://appsmail.ru/platform/api'
+            app_id: 684195 
+            private_key: '838b5576ff2c60cf14d1fd4cbe2929e1'
+            secret_key: '3f1c2cbd21fdaedd981f1e0ae5fa8593'
+        vk: 
+            app_id: 321
+
+# Services
+services:
+    social_api:
+        class: Gift\GeneralBundle\SocialApi
+        arguments: [%social_api.networks%]
+

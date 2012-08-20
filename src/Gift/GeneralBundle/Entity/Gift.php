@@ -193,4 +193,32 @@ class Gift
     public function processPostUpdate() {
         $this->uploadImage();
     }
+    /**
+     * @var integer $premium
+     */
+    private $premium;
+
+
+    /**
+     * Set premium
+     *
+     * @param integer $premium
+     * @return Gift
+     */
+    public function setPremium($premium)
+    {
+        $this->premium = $premium;
+    
+        return $this;
+    }
+
+    /**
+     * Get premium
+     *
+     * @return integer 
+     */
+    public function getPremium()
+    {
+        return $this->premium;
+    }
 }

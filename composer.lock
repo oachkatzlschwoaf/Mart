@@ -1,6 +1,12 @@
 {
-    "hash": "8beb86f09717390fa47d00117f1d473f",
+    "hash": "3827b56c49c9dab80fd10da87619d153",
     "packages": [
+        {
+            "package": "Beryllium/CacheBundle",
+            "version": "dev-master",
+            "source-reference": "fc9887a0ae755041b4855d48f93a584f2958cf34",
+            "commit-date": "1342580723"
+        },
         {
             "package": "doctrine/common",
             "version": "2.3.x-dev",
@@ -81,13 +87,7 @@
         },
         {
             "package": "monolog/monolog",
-            "version": "1.1.0"
-        },
-        {
-            "package": "sensio/distribution-bundle",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
+            "version": "1.2.0"
         },
         {
             "package": "sensio/distribution-bundle",
@@ -146,8 +146,8 @@
         {
             "package": "symfony/symfony",
             "version": "dev-master",
-            "source-reference": "d3625b0c2bf96b8d6f8ef6682b4d51be8c213f83",
-            "commit-date": "1345191498"
+            "source-reference": "ef29276c3a1d6ab757d894bd64391fa2ea47db0c",
+            "commit-date": "1345367019"
         },
         {
             "package": "twig/extensions",
@@ -164,8 +164,8 @@
         {
             "package": "twig/twig",
             "version": "dev-master",
-            "source-reference": "f2f698c820d4396f519ef4175ad6fe79fcfb9ecf",
-            "commit-date": "1344328685"
+            "source-reference": "3e4057b4b14a2f90db7c895e3e9bcbd3d23875e8",
+            "commit-date": "1345222881"
         }
     ],
     "packages-dev": null,
@@ -182,6 +182,7 @@
         "sensio/distribution-bundle": 20,
         "sensio/framework-extra-bundle": 20,
         "sensio/generator-bundle": 20,
-        "jms/serializer-bundle": 20
+        "jms/serializer-bundle": 20,
+        "beryllium/cachebundle": 20
     }
 }

@@ -145,9 +145,6 @@ class Gift
     }
 
     public function uploadImage() {
-        print "test";
-        die;
-
         if ($this->image_upload) {
 
             $this->image_upload->move(
@@ -188,5 +185,12 @@ class Gift
 
     protected function getUploadDir($type) {
         return 'uploads/'.$type;
+    }
+
+    /**
+     * @ORM\PostUpdate
+     */
+    public function processPostUpdate() {
+        $this->uploadImage();
     }
 }

@@ -1,0 +1,81 @@
+Gift\GeneralBundle\Entity\User:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\UserRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        uid:
+            type: string
+            length: 255
+        first_name:
+            type: string
+            length: 255
+        last_name:
+            type: string
+            length: 255
+        nick:
+            type: string
+            length: 255
+            nullable: true
+        gender:
+            type: boolean
+        email:
+            type: string
+            length: 255
+        box:
+            type: string
+            length: 255
+        login:
+            type: string
+            length: 255
+        link:
+            type: string
+            length: 255
+        ref_type:
+            type: string
+            length: 255
+            nullable: true
+        ref_id:
+            type: string
+            length: 255
+            nullable: true
+        country_id:
+            type: integer 
+            nullable: true
+        country_name:
+            type: string
+            length: 255
+            nullable: true
+        region_id:
+            type: integer 
+            nullable: true
+        region_name:
+            type: string
+            length: 255
+            nullable: true
+        city_id:
+            type: integer 
+            nullable: true
+        city_name:
+            type: string
+            length: 255
+            nullable: true
+        birthday:
+            type: datetime
+            nullable: true
+        created_at:
+            type: datetime
+        balance:
+            type: integer
+            default: 0
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]
+    uniqueConstraints:
+        uid_idx:
+            columns: uid 

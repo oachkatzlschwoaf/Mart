@@ -7,6 +7,7 @@
 <table style="width: 100%">
     <thead>
         <td style="width: 5%">Id</td>
+        <td style="width: 5%">Premium</td>
         <td style="width: 10%">Title</td>
         <td style="width: 15%">Tags</td>
         <td style="width: 25%">Image</td>
@@ -18,6 +19,7 @@
         {% for gift in gifts %}
             <tr>
                 <td>{{ gift.id }}</td>
+                <td {% if gift.premium > 0 %}style="background: #ebeba7"{% endif %} >{{ gift.premium }}</td>
                 <td>{{ gift.title }}</td>
                 <td>{{ gift.tags }}</td>
                 <td><img src="{{ asset(gift.getImageWebPath()) }}" /></td>
@@ -26,7 +28,7 @@
                 <td><a href="{{ path("adminDeleteGift", { gid: gift.id }) }}">Delete</a></td>
             </tr>
             <tr>
-                <td colspan="6" style="background: gray; height: 3px"></td>
+                <td colspan="8" style="background: gray; height: 3px"></td>
             </tr>
         {% endfor %}
     </tbody>

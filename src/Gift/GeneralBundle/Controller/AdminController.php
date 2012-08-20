@@ -10,10 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 # Entity
 use Gift\GeneralBundle\Entity\Gift;
 use Gift\GeneralBundle\Entity\Category;
+use Gift\GeneralBundle\Entity\Cover;
 
 # Forms
 use Gift\GeneralBundle\Form\GiftType; 
 use Gift\GeneralBundle\Form\CategoryType; 
+use Gift\GeneralBundle\Form\CoverType; 
 
 class AdminController extends Controller {
 
@@ -170,4 +172,71 @@ class AdminController extends Controller {
 
         return $this->redirect($this->generateUrl('adminCategories'));
     }
+
+    public function coverAction(Request $request) {
+
+        $cvid = $request->get('cvid');
+        $cover = new Cover(); 
+
+        if ($cvid) {
+            //Edit
+            $rep = $this->getDoctrine()
+                ->getRepository('GiftGeneralBundle:Cover');
+
+            $cover = $rep->find($cvid);
+        }
+
+        $form = $this->createForm(new CoverType(), $cover);
+
+        # Process form
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getEntityManager();
+                $em->persist($cover);
+                $em->flush();
+
+                return $this->redirect($this->generateUrl('adminEditCover', array('cvid' => $cover->getId())));
+            }
+        }
+
+        return $this->render('GiftGeneralBundle:Admin:cover.html.twig',
+            array(
+                'form' => $form->createView(),    
+                'cvid'  => $cvid,
+                'cover' => $cover,
+        ));
+    }
+
+    public function coversAction() {
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Cover');
+        
+        $covers = $rep->findAll();
+
+        return $this->render('GiftGeneralBundle:Admin:covers.html.twig',
+            array(
+                'covers' => $covers
+        ));
+    }
+
+
+    public function deleteCoverAction(Request $request) {
+        $cvid = $request->get('cvid');
+
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Cover');
+
+        $cover = $rep->find($cvid);
+        
+        if ($cover) {
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->remove($cover);
+            $em->flush();
+        }
+
+        return $this->redirect($this->generateUrl('adminCovers'));
+    }
+
 }

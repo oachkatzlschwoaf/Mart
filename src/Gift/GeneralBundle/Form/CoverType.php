@@ -6,15 +6,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class GiftType extends AbstractType
+class CoverType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('title')
-            ->add('tags')
-            ->add('premium')
-            ->add('image_upload', 'file')
+            ->add('cost')
             ->add('thumbnail_upload', 'file')
         ;
     }
@@ -22,12 +20,12 @@ class GiftType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Gift\GeneralBundle\Entity\Gift'
+            'data_class' => 'Gift\GeneralBundle\Entity\Cover'
         ));
     }
 
     public function getName()
     {
-        return 'gift_generalbundle_gifttype';
+        return 'gift_generalbundle_covertype';
     }
 }

@@ -1,0 +1,32 @@
+<h3>Covers</h3>
+
+<style>
+    table thead td { background: #BBB; font-weight: bold; }
+</style>
+
+<table style="width: 100%">
+    <thead>
+        <td style="width: 5%">Id</td>
+        <td style="width: 10%">Title</td>
+        <td style="width: 25%">Image</td>
+        <td style="width: 5%">Cost</td>
+        <td style="width: 5%">Edit</td>
+        <td style="width: 5%">Delete</td>
+    </thead>
+    <tbody>
+        {% for cover in covers %}
+            <tr>
+                <td>{{ cover.id }}</td>
+                <td>{{ cover.title }}</td>
+                <td><img src="{{ asset(cover.getWebPath()) }}" /></td>
+                <td>{{ cover.cost }}</td>
+                <td><a href="{{ path("adminEditCover", { cvid: cover.id }) }}">Edit</a></td>
+                <td><a href="{{ path("adminDeleteCover", { cvid: cover.id }) }}">Delete</a></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="background: gray; height: 3px"></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

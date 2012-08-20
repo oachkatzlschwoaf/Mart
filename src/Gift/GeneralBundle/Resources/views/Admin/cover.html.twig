@@ -1,0 +1,14 @@
+{% if cvid %}
+    <h3>Edit Cover - {{ cvid }}</h3>
+{% else %}
+    <h3>Create Cover</h3>
+{% endif %}
+
+{% if cvid %}
+    <img src="{{ asset(cover.getWebPath()) }}" style="border: 1px solid gray; margin: 10px" />
+{% endif %}
+
+<form action="{% if cvid %}{{ path("adminEditCover", {'cvid': cvid}) }}{% else %}{{ path("adminAddCover") }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
+    {{ form_widget(form) }}
+    <input type="submit" value="Done" />
+</form>

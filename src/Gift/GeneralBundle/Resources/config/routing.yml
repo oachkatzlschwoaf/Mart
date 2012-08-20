@@ -1,5 +1,9 @@
-GiftGeneralBundle_homepage:
-    pattern:  /hello/{name}
+homepage:
+    pattern: /
+    defaults: { _controller: GiftGeneralBundle:Default:index }
+
+homepage_index:
+    pattern: /index
     defaults: { _controller: GiftGeneralBundle:Default:index }
 
 # Admin
@@ -40,6 +44,22 @@ adminDeleteCategory:
     pattern: /admin/category/{cid}/delete
     defaults: { _controller: GiftGeneralBundle:Admin:deleteCategory }
 
+adminAddCover:
+    pattern: /admin/cover/add
+    defaults: { _controller: GiftGeneralBundle:Admin:cover }
+
+adminEditCover:
+    pattern: /admin/cover/{cvid}/edit
+    defaults: { _controller: GiftGeneralBundle:Admin:cover }
+
+adminCovers:
+    pattern: /admin/covers
+    defaults: { _controller: GiftGeneralBundle:Admin:covers }
+
+adminDeleteCover:
+    pattern: /admin/cover/{cvid}/delete
+    defaults: { _controller: GiftGeneralBundle:Admin:deleteCover }
+
 # API
 
 apiGifts:
@@ -65,3 +85,7 @@ removeCategoryGift:
     defaults: { _controller: GiftGeneralBundle:Default:removeCategoryGift }
     requirements:
         _method:  POST
+
+apiUserFriends:
+    pattern: /api/user/{sk}/friends
+    defaults: { _controller: GiftGeneralBundle:Default:getUserFriends }

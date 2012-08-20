@@ -1,7 +1,7 @@
-Gift\GeneralBundle\Entity\Gift:
+Gift\GeneralBundle\Entity\Cover:
     type: entity
     table: null
-    repositoryClass: Gift\GeneralBundle\Entity\GiftRepository
+    repositoryClass: Gift\GeneralBundle\Entity\CoverRepository
     fields:
         id:
             type: integer
@@ -11,14 +11,8 @@ Gift\GeneralBundle\Entity\Gift:
         title:
             type: string
             length: 255
-        tags:
-            type: string
-            length: 255
-        created_at:
-            type: datetime
-        premium:
+        cost:
             type: integer
-            nullable: true
     lifecycleCallbacks: 
         prePersist: [ processPrePersist ]
         postPersist: [ processPostPersist ]

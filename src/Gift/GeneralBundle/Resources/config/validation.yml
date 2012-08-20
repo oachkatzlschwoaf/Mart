@@ -8,3 +8,8 @@ Gift\GeneralBundle\Entity\Gift:
         thumbnail_upload:
             - File:
                 mimeTypes: [ image/png ]
+Gift\GeneralBundle\Entity\Cover:
+    properties:
+        thumbnail_upload:
+            - File:
+                mimeTypes: [ image/png ]

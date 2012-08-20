@@ -1,1 +1,104 @@
-Hello {{ name }}!
+{% extends '::base.html.twig' %}
+{% block body %}
+
+Hello {{ user.nick }} ({{ sk }})!
+<br />
+<b>balance:</b> {{ user.balance }}
+<br />
+
+<h3>Gifts</h3>
+
+<div id="gifts">
+    {% for gift in gifts %}
+        <img src="{{ asset(gift.getThumbWebPath()) }}" onclick="setGift({{ gift.id }})" style="border: 1px solid gray" />
+        <br /><br />
+    {% endfor %}
+</div>
+
+<div id="friends" style="display:none">
+</div>
+
+<div id="description" style="display:none">
+    <img id="gift_show" />
+    <br />
+    <textarea id="desc_text" style="width: 300px; height: 70px"></textarea>
+    <br />
+    <input type="radio" name="privacy" id="is_public" value="public" checked>Публичный
+    <br />
+    <input type="radio" name="privacy" id="is_private" value="private">Приватный
+    <br />
+    <input type="checkbox" id="incognito" /> Инкогнито
+    <br />
+    <input type="submit" value="Готово" onclick="setDescription()" />
+</div>
+
+<div id="covers" style="display:none">
+    {% for cover in covers %}
+        <img src="{{ asset(cover.getWebPath()) }}" onclick="setCover({{ cover.id }})" style="border: 1px solid gray" />
+        <br /><br />
+    {% endfor %}
+</div>
+
+<script>
+    var state = {};
+
+    function htmlEncode(value){
+        return $('<div/>').text(value).html();
+    }
+
+    function htmlDecode(value){
+        return $('<div/>').html(value).text();
+    }
+
+    function setGift(gid) {
+        state.gift_selected = gid;
+
+        // Hide Gifts
+        $('#gifts').hide();
+
+        // Show friends block
+        $.getJSON("{{ path("apiUserFriends", {'sk': sk}) }} ", function(data) {
+            $.each(data, function(key, val) {
+                name = htmlEncode(val.first_name + " " + val.last_name);
+                $("#friends").append("<div><a href='#' onclick='setFriend(\""+val.uid+"\")'>"+name+"</a></div>");    
+            });
+        });
+        
+        $('#friends').show();
+    }
+
+    function setFriend(uid) {
+        state.friend_selected = uid;
+
+        $('#friends').hide();
+
+        // Show description 
+        $('#description').show();
+    }
+
+    function setDescription() {
+        state.description = $("#desc_text").val(); 
+        
+        state.privacy = 0;
+        if ($('#is_private').is(':checked')) {
+            state.privacy = 1;
+        }
+
+        state.incognito = 0;
+        if ($('#incognito').is(':checked')) {
+            state.incognito = 1;
+        }
+
+        $('#description').hide();
+        
+        // Show covers
+        $('#covers').show();
+    }
+
+    function setCover(cvid) {
+        state.cover_selected = 1;
+
+    }
+</script>
+
+{% endblock %}
