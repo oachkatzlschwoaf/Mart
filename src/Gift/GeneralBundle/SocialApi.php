@@ -129,7 +129,7 @@ class SocialApi {
             usort($data, array("Gift\GeneralBundle\SocialApi", "cmpFriends"));
             return $data;
         } else {
-            return; 
+            return array(); 
         }
     }
 
