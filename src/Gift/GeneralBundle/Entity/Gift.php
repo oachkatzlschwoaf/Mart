@@ -219,6 +219,10 @@ class Gift
      */
     public function getPremium()
     {
-        return $this->premium;
+        if ($this->premium) {
+            return $this->premium;
+        } else {
+            return 0;
+        }
     }
 }

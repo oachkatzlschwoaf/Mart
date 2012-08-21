@@ -5,12 +5,14 @@ Hello {{ user.nick }} ({{ sk }})!
 <br />
 <b>balance:</b> {{ user.balance }}
 <br />
+<b>cost:</b> <span id="cost">0</span>
+<br />
 
 <h3>Gifts</h3>
 
 <div id="gifts">
     {% for gift in gifts %}
-        <img src="{{ asset(gift.getThumbWebPath()) }}" onclick="setGift({{ gift.id }})" style="border: 1px solid gray" />
+        <img src="{{ asset(gift.getThumbWebPath()) }}" onclick="setGift({{ gift.id }}, {{ gift.premium }})" style="border: 1px solid gray" />
         <br /><br />
     {% endfor %}
 </div>
@@ -32,15 +34,26 @@ Hello {{ user.nick }} ({{ sk }})!
     <input type="submit" value="Готово" onclick="setDescription()" />
 </div>
 
+<div id="done" style="display:none">
+
+</div>
+
 <div id="covers" style="display:none">
     {% for cover in covers %}
-        <img src="{{ asset(cover.getWebPath()) }}" onclick="setCover({{ cover.id }})" style="border: 1px solid gray" />
+        <img src="{{ asset(cover.getWebPath()) }}" onclick="setCover({{ cover.id }}, {{ cover.getCost() }})" style="border: 1px solid gray" />
         <br /><br />
     {% endfor %}
 </div>
 
 <script>
-    var state = {};
+    var state = { };
+    state.cost = 0;
+
+    var price = { };
+    price.gift = {{ config.gift_price }};
+    price.gift_premium = {{ config.gift_price_premium }};
+    price.private = {{ config.private_cost }};
+    price.incognito = {{ config.incognito_cost }};
 
     function htmlEncode(value){
         return $('<div/>').text(value).html();
@@ -50,8 +63,17 @@ Hello {{ user.nick }} ({{ sk }})!
         return $('<div/>').html(value).text();
     }
 
-    function setGift(gid) {
+    function setGift(gid, premium) {
         state.gift_selected = gid;
+
+        // Update cost
+        if (typeof(premium) === 'undefined' || premium == 0) {
+            state.cost += price.gift;
+        } else if (premium > 0) {
+            state.cost += price.gift_premium;
+        }
+
+        $('#cost').text(state.cost);
 
         // Hide Gifts
         $('#gifts').hide();
@@ -82,12 +104,17 @@ Hello {{ user.nick }} ({{ sk }})!
         state.privacy = 0;
         if ($('#is_private').is(':checked')) {
             state.privacy = 1;
+            state.cost += price.private;
         }
 
         state.incognito = 0;
         if ($('#incognito').is(':checked')) {
             state.incognito = 1;
+            state.cost += price.incognito;
         }
+
+        // Update cost
+        $('#cost').text(state.cost);
 
         $('#description').hide();
         
@@ -95,9 +122,38 @@ Hello {{ user.nick }} ({{ sk }})!
         $('#covers').show();
     }
 
-    function setCover(cvid) {
-        state.cover_selected = 1;
+    function setCover(cvid, cost) {
+        state.cover_selected = cvid;
 
+        // Update cost
+        state.cost += cost;
+
+        $('#cost').text(state.cost);
+
+        $('#covers').hide();
+
+        // Purchase 
+        $.post("{{ path("apiPurchase", {'sk': sk}) }}", {
+                gift: state.gift_selected,
+                receiver: state.friend_selected,
+                text: state.description,
+                privacy: state.privacy,
+                incognito: state.incognito,
+                cover: state.cover_selected
+            },
+            function(data) {
+                console.log(data);
+
+                if (data.done == 'gift sended') {
+                    $('#done').text('Подарок отправлен!');
+                } else if (data.balance_error == 'need more money') {
+                    $('#done').text('Не хватает денег!');
+                }
+
+                $('#done').show();
+            },
+            "json"
+        );
     }
 </script>
 

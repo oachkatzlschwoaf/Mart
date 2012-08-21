@@ -70,7 +70,7 @@ apiCategories:
     pattern: /api/categories
     defaults: { _controller: GiftGeneralBundle:Default:categories }
 
-saveCategoryGift:
+apiSaveCategoryGift:
     pattern: /api/category/{cid}/gift/{gid}/save
     defaults: { _controller: GiftGeneralBundle:Default:saveCategoryGift }
     requirements:
@@ -80,7 +80,7 @@ apiCategoryGifts:
     pattern: /api/category/{cid}/gifts
     defaults: { _controller: GiftGeneralBundle:Default:categoryGifts }
 
-removeCategoryGift:
+apiRemoveCategoryGift:
     pattern: /api/category/{cid}/gift/{gid}/remove
     defaults: { _controller: GiftGeneralBundle:Default:removeCategoryGift }
     requirements:
@@ -89,3 +89,8 @@ removeCategoryGift:
 apiUserFriends:
     pattern: /api/user/{sk}/friends
     defaults: { _controller: GiftGeneralBundle:Default:getUserFriends }
+
+apiPurchase:
+    pattern: /api/user/{sk}/purchase
+    defaults: { _controller: GiftGeneralBundle:Default:purchase }
+

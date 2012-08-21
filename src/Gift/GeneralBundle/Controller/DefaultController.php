@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 # Entity
 use Gift\GeneralBundle\Entity\CategoryGift;
 use Gift\GeneralBundle\Entity\User;
+use Gift\GeneralBundle\Entity\UserGift;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -121,6 +122,20 @@ class DefaultController extends Controller
         return $user;
     }
 
+    public function getConfig() {
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Config');
+        
+        $conf = $rep->findAll();
+
+        $config = array();
+        foreach ($conf as $c) {
+            $config[ $c->getName() ] = $c->getValue();
+        }
+
+        return $config;
+    }
+
     public function indexAction(Request $r) {
         $sk  = $r->get('session_key');
         $uid = $r->get('oid');
@@ -140,6 +155,9 @@ class DefaultController extends Controller
         
         $covers = $rep->findAll();
 
+        # Get config
+        $config = $this->getConfig();         
+
         # Prepare template
         $name = $user->getNick();
 
@@ -149,6 +167,7 @@ class DefaultController extends Controller
                 'user'  => $user,
                 'gifts' => $gifts,
                 'covers' => $covers,
+                'config' => $config,
         ));
     }
 
@@ -324,6 +343,153 @@ class DefaultController extends Controller
 
                 $answer = $friends;
             }
+        }
+
+        $response = new Response(json_encode($answer));
+        #$response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    public function purchaseAction(Request $request) {
+        $answer = array( 'error' => 'something wrong' );
+
+        // Check session
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Check gift 
+        $gid = $request->get('gift'); 
+
+        if (!$gid) {
+            $answer = array( 'error' => 'no gift id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_gift = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Gift');
+
+        $gift = $rep_gift->find($gid);
+        
+        if (!$gift) {
+            $answer = array( 'error' => 'no gift' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Check cover
+        $cvid = $request->get('cover'); 
+
+        if (!$cvid) {
+            $answer = array( 'error' => 'no cover id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_cover = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Cover');
+
+        $cover = $rep_cover->find($cvid);
+        
+        if (!$cover) {
+            $answer = array( 'error' => 'no cover' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Check receiver 
+        $rid = $request->get('receiver'); 
+
+        $q = $rep_user->createQueryBuilder('p')
+            ->where('p.uid = :uid')
+            ->setParameters(array(
+                'uid' => $rid
+            ))
+            ->getQuery();
+
+        $receiver = $q->getResult();
+
+        $no_app_user = 0;
+        if (!$receiver) {
+            $no_app_user = 1;
+        }
+
+        // Get text, privacy, incognito
+        $text = $request->get('text');
+        $privacy = $request->get('privacy');
+        $incognito = $request->get('incognito');
+
+        // Calculate Cost
+        $config = $this->getConfig();         
+
+        $cost = 0;
+
+        $is_premium = $gift->getPremium();
+
+        if ($is_premium > 0) {
+            $cost = $config['gift_price_premium']; // Premium
+        } elseif ($is_premium < 0) {
+            $cost = 0; // Free
+        } else {
+            $cost = $config['gift_price']; // Normal
+        }
+
+        if (1 == $privacy) {
+            $cost += $config['private_cost'];
+        }
+
+        if (1 == $incognito) {
+            $cost += $config['incognito_cost'];
+        }
+
+        $cost += $cover->getCost(); 
+
+        // Check balance
+        if ($user->getBalance() >= $cost) {
+            // OK
+            $user->setBalance( $user->getBalance() - $cost );
+
+            $ug = new UserGift();
+            $ug->setGiftId($gid);
+            $ug->setUserId($uid);
+            $ug->setReceiver($rid);
+            $ug->setPrivacy($privacy);
+            $ug->setIncognito($incognito);
+            $ug->setText($text);
+            $ug->setCoverId($cvid);
+            $ug->setIsOpen(0);
+
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $em->persist($user);
+            $em->persist($ug);
+
+            $em->flush();
+
+            $answer = array('no_app_user' => $no_app_user, 'done' => 'gift sended', 'balance' => $user->getBalance());
+
+        } else {
+            // Need more money
+            $answer = array('no_app_user' => $no_app_user, 'balance_error' => 'need more money');
+
         }
 
         $response = new Response(json_encode($answer));

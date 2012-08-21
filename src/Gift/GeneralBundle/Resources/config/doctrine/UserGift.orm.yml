@@ -1,0 +1,34 @@
+Gift\GeneralBundle\Entity\UserGift:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\UserGiftRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        user_id:
+            type: integer
+        receiver:
+            type: string
+            length: 255
+        gift_id:
+            type: integer
+        privacy:
+            type: integer
+        incognito:
+            type: boolean
+        text:
+            type: string
+            length: 255
+        cover_id:
+            type: integer
+        is_open:
+            type: boolean
+        created_at:
+            type: datetime
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]
