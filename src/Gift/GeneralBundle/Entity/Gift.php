@@ -179,11 +179,11 @@ class Gift
         return $this->getUploadDir('thumbs').'/'.$this->getId().'.png';
     }
 
-    protected function getUploadRootDir($type) {
+    public function getUploadRootDir($type) {
         return __DIR__.'/../../../../web/'.$this->getUploadDir($type);
     }
 
-    protected function getUploadDir($type) {
+    public function getUploadDir($type) {
         return 'uploads/'.$type;
     }
 
@@ -224,5 +224,33 @@ class Gift
         } else {
             return 0;
         }
+    }
+    /**
+     * @var integer $popularity7
+     */
+    private $popularity7;
+
+
+    /**
+     * Set popularity7
+     *
+     * @param integer $popularity7
+     * @return Gift
+     */
+    public function setPopularity7($popularity7)
+    {
+        $this->popularity7 = $popularity7;
+    
+        return $this;
+    }
+
+    /**
+     * Get popularity7
+     *
+     * @return integer 
+     */
+    public function getPopularity7()
+    {
+        return $this->popularity7;
     }
 }

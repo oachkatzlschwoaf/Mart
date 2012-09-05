@@ -3,54 +3,18 @@
 use strict;
 use warnings;
 
-use URI;
-use LWP::UserAgent;
-use JSON;
+use API;
 use Data::Dumper;
 
-my $api_url = 'http://localhost.dev/gift/app_dev.php/api/';
-
-sub request {
-    my ($p, $method) = (@_);
-
-    return unless ($p->{'call'});
-
-    my $url = $api_url.$p->{'call'};
-    delete($p->{'call'});
-
-    my $ua = LWP::UserAgent->new();
-
-    my $response;
-
-    if (!$method || $method eq 'get') {
-        my $uri = URI->new($url);
-        $uri->query_form($p);
-        $response = $ua->get($uri);
-    } elsif ($method eq 'post') {
-        $response = $ua->post($url, $p);
-    }
-
-    if ($response->is_success()) {
-        my $res;
-        eval { $res = decode_json( $response->content ) };
-
-        if (!$@) {
-            return $res;
-        } else {
-            return;
-        }
-
-    } else {
-        return;
-    }
-}
+my $TAG_ALL_GIFTS = 'all';
 
 sub getGifts {
     my $r = {
         'call' => "gifts",
     };
 
-    my $ans = request($r);
+    my $api = API->new();
+    my $ans = $api->request($r);
 
     return $ans;
 }
@@ -60,7 +24,8 @@ sub getCategories {
         'call' => "categories",
     };
 
-    my $ans = request($r);
+    my $api = API->new();
+    my $ans = $api->request($r);
 
     return $ans;
 }
@@ -72,7 +37,8 @@ sub saveGiftInCategory {
         'call' => "category/$cid/gift/$gid/save",
     };
 
-    my $ans = request($r, 'post');
+    my $api = API->new();
+    my $ans = $api->request($r, 'post');
 
     return $ans;
 }
@@ -84,7 +50,8 @@ sub getGiftsInCategory {
         'call' => "category/$cid/gifts",
     };
 
-    my $ans = request($r, 'post');
+    my $api = API->new();
+    my $ans = $api->request($r, 'post');
 
     return $ans;
 }
@@ -96,7 +63,8 @@ sub removeGiftFromCategory {
         'call' => "category/$cid/gift/$gid/remove",
     };
 
-    my $ans = request($r, 'post');
+    my $api = API->new();
+    my $ans = $api->request($r, 'post');
 
     return $ans;
 }
@@ -130,9 +98,16 @@ foreach my $c (@$cats) {
     $categories{ $c->{'id'} } = 1;
 
     foreach my $tag (@tags) {
-        if (defined( $tag_gifts{$tag} )) {
-            foreach my $gid ( @{ $tag_gifts{$tag} } ) {
-                $cat_gifts{ $c->{'id'} }{ $gid } = 1;
+        if (defined( $tag_gifts{$tag} ) || $tag eq $TAG_ALL_GIFTS) {
+
+            if ($tag eq $TAG_ALL_GIFTS) {
+                foreach my $g (@$gifts) {
+                    $cat_gifts{ $c->{'id'} }{ $g->{'id'} } = 1;
+                }
+            } else {
+                foreach my $gid ( @{ $tag_gifts{$tag} } ) {
+                    $cat_gifts{ $c->{'id'} }{ $gid } = 1;
+                }
             }
         }
     }

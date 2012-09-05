@@ -19,6 +19,9 @@ Gift\GeneralBundle\Entity\Gift:
         premium:
             type: integer
             nullable: true
+        popularity7:
+            type: integer
+            nullable: true
     lifecycleCallbacks: 
         prePersist: [ processPrePersist ]
         postPersist: [ processPostPersist ]

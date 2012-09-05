@@ -56,6 +56,7 @@ class SocialApi {
                 $md5_url = md5($url);
                 $res = $cache->get("api-$md5_url");
                 $data = array();
+                $out = '';
 
                 if ($res) {
                     # Get from cache

@@ -138,6 +138,6 @@ class Cover
     }
 
     protected function getUploadDir() {
-        return 'uploads/cover';
+        return 'uploads/covers';
     }
 }

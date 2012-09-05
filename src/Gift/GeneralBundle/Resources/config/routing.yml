@@ -76,6 +76,10 @@ apiSaveCategoryGift:
     requirements:
         _method:  POST
 
+apiCategoryGiftsLite:
+    pattern: /api/category/gifts
+    defaults: { _controller: GiftGeneralBundle:Default:categoryGifts }
+
 apiCategoryGifts:
     pattern: /api/category/{cid}/gifts
     defaults: { _controller: GiftGeneralBundle:Default:categoryGifts }
@@ -93,4 +97,24 @@ apiUserFriends:
 apiPurchase:
     pattern: /api/user/{sk}/purchase
     defaults: { _controller: GiftGeneralBundle:Default:purchase }
+
+apiUserGifts:
+    pattern: /api/user/{sk}/gifts
+    defaults: { _controller: GiftGeneralBundle:Default:getUserGifts }
+
+apiOpenGift:
+    pattern: /api/user/{sk}/gift/open
+    defaults: { _controller: GiftGeneralBundle:Default:openGift }
+    requirements:
+        _method:  POST
+
+apiPurchases:
+    pattern: /api/purchases
+    defaults: { _controller: GiftGeneralBundle:Default:purchases }
+
+apiSetGiftPopularity:
+    pattern: /api/gift/{gid}/popularity/set
+    defaults: { _controller: GiftGeneralBundle:Default:setGiftPopularity }
+    requirements:
+        _method:  POST
 

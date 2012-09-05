@@ -179,11 +179,11 @@ class Gift
         return $this->getUploadDir('thumbs').'/'.$this->getId().'.png';
     }
 
-    protected function getUploadRootDir($type) {
+    public function getUploadRootDir($type) {
         return __DIR__.'/../../../../web/'.$this->getUploadDir($type);
     }
 
-    protected function getUploadDir($type) {
+    public function getUploadDir($type) {
         return 'uploads/'.$type;
     }
 
@@ -219,6 +219,10 @@ class Gift
      */
     public function getPremium()
     {
-        return $this->premium;
+        if ($this->premium) {
+            return $this->premium;
+        } else {
+            return 0;
+        }
     }
 }

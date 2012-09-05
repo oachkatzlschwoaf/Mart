@@ -8,153 +8,135 @@ Hello {{ user.nick }} ({{ sk }})!
 <b>cost:</b> <span id="cost">0</span>
 <br />
 
-<h3>Gifts</h3>
-
-<div id="gifts">
-    {% for gift in gifts %}
-        <img src="{{ asset(gift.getThumbWebPath()) }}" onclick="setGift({{ gift.id }}, {{ gift.premium }})" style="border: 1px solid gray" />
-        <br /><br />
-    {% endfor %}
+<div style="display: none">
+    <div id="data" style="width: 500px; height: 400px">
+        Подарочек:
+        <br />
+        <img id="show_gift_img">
+        <div id="show_gift_text"></div>
+        <span id="show_gift_from"></span>
+        <img src="" id="show_gift_from_img">
+    </div>
 </div>
 
-<div id="friends" style="display:none">
+<div id="gifts_my_block">
+    <h3>Мои подарки</h3>
+    Новые:
+    <div id="gifts_my_new" class="gifts_container"> </div>
+    <div>
+        <a href="#" onclick="view.my_gifts.scrollGifts('newest', 'back')">&larr;</a>
+        <a href="#" onclick="view.my_gifts.scrollGifts('newest', 'forward')">&rarr;</a>
+    </div>
+
+    Открытые:
+    <div id="gifts_my" class="gifts_container"> </div>
+    <div>
+        <a href="#" onclick="view.my_gifts.scrollGifts('open', 'back')">&larr;</a>
+        <a href="#" onclick="view.my_gifts.scrollGifts('open', 'forward')">&rarr;</a>
+    </div>
 </div>
 
-<div id="description" style="display:none">
-    <img id="gift_show" />
-    <br />
-    <textarea id="desc_text" style="width: 300px; height: 70px"></textarea>
-    <br />
-    <input type="radio" name="privacy" id="is_public" value="public" checked>Публичный
-    <br />
-    <input type="radio" name="privacy" id="is_private" value="private">Приватный
-    <br />
-    <input type="checkbox" id="incognito" /> Инкогнито
-    <br />
-    <input type="submit" value="Готово" onclick="setDescription()" />
+<h3>Каталог подарков</h3>
+
+<div id="loader" style='display: none'>
+    <img src="{{ asset('images/loading.gif') }}" />
 </div>
 
-<div id="done" style="display:none">
+<div id="gifts_catalog">
+    <div id="gifts_block" style='border: 1px solid black; width: 620px; overflow: hidden'>
+        <div id="gifts_cats">
+            Categories:
+            {% for c in categories %}
+                <span><a href="#" onclick="gifts_catalog.setCategory('{{ c.id }}')">{{ c.name }}</a></span>&nbsp;
+            {% endfor %}
+        </div>
 
-</div>
+        <div>
+            sort by: <a href="#" onclick="gifts_catalog.sortGifts('created_at')">new</a> | <a href="#" onclick="gifts_catalog.sortGifts('popularity')">popular</a> 
+        </div>
 
-<div id="covers" style="display:none">
-    {% for cover in covers %}
-        <img src="{{ asset(cover.getWebPath()) }}" onclick="setCover({{ cover.id }}, {{ cover.getCost() }})" style="border: 1px solid gray" />
-        <br /><br />
-    {% endfor %}
+        <div id="gifts_list" class='gifts_list'>
+            {% for gift in gifts %}
+                <a onclick="purchase.setGift({{ gift.id }}, {{ gift.premium }})" href="#">
+                    <img src="{{ asset(gift.getThumbWebPath()) }}" />
+                </a>
+            {% endfor %}
+        </div>
+
+        <div style="clear: both"></div>
+
+        <div id="gift_scroll">
+            <a href="#" onclick="view.gifts_catalog.scrollGifts('back')">&larr;</a>
+            <a href="#" onclick="view.gifts_catalog.scrollGifts('forward')">&rarr;</a>
+        </div>
+    </div>
+
+    <div id="friends_block" style="display: none; overflow: hidden;"> 
+        <div style="margin-bottom: 7px;">
+            <input type="text" id="friend_search_query" >
+            <input type="button" value="Search" onclick="view.gifts_catalog.searchFriend()">
+            &nbsp;&nbsp;
+            <a href="#" onclick="view.gifts_catalog.showFriendsSelector()">показать всех</a>
+        </div>
+
+        <div id="friends" class="friends_container">
+        </div>
+
+        <a href="#" onclick="view.gifts_catalog.scrollFriends('back')">&larr;</a>
+        <a href="#" onclick="view.gifts_catalog.scrollFriends('forward')">&rarr;</a>
+    </div>
+
+    <div id="description_block" style="display:none">
+        <img id="gift_show" />
+        <br />
+        Для <span id="gift_for"></span>
+
+        <br />
+        <textarea id="desc_text" style="width: 300px; height: 70px"></textarea>
+        <br />
+        <input type="checkbox" name="privacy" id="is_private" value="private">Приватный
+        <br />
+        <input type="checkbox" id="incognito" /> Инкогнито
+        <br />
+        <input type="submit" value="Готово" onclick="view.gifts_catalog.chooseDescription()" />
+    </div>
+
+    <div id="done" style="display:none">
+
+    </div>
+
+    <div id="covers_block" style="display:none">
+        {% for cover in covers %}
+            <div style="float: left; margin: 10px">
+                <a href="#" onclick="purchase.setCover({{ cover.id }}, {{ cover.getCost() }})" >
+                    <img src="{{ asset(cover.getWebPath()) }}" />
+                </a>
+                <br />
+                cost: {{ cover.getCost() }}
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 <script>
-    var state = { };
-    state.cost = 0;
+    // INIT
 
-    var price = { };
-    price.gift = {{ config.gift_price }};
-    price.gift_premium = {{ config.gift_price_premium }};
-    price.private = {{ config.private_cost }};
-    price.incognito = {{ config.incognito_cost }};
+    util.api_url.friends_get    = "{{ path("apiUserFriends", {'sk': sk}) }}";
+    util.api_url.purchase       = "{{ path("apiPurchase", {'sk': sk}) }}";
+    util.api_url.my_gifts       = "{{ path("apiUserGifts", {'sk': sk}) }}";
+    util.api_url.open_gift      = "{{ path("apiOpenGift", {'sk': sk}) }}";
+    util.api_url.category_gifts = "{{ path("apiCategoryGiftsLite") }}";
 
-    function htmlEncode(value){
-        return $('<div/>').text(value).html();
-    }
+    util.images_path         = "{{ asset(gifts[0].getUploadDir('images')) }}";
+    util.thumbs_path         = "{{ asset(gifts[0].getUploadDir('thumbs')) }}";
+    util.covers_path         = "{{ asset(gifts[0].getUploadDir('covers')) }}";
 
-    function htmlDecode(value){
-        return $('<div/>').html(value).text();
-    }
+    util.price = { };
+    util.price.gift         = {{ config.gift_price }};
+    util.price.gift_premium = {{ config.gift_price_premium }};
+    util.price.private      = {{ config.private_cost }};
+    util.price.incognito    = {{ config.incognito_cost }};
 
-    function setGift(gid, premium) {
-        state.gift_selected = gid;
-
-        // Update cost
-        if (typeof(premium) === 'undefined' || premium == 0) {
-            state.cost += price.gift;
-        } else if (premium > 0) {
-            state.cost += price.gift_premium;
-        }
-
-        $('#cost').text(state.cost);
-
-        // Hide Gifts
-        $('#gifts').hide();
-
-        // Show friends block
-        $.getJSON("{{ path("apiUserFriends", {'sk': sk}) }} ", function(data) {
-            $.each(data, function(key, val) {
-                name = htmlEncode(val.first_name + " " + val.last_name);
-                $("#friends").append("<div><a href='#' onclick='setFriend(\""+val.uid+"\")'>"+name+"</a></div>");    
-            });
-        });
-        
-        $('#friends').show();
-    }
-
-    function setFriend(uid) {
-        state.friend_selected = uid;
-
-        $('#friends').hide();
-
-        // Show description 
-        $('#description').show();
-    }
-
-    function setDescription() {
-        state.description = $("#desc_text").val(); 
-        
-        state.privacy = 0;
-        if ($('#is_private').is(':checked')) {
-            state.privacy = 1;
-            state.cost += price.private;
-        }
-
-        state.incognito = 0;
-        if ($('#incognito').is(':checked')) {
-            state.incognito = 1;
-            state.cost += price.incognito;
-        }
-
-        // Update cost
-        $('#cost').text(state.cost);
-
-        $('#description').hide();
-        
-        // Show covers
-        $('#covers').show();
-    }
-
-    function setCover(cvid, cost) {
-        state.cover_selected = cvid;
-
-        // Update cost
-        state.cost += cost;
-
-        $('#cost').text(state.cost);
-
-        $('#covers').hide();
-
-        // Purchase 
-        $.post("{{ path("apiPurchase", {'sk': sk}) }}", {
-                gift: state.gift_selected,
-                receiver: state.friend_selected,
-                text: state.description,
-                privacy: state.privacy,
-                incognito: state.incognito,
-                cover: state.cover_selected
-            },
-            function(data) {
-                console.log(data);
-
-                if (data.done == 'gift sended') {
-                    $('#done').text('Подарок отправлен!');
-                } else if (data.balance_error == 'need more money') {
-                    $('#done').text('Не хватает денег!');
-                }
-
-                $('#done').show();
-            },
-            "json"
-        );
-    }
 </script>
 
 {% endblock %}

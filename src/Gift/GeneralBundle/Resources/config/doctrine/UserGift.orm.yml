@@ -10,6 +10,15 @@ Gift\GeneralBundle\Entity\UserGift:
                 strategy: AUTO
         user_id:
             type: integer
+        user_name:
+            type: string
+            length: 255
+        user_box:
+            type: string
+            length: 255
+        user_login:
+            type: string
+            length: 255
         receiver:
             type: string
             length: 255

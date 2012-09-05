@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserGift
 {
+    public $created_date;
+
     /**
      * @var integer $id
      */
@@ -59,6 +61,14 @@ class UserGift
      */
     private $created_at;
 
+    public function getCreatedDate() {
+        return $this->created_date;
+    }
+
+    public function setCreatedDate() {
+        $this->created_date = $this->created_at->format("Y-m-d");
+        return $this;
+    }
 
     /**
      * Get id
@@ -272,8 +282,13 @@ class UserGift
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt($format = null) {
+        if ($format === "date") {
+            return $this->created_at->format("Y-m-d");
+        } elseif ($format === "date_time") {
+            return $this->created_at->format("Y-m-d H:i");
+        } 
+
         return $this->created_at;
     }
 
@@ -298,5 +313,89 @@ class UserGift
     public function processPostUpdate()
     {
         // Add your code here
+    }
+    /**
+     * @var string $user_name
+     */
+    private $user_name;
+
+
+    /**
+     * Set user_name
+     *
+     * @param string $userName
+     * @return UserGift
+     */
+    public function setUserName($userName)
+    {
+        $this->user_name = $userName;
+    
+        return $this;
+    }
+
+    /**
+     * Get user_name
+     *
+     * @return string 
+     */
+    public function getUserName()
+    {
+        return $this->user_name;
+    }
+    /**
+     * @var string $user_box
+     */
+    private $user_box;
+
+    /**
+     * @var string $user_login
+     */
+    private $user_login;
+
+
+    /**
+     * Set user_box
+     *
+     * @param string $userBox
+     * @return UserGift
+     */
+    public function setUserBox($userBox)
+    {
+        $this->user_box = $userBox;
+    
+        return $this;
+    }
+
+    /**
+     * Get user_box
+     *
+     * @return string 
+     */
+    public function getUserBox()
+    {
+        return $this->user_box;
+    }
+
+    /**
+     * Set user_login
+     *
+     * @param string $userLogin
+     * @return UserGift
+     */
+    public function setUserLogin($userLogin)
+    {
+        $this->user_login = $userLogin;
+    
+        return $this;
+    }
+
+    /**
+     * Get user_login
+     *
+     * @return string 
+     */
+    public function getUserLogin()
+    {
+        return $this->user_login;
     }
 }

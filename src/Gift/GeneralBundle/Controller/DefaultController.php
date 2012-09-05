@@ -143,17 +143,27 @@ class DefaultController extends Controller
         # Fetch user
         $user = $this->fetchUser($r);
 
-        # Get gifts 
-        $rep = $this->getDoctrine()
-            ->getRepository('GiftGeneralBundle:Gift');
-        
-        $gifts = $rep->findAll();
-        
+        # Get gifts
+        $gifts = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:Gift p order by p.popularity7 DESC')
+            ->setMaxResults(5) // TODO: unhardcode
+            ->getResult();
+
         # Get covers 
         $rep = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:Cover');
         
         $covers = $rep->findAll();
+
+        # Get categories in rotation
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Category');
+
+        $q = $rep->createQueryBuilder('p')
+            ->where('p.rotation > 0')
+            ->getQuery();
+            
+        $categories = $q->getResult();
 
         # Get config
         $config = $this->getConfig();         
@@ -163,11 +173,12 @@ class DefaultController extends Controller
 
         return $this->render('GiftGeneralBundle:Default:index.html.twig', 
             array(
-                'sk'    => $sk,
-                'user'  => $user,
-                'gifts' => $gifts,
-                'covers' => $covers,
-                'config' => $config,
+                'sk'         => $sk,
+                'user'       => $user,
+                'gifts'      => $gifts,
+                'covers'     => $covers,
+                'config'     => $config,
+                'categories' => $categories,
         ));
     }
 
@@ -255,7 +266,14 @@ class DefaultController extends Controller
     }
 
     public function categoryGiftsAction(Request $request) {
-        $cid = $request->get('cid');
+        $cid    = $request->get('cid');
+        $limit  = $request->get('limit');
+        $sortby = $request->get('sort_by');
+        $ext    = $request->get('ext');
+
+        if (!$sortby) {
+            $sortby = 'created_at';
+        }
 
         $rep = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:CategoryGift');
@@ -273,6 +291,47 @@ class DefaultController extends Controller
         $response = new Response(json_encode($answer));
 
         if ($pairs && count($pairs > 0)) {
+
+            if ($ext) {
+                # Get gifts 
+                $rep = $this->getDoctrine()
+                    ->getRepository('GiftGeneralBundle:Gift');
+                
+                $gifts = $rep->findAll();
+
+                $gift_hash = array();
+                foreach ($gifts as $gift) {
+                    $gift_hash[$gift->getId()] = $gift; 
+                }
+
+                $res = array();
+                $i = 1;
+                foreach ($pairs as $pair) {
+                    array_push($res, $gift_hash[ $pair->getGiftId() ]); 
+
+                    $i++;
+
+                    if ($limit > 0 && $i > $limit) {
+                        break;
+                    }
+                }
+
+                if ($sortby == 'created_at') {
+                    usort($res, function($a, $b) {
+                        return $b->getId()-$a->getId(); 
+                    }); 
+                } elseif ($sortby == 'popularity') {
+                    usort($res, function($a, $b) {
+                        return $b->getPopularity7()-$a->getPopularity7(); 
+                    }); 
+                }
+
+                $serializer = $this->get('serializer');
+                $json = $serializer->serialize($res, 'json');
+                $response = new Response($json);
+
+                return $response;
+            }
 
             $serializer = $this->get('serializer');
             $json = $serializer->serialize($pairs, 'json');
@@ -467,9 +526,17 @@ class DefaultController extends Controller
             // OK
             $user->setBalance( $user->getBalance() - $cost );
 
+            $name = $user->getFirstName().' '.$user->getLastName();
+            if (strlen($name) < 3) {
+                $name = $user->getNick();
+            }
+
             $ug = new UserGift();
             $ug->setGiftId($gid);
             $ug->setUserId($uid);
+            $ug->setUserName($name);
+            $ug->setUserBox($user->getBox());
+            $ug->setUserLogin($user->getLogin());
             $ug->setReceiver($rid);
             $ug->setPrivacy($privacy);
             $ug->setIncognito($incognito);
@@ -495,6 +562,172 @@ class DefaultController extends Controller
         $response = new Response(json_encode($answer));
         #$response->headers->set('Content-Type', 'application/json');
 
+        return $response;
+    }
+
+    public function getUserGiftsAction(Request $request) {
+        // Check session
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Get user gifts
+        $is_open = $request->get('is_open');
+
+        if (!$is_open)
+            $is_open = 0;
+
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:UserGift');
+
+        $q = $rep->createQueryBuilder('p')
+            ->where('p.receiver = :uid')
+            ->setParameters(array(
+                'uid'     => $user->getUid(),
+            ))
+            ->getQuery();
+            
+        $user_gifts = $q->getResult();
+
+        foreach ($user_gifts as $ug) {
+            $ug->setCreatedDate();
+            if ($ug->getIncognito()) {
+                $ug->setUserName('');
+                $ug->setUserBox('');
+                $ug->setUserLogin('');
+                $ug->setUserId('');
+            }
+        }
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($user_gifts, 'json');
+
+        $response = new Response($json);
+        #$response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    public function openGiftAction(Request $request) {
+        // Check session
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Get user gift pair
+        $ugid = $request->get('ugid');
+
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:UserGift');
+
+        $ug = $rep->find($ugid);
+
+        if ($ug) {
+            // Open it
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $ug->setIsOpen(1);
+
+            $em->persist($ug);
+            $em->flush();
+
+            $answer = array( 'open' => 'done' );
+            $response = new Response(json_encode($answer));
+            return $response;
+
+        } else {
+            $answer = array( 'error' => 'no user gift' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+    }
+
+    public function purchasesAction(Request $request) {
+        $from = $request->get('from');
+        $to   = $request->get('to');
+
+        if (!$from || !$to) {
+            $answer = array( 'error' => 'no date' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $em = $this->getDoctrine()->getEntityManager();
+        $query = $em->createQuery(
+            "select p from GiftGeneralBundle:UserGift p WHERE p.created_at > :from and p.created_at < :to")
+        ->setParameter('from', $from)
+        ->setParameter('to', $to);
+
+        $ps = $query->getResult();
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($ps, 'json');
+        $response = new Response($json);
+        return $response;
+    }
+
+    public function setGiftPopularityAction(Request $request) {
+        $gid = $request->get('gid'); 
+        $pop = $request->get('popularity'); 
+
+        if (!$gid) {
+            $answer = array( 'error' => 'no gift id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_gift = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Gift');
+
+        $gift = $rep_gift->find($gid);
+        
+        if (!$gift) {
+            $answer = array( 'error' => 'no gift' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+        
+        $gift->setPopularity7( $pop ); 
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $em->persist($gift);
+        $em->flush();
+
+        $answer = array( 'done' => 'popularity saved' );
+        $response = new Response(json_encode($answer));
         return $response;
     }
 }
