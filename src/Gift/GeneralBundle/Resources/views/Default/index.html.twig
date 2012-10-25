@@ -1,122 +1,27 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
-Hello {{ user.nick }} ({{ sk }})!
-<br />
-<b>balance:</b> {{ user.balance }}
-<br />
-<b>cost:</b> <span id="cost">0</span>
-<br />
+<script type="text/javascript">
+    _kmq.push(['identify', '{{ user.email }}']);
+</script>
 
-<div style="display: none">
-    <div id="data" style="width: 500px; height: 400px">
-        Подарочек:
-        <br />
-        <img id="show_gift_img">
-        <div id="show_gift_text"></div>
-        <span id="show_gift_from"></span>
-        <img src="" id="show_gift_from_img">
-    </div>
-</div>
+{% include 'GiftGeneralBundle:Default:top_nav.html.twig' %}
 
-<div id="gifts_my_block">
-    <h3>Мои подарки</h3>
-    Новые:
-    <div id="gifts_my_new" class="gifts_container"> </div>
-    <div>
-        <a href="#" onclick="view.my_gifts.scrollGifts('newest', 'back')">&larr;</a>
-        <a href="#" onclick="view.my_gifts.scrollGifts('newest', 'forward')">&rarr;</a>
-    </div>
+{% include 'GiftGeneralBundle:Default:my_gifts.html.twig' %}
 
-    Открытые:
-    <div id="gifts_my" class="gifts_container"> </div>
-    <div>
-        <a href="#" onclick="view.my_gifts.scrollGifts('open', 'back')">&larr;</a>
-        <a href="#" onclick="view.my_gifts.scrollGifts('open', 'forward')">&rarr;</a>
-    </div>
-</div>
+{% include 'GiftGeneralBundle:Default:gifts_catalog.html.twig' %}
 
-<h3>Каталог подарков</h3>
+{% include 'GiftGeneralBundle:Default:friends_catalog.html.twig' %}
 
-<div id="loader" style='display: none'>
-    <img src="{{ asset('images/loading.gif') }}" />
-</div>
+{% include 'GiftGeneralBundle:Default:description.html.twig' %}
 
-<div id="gifts_catalog">
-    <div id="gifts_block" style='border: 1px solid black; width: 620px; overflow: hidden'>
-        <div id="gifts_cats">
-            Categories:
-            {% for c in categories %}
-                <span><a href="#" onclick="gifts_catalog.setCategory('{{ c.id }}')">{{ c.name }}</a></span>&nbsp;
-            {% endfor %}
-        </div>
+{% include 'GiftGeneralBundle:Default:covers.html.twig' %}
 
-        <div>
-            sort by: <a href="#" onclick="gifts_catalog.sortGifts('created_at')">new</a> | <a href="#" onclick="gifts_catalog.sortGifts('popularity')">popular</a> 
-        </div>
+{% include 'GiftGeneralBundle:Default:send_done.html.twig' %}
 
-        <div id="gifts_list" class='gifts_list'>
-            {% for gift in gifts %}
-                <a onclick="purchase.setGift({{ gift.id }}, {{ gift.premium }})" href="#">
-                    <img src="{{ asset(gift.getThumbWebPath()) }}" />
-                </a>
-            {% endfor %}
-        </div>
+{% include 'GiftGeneralBundle:Default:friends.html.twig' %}
 
-        <div style="clear: both"></div>
-
-        <div id="gift_scroll">
-            <a href="#" onclick="view.gifts_catalog.scrollGifts('back')">&larr;</a>
-            <a href="#" onclick="view.gifts_catalog.scrollGifts('forward')">&rarr;</a>
-        </div>
-    </div>
-
-    <div id="friends_block" style="display: none; overflow: hidden;"> 
-        <div style="margin-bottom: 7px;">
-            <input type="text" id="friend_search_query" >
-            <input type="button" value="Search" onclick="view.gifts_catalog.searchFriend()">
-            &nbsp;&nbsp;
-            <a href="#" onclick="view.gifts_catalog.showFriendsSelector()">показать всех</a>
-        </div>
-
-        <div id="friends" class="friends_container">
-        </div>
-
-        <a href="#" onclick="view.gifts_catalog.scrollFriends('back')">&larr;</a>
-        <a href="#" onclick="view.gifts_catalog.scrollFriends('forward')">&rarr;</a>
-    </div>
-
-    <div id="description_block" style="display:none">
-        <img id="gift_show" />
-        <br />
-        Для <span id="gift_for"></span>
-
-        <br />
-        <textarea id="desc_text" style="width: 300px; height: 70px"></textarea>
-        <br />
-        <input type="checkbox" name="privacy" id="is_private" value="private">Приватный
-        <br />
-        <input type="checkbox" id="incognito" /> Инкогнито
-        <br />
-        <input type="submit" value="Готово" onclick="view.gifts_catalog.chooseDescription()" />
-    </div>
-
-    <div id="done" style="display:none">
-
-    </div>
-
-    <div id="covers_block" style="display:none">
-        {% for cover in covers %}
-            <div style="float: left; margin: 10px">
-                <a href="#" onclick="purchase.setCover({{ cover.id }}, {{ cover.getCost() }})" >
-                    <img src="{{ asset(cover.getWebPath()) }}" />
-                </a>
-                <br />
-                cost: {{ cover.getCost() }}
-            </div>
-        {% endfor %}
-    </div>
-</div>
+{% include 'GiftGeneralBundle:Default:friend.html.twig' %}
 
 <script>
     // INIT
@@ -136,7 +41,12 @@ Hello {{ user.nick }} ({{ sk }})!
     util.price.gift_premium = {{ config.gift_price_premium }};
     util.price.private      = {{ config.private_cost }};
     util.price.incognito    = {{ config.incognito_cost }};
+    util.private            = "{{ mm_private_key }}"; 
 
+    util.default_gift_cat = "{{ config.default_category }}";
+
+    util.user_start_balance = {{ user.balance }};
+    util.user_id            = {{ user.id }};
 </script>
 
 {% endblock %}

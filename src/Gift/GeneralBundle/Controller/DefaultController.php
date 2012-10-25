@@ -144,9 +144,10 @@ class DefaultController extends Controller
         $user = $this->fetchUser($r);
 
         # Get gifts
+        # Don't need anymore
         $gifts = $this->getDoctrine()->getEntityManager()
             ->createQuery('select p FROM GiftGeneralBundle:Gift p order by p.popularity7 DESC')
-            ->setMaxResults(5) // TODO: unhardcode
+            ->setMaxResults(6) // TODO: unhardcode
             ->getResult();
 
         # Get covers 
@@ -156,15 +157,10 @@ class DefaultController extends Controller
         $covers = $rep->findAll();
 
         # Get categories in rotation
-        $rep = $this->getDoctrine()
-            ->getRepository('GiftGeneralBundle:Category');
-
-        $q = $rep->createQueryBuilder('p')
-            ->where('p.rotation > 0')
-            ->getQuery();
+        $categories = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:Category p where p.rotation > 0 order by p.rotation ASC')
+            ->getResult();
             
-        $categories = $q->getResult();
-
         # Get config
         $config = $this->getConfig();         
 
@@ -555,8 +551,7 @@ class DefaultController extends Controller
 
         } else {
             // Need more money
-            $answer = array('no_app_user' => $no_app_user, 'balance_error' => 'need more money');
-
+            $answer = array('no_app_user' => $no_app_user, 'balance_error' => 'need more money', 'need' => abs($cost - $user->getBalance()));
         }
 
         $response = new Response(json_encode($answer));
@@ -567,40 +562,40 @@ class DefaultController extends Controller
 
     public function getUserGiftsAction(Request $request) {
         // Check session
-        $sk = $request->get('sk');
+        $sk      = $request->get('sk');
+        $user_id = $request->get('uid');
 
-        $mc  = $this->get('beryllium_cache');
-        $uid = $mc->get("sk_u-$sk");
+        $sel_user_id = '';
 
-        if (!$uid) {
-            $answer = array( 'error' => 'no user id' );
-            $response = new Response(json_encode($answer));
-            return $response;
-        }
+        if ($user_id) {
+            $sel_user_id = $user_id;
+                
+        } else if ($sk) {
+            $mc  = $this->get('beryllium_cache');
+            $uid = $mc->get("sk_u-$sk");
 
-        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
-        $user = $rep_user->find($uid);
+            $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+            $user = $rep_user->find($uid);
 
-        if (!$user) {
-            $answer = array( 'error' => 'no user' );
-            $response = new Response(json_encode($answer));
-            return $response;
+            if (!$user) {
+                $answer = array( 'error' => "no user" );
+                $response = new Response(json_encode($answer));
+                return $response;
+            }
+
+            $sel_user_id = $user->getUid();
         }
 
         // Get user gifts
-        $is_open = $request->get('is_open');
-
-        if (!$is_open)
-            $is_open = 0;
-
         $rep = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:UserGift');
 
         $q = $rep->createQueryBuilder('p')
             ->where('p.receiver = :uid')
             ->setParameters(array(
-                'uid'     => $user->getUid(),
+                'uid'     => $sel_user_id,
             ))
+            ->orderBy('p.id', 'DESC')
             ->getQuery();
             
         $user_gifts = $q->getResult();
@@ -611,7 +606,7 @@ class DefaultController extends Controller
                 $ug->setUserName('');
                 $ug->setUserBox('');
                 $ug->setUserLogin('');
-                $ug->setUserId('');
+                //$ug->setUserId('');
             }
         }
 

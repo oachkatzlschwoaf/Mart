@@ -1,0 +1,42 @@
+<div class="block sending gft_block" id="description_block" style="display:none">
+    <header>Подарок</header>
+
+    <div class="l">
+        <div class="img"><img id="gift_show" width="250" height="250" alt=" "></div>
+    </div>
+    <!-- end .l-->
+
+    <div class="r">
+        <header>Получатель:</header>
+        <div class="person"> 
+            <div class="ava"><a href="#"><img id="gift_for_ava" src="img/temp/ava.jpg" width="50" height="50" alt=" "></a></div>
+            <div class="text"><span id="gift_for"></span></div>
+        </div>
+        <!-- end .person-->
+
+        <fieldset>
+            <header>Придумайте подпись:</header>
+            <div class="input textarea">
+                <textarea id="desc_text"></textarea>
+            </div>
+            <ul class="checks">
+                <li>
+                    <input class="customCheckbox" id="is_private" checked type="checkbox" value="">
+                    <label for="check1">Сделать приватным (виден вам и получателю) <span class="orange">(+10 монет)</span></label>
+                </li>
+                <li>
+                    <input class="customCheckbox" id="incognito" type="checkbox" value="">
+                    <label for="check2">Подарить инкогнито <span class="orange">(+5 монет)</span></label>
+                </li>
+            </ul>
+            <span class="btn">
+                <span>Отправить!
+                <input value="" type="submit" onclick="view.gifts_catalog.chooseDescription()">
+                </span>
+            </span>
+        </fieldset>
+    </div>
+    <!-- end .r--> 
+</div>
+<!-- end .block--> 
+

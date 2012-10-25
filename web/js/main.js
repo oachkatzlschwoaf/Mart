@@ -1,14 +1,45 @@
 var purchase      = { };
 var view          = { };
 var user          = { };
+var friend        = { };
 var gifts         = { };
 var gifts_catalog = { };
+
+var my_gifts      = { };
 
 var util = {
     api_url: { },
 };
 
 $(document).ready(function() {
+
+    // Friend
+    friend = {
+        friend_gifts: {
+            'open': new Array(),
+            'newest': new Array()
+        },
+
+        emitter: $(document),
+
+        select: function(id, friends) {
+            f = friends[id];
+            this.emitter.trigger('friend.select', f);
+        },
+
+        getGifts: function(uid) {
+            dfd = $.Deferred();
+
+            $.getJSON(util.api_url.my_gifts, 
+                { 'uid': uid }, 
+                function(data) {
+                    dfd.resolve(data);
+                }.bind(this)
+            );
+
+            return dfd.promise();
+        }
+    };
 
     // Gifts Catalog
     gifts_catalog = {
@@ -17,8 +48,19 @@ $(document).ready(function() {
         gifts: new Array(),
 
         setCategory: function(id) {
+            dfd = $.Deferred();
+            this.prev_cat_id = this.cat_id;
             this.cat_id = id;
-            this.emitter.trigger('gift_catalog.set_category', this);
+
+            this.emitter.trigger('show_block_loader', this);
+
+            this.getGiftsByCategory(this.cat_id, 'popularity').done(function(gifts) {
+                this.emitter.trigger('hide_block_loader');
+                this.emitter.trigger('gift_catalog.set_category', this);
+                dfd.resolve(this);
+            }.bind(this));
+
+            return dfd.promise();
         },
 
         getGiftsByCategory: function(id, sort) {
@@ -37,9 +79,14 @@ $(document).ready(function() {
         },
 
         sortGifts: function(sort) {
+            this.emitter.trigger('show_block_loader');
+
             this.getGiftsByCategory(this.cat_id, sort).done(function(gifts) {
-                this.emitter.trigger('gift_catalog.sort_gifts', { 'gifts': gifts });
+                this.emitter.trigger('hide_block_loader');
+                this.emitter.trigger('gift_catalog.sort_gifts', { 'gifts': gifts, 'sort': sort });
             }.bind(this));
+
+            return false;
         },
 
     };
@@ -57,6 +104,11 @@ $(document).ready(function() {
             view.emitter.on('view.open_gift', function (e, input) { 
                 this.openGift(input);
             }.bind(this));
+        },
+
+        clear: function() {
+            this.open   = new Array();
+            this.newest = new Array();
         },
 
         getList: function() {
@@ -109,6 +161,16 @@ $(document).ready(function() {
             }.bind(this));
         },
 
+        clear: function() {
+            delete this.friend_selected;
+            delete this.receiver;
+            delete this.gift_selected;
+            delete this.text;
+            delete this.privacy;
+            delete this.incognito;
+            delete this.cover;
+        },
+
         setGift: function (gid, premium) {
             this.gift_selected = gid;
 
@@ -117,6 +179,8 @@ $(document).ready(function() {
             } else if (premium > 0) {
                 this.cost += util.price.gift_premium;
             }
+
+            _kmq.push(['record', 'My Event']);
 
             this.emitter.trigger('purchase.gift_selected', this);
         },
@@ -152,6 +216,8 @@ $(document).ready(function() {
 
 
         process: function() {
+            this.emitter.trigger('show_send_loader', this);
+
             $.post(util.api_url.purchase, {
                     gift:      this.gift_selected,
                     receiver:  this.friend_selected.uid,
@@ -160,15 +226,50 @@ $(document).ready(function() {
                     incognito: this.incognito,
                     cover:     this.cover_selected
                 },
+
                 function(data) {
+
+                    this.emitter.trigger('hide_send_loader', this);
+
                     if (data.done == 'gift sended') {
                         this.emitter.trigger('purchase.done', this);
                     } else if (data.balance_error == 'need more money') {
+                        this.need = data.need;
                         this.emitter.trigger('purchase.error_balance', this);
                     }
                 }.bind(this),
                 "json"
             );
+        },
+        
+        postGuestbook: function() {
+            mailru.common.guestbook.post({
+               'title': 'У меня для тебя подарок', 
+               'text': this.text,
+               'img_url': util.images_path+"/"+purchase.gift_selected+".png",
+            }); 
+        },
+
+        sendMessage: function() {
+            mailru.common.messages.send({
+                'uid': this.friend_selected.uid,
+                'text': this.text
+            });
+        },
+
+        postStream: function() {
+            mailru.common.stream.post({
+                'title': 'Ура! Подарок!',
+                'text': this.text,
+                'img_url': util.images_path+"/"+purchase.gift_selected+".png",
+                'action_links': [
+                    {'text': 'Посмотреть', 'href': 'http://example.com/test1'},
+                ]
+            });
+        },
+
+        inviteFriends: function() {
+            mailru.app.friends.invite();
         }
     }
 
@@ -177,6 +278,7 @@ $(document).ready(function() {
         friends: new Array(), 
         api: util.api_url,
         emitter: $(document),
+        balance: util.user_start_balance,
 
         // Methods
         getFriends: function () {
@@ -184,6 +286,16 @@ $(document).ready(function() {
 
             if (this.friends.length == 0) {
                 $.getJSON(this.api.friends_get, function(data) {
+                    $.each(data, function() {
+                        name = htmlEncode(this.first_name + " " + this.last_name);
+                        
+                        if (name.length === 1) {
+                            name = this.nick;
+                        }
+
+                        this.name = name;
+                    });
+
                     this.friends = data;
                     dfd.resolve(data);
                 }.bind(this));
@@ -214,49 +326,300 @@ $(document).ready(function() {
     };
 
     // Views 
-    view.hide = function(v) {
-        $.each(this, function(name, obj) {
-            if (typeof(obj) === 'object') {
-                if (obj != v) {
-                    obj.hide();
-                }
-            }
-        });
+    view = {
+        nav_buttons: {
+            'index':   $('#nav_index'),
+            'friends': $('#nav_friends')
+        },
 
+        selectMenu: function(mnu) {
+            elements = $('.gft_mnu');
+            elements.each( function() { 
+                $(this).removeClass('active'); 
+            });
+
+            this.nav_buttons[mnu].addClass('active');
+        },
+
+        hideBlocks: function() {
+            $('.gft_block').each( function() { 
+                $(this).hide(); 
+            });
+
+            $('.gft_loader').each( function() { 
+                $(this).hide(); 
+            });
+        }
     };
 
+    // Page: friends
+    view.friends = {
+        emitter:           $(document),
+
+        container:         $('#friends_all_block'),
+        loader:            $('#friends_all_loader'),
+
+        friends_list:      $('#friends_all'),
+        friends_search:    $('#friend_all_query'),
+        friends_to_show:   15,
+
+        friend_container:   $('#friend_block'),
+        friend_name:        $('#friend_name'),
+        friend_ava:         $('#friend_ava'),
+        friend_bday_block:  $('#friend_bday_block'),
+        friend_bday:        $('#friend_bday'),
+        friend_title:       $('#friend_title'),
+
+        friend_gift_list:      $('#friend_gift_list'),
+        friend_gift_loader:    $('#friend_gifts_loader'),
+        friend_gift_container: $('#friend_gifts'),
+        friend_gift_nav:       $('#friend_gifts_nav'),
+        friend_gift_none:      $('#friend_gifts_none'),
+        friend_gift_all:       $('#friend_gifts_all'),
+        friend_gift_none_text: $('#friend_gifts_none_text'),
+        friend_gift_answer:    $('#friend_gifts_answer'),
+        
+        count: 4, 
+
+        // Methods
+        init: function (v, u, f, p) {
+            // Friends search
+            u.emitter.on('user.search_friend', function (e, input) { 
+                this.pos = 0;
+                this.users = input.result;
+                this.scrollFriends();
+            }.bind(this));
+
+            // Select Friend
+            u.emitter.on('friend.select', function (e, input) { 
+                this.showFriendPage(v, input, f, p);
+            }.bind(this));
+        },
+
+        showFriendPage: function(v, f_info, f, p) {
+            v.hideBlocks();
+
+            d = new Date();
+
+            this.friend_name.text(f_info.name);
+            this.friend_ava.attr('src', f_info.pic_190 + '?' + d.getTime())
+
+            if (f_info.birthday.length > 1) {
+                this.friend_bday_block.show();
+                this.friend_bday.text(f_info.birthday);
+            } else {
+                this.friend_bday_block.hide();
+            }
+
+            if (f_info.sex == 1) {
+                this.friend_title.text('Её подарки');
+                this.friend_gift_none_text.text('У неё еще нет подарков, сделайте подарок первым!');
+            } else {
+                this.friend_title.text('Его подарки');
+                this.friend_gift_none_text.text('У него еще нет подарков, сделайте подарок первым!');
+            }
+
+            this.friend_gift_answer.click(function() {
+                p.setFriend(f_info);
+            }.bind(this));
+
+            this.friend_gift_container.hide();
+            this.friend_gift_loader.show();
+
+            f.getGifts(f_info.uid).done(function(gs) {
+                this.gifts = $.grep(gs, function(v, i) {
+                    if (v.privacy == 1 && v.user_id != util.user_id) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+
+                this.pos = 0;
+
+                this.friend_gift_none.hide();
+                this.friend_gift_all.show();
+
+                if (this.gifts.length == 0) {
+                    this.friend_gift_none.show();
+                    this.friend_gift_all.hide();
+                } else if (this.gifts.length <= this.count) {
+                    this.friend_gift_nav.hide(); 
+                } else {
+                    this.friend_gift_nav.show(); 
+                }
+
+                this.scrollGifts();
+
+                this.friend_gift_loader.hide();
+                this.friend_gift_container.show();
+            }.bind(this));
+
+            this.friend_container.show();
+
+        },
+
+        scrollGifts: function(direction) {
+            if (direction == 'forward') {
+                this.pos += this.count;
+
+                if (this.pos > (this.gifts.length - 1)) {
+                    this.pos = 0;
+                }
+            } else if (direction == 'back') {
+                this.pos -= this.count;
+
+                if (this.pos < 0) { 
+                    this.pos = Math.floor((this.gifts.length - 1) / this.count) 
+                        * this.count;
+                }
+            }
+
+            pos       = this.pos;
+            cnt       = this.count; 
+            gifts     = this.gifts;
+            container = this.friend_gift_list;
+
+            container.html('');
+
+            for (i = pos; i < (pos + cnt); i++) {
+                var v = gifts[i];
+
+                if (typeof(v) === 'object') {
+                    var path = util.thumbs_path+'/'+v.gift_id+'.png';
+
+                    user_name = v.user_name;
+                    if (v.incognito) {
+                        user_name = 'Инкогнито';
+                    }
+
+                    if (!v.is_open) {
+                        path = util.covers_path+'/'+v.cover_id+'.png';
+                    }
+
+                    container.append(
+                        "<article><img src='"+path+"' width='90' height='90' alt=''><div class='descr'><img src='"+path+" 'width='90' height='90' alt=''>"+user_name+"<div class='grey'>"+v.created_date+"</div></div></article>"
+                    );    
+
+                }
+            }
+
+            return false;
+        },
+
+        showFriendsPage: function(v, u) {
+            v.hideBlocks();
+
+            this.loader.show();
+
+            v.selectMenu('friends');
+
+            u.getFriends().done(function(friends) {
+                this.users = friends;
+                this.pos = 0;
+
+                this.scrollFriends();
+
+                this.loader.hide();
+                this.container.show();
+            }.bind(this));
+        },
+
+        searchFriend: function() {
+            var query = this.friends_search.val();  
+            user.searchFriend(query);
+        },
+
+        scrollFriends: function(direction) {
+            if (direction == 'forward') {
+                this.pos += this.friends_to_show;
+
+                if (this.pos > (this.users.length - 1)) {
+                    this.pos = 0;
+                }
+            } else if (direction == 'back') {
+                this.pos -= this.friends_to_show;
+
+                if (this.pos < 0) {
+                    this.pos = 
+                        Math.floor((this.users.length - 1) / this.friends_to_show) * this.friends_to_show;
+                }
+            }
+
+            cnt = this.friends_to_show;
+            pos = this.pos;
+
+            this.friends_list.html("");
+
+            for (i = pos; i < (pos + cnt); i++) {
+                var v = this.users[i];
+
+                if (typeof(v) === 'object') {
+                    this.friends_list.append(
+                        "<article><div class='photo'><a href='#' onclick='friend.select(\""+i+"\",user.friends)'><img src='"+v.pic_128+"' width='120' height='120' alt=' '></a></div>"+v.name+"</article>"
+                    );
+                }
+            }
+        }
+    };
+
+    // Page: Gifts catalog
     view.gifts_catalog = {
         emitter:           $(document),
 
         cost:              $("#cost"),
         container:         $('#gifts_catalog'),
 
+        loader:            $('#gifts_catalog_loader'),
+        loader_block:      $('#gifts_block_loader'),
+
         gifts_container:   $('#gifts_block'),
         gifts_list:        $('#gifts_list'),
-        gifts_to_show:     5,
+        gifts_navi:        $('#gifts_catalog_navi'),
+        gifts_to_show:     6,
 
         friends_container: $('#friends_block'),
         friends_list:      $('#friends'),
         friends_search:    $('#friend_search_query'),
-        friends_to_show:   8,
+        friends_loader:    $('#friends_loader'),
+        friends_to_show:   15,
 
         desc_container:    $('#description_block'),
         desc_gift:         $('#gift_show'),
         desc_gift_for:     $('#gift_for'),
+        desc_gift_for_ava: $('#gift_for_ava'),
         desc_text:         $('#desc_text'),
         desc_is_private:   $('#is_private'),
         desc_incognito:    $('#incognito'),
 
         covers_container:  $('#covers_block'),
 
-        done_container:    $('#done'),
-        
+        done_container_ok: $('#done_ok'),
+        done_ava:          $('#done_ava_for'),
+        done_for:          $('#done_for'),
+        done_gift:         $('#done_gift'),
+        done_text:         $('#done_text'),
+        done_text1:        $('#done_text1'),
+        done_text2:        $('#done_text2'),
+
+        done_container_error: $('#done_error'),
+        error_ava:            $('#error_ava_for'),
+        error_gift:           $('#error_gift'),
+        error_text:           $('#error_text'),
+
+        send_loader:       $('#send_loader'),
+
+        user_balance:      $('#user_balance'),
+
+        category_id:       'category_',
+        sort_id:           'sort_',
+
         // Methods
-        init: function (purchase, user, gifts_catalog) {
+        init: function (v, vmg, purchase, user, gc, mg, g) {
             // Set Gift
             purchase.emitter.on('purchase.gift_selected', function (e, input) { 
-                this.cost.text(input.cost);
-                this.gifts_container.hide();
+                this.container.hide();
+                v.hideBlocks();
 
                 if (typeof input.friend_selected === 'undefined') {
                     this.showFriendsSelector(user); 
@@ -275,8 +638,15 @@ $(document).ready(function() {
             // Set Friend
             purchase.emitter.on('purchase.friend_selected', function (e, input) { 
                 if (typeof input.gift_selected === 'undefined') {
-                    // TODO: Show gifts container
+                    // Gift not selected
+                    v.hideBlocks();
+
+                    this.loader.show();
+                    gc.setCategory(util.default_gift_cat).done(function() {
+                    }.bind(this));
+
                 } else {
+                    // Gifts selected
                     this.friends_container.hide();
                     this.showDescriptionBlock(purchase);
                 }
@@ -297,33 +667,144 @@ $(document).ready(function() {
                 input.process();
             }.bind(this));
 
+            // Show block loader 
+            purchase.emitter.on('show_block_loader', function (e, input) { 
+                this.gifts_list.hide();
+                this.gifts_navi.hide();
+                this.loader_block.show();
+            }.bind(this));
+
+            // Hide block loader 
+            purchase.emitter.on('hide_block_loader', function (e, input) { 
+                this.loader.hide();
+                this.loader_block.hide();
+                this.gifts_list.show();
+            }.bind(this));
+
+            // Show send loader 
+            purchase.emitter.on('show_send_loader', function (e, input) { 
+                this.send_loader.show();
+            }.bind(this));
+
+            // Hide send loader 
+            purchase.emitter.on('hide_send_loader', function (e, input) { 
+                this.send_loader.hide();
+            }.bind(this));
+
             // Purchase done 
             purchase.emitter.on('purchase.done', function (e, input) { 
-                this.done_container.text('Подарок отправлен!');
-                this.done_container.show();
+                img_path = util.thumbs_path+"/"+input.gift_selected+".png";
+
+                b = user.balance - input.cost;
+                this.user_balance.text( b + ' ' + declOfNum(b, ['монета', 'монеты', 'монет']) );
+
+                d = new Date();
+
+                this.done_ava.attr('src', input.friend_selected.pic_190+"?"+d.getTime()); 
+                this.done_for.text(input.friend_selected.name); 
+                this.done_gift.attr('src', img_path);
+
+                if (input.friend_selected.sex == 1) {
+                    this.done_text.text('она его скорее получила');
+                    this.done_text2.text('Напишите ей об этом сообщение!');
+                } else {
+                    this.done_text.text('он его скорее получил');
+                    this.done_text2.text('Напишите ему об этом сообщение!');
+                }
+                
+                this.done_container_ok.show();
             }.bind(this));
 
             // Purchase balance error 
             purchase.emitter.on('purchase.error_balance', function (e, input) { 
-                this.done_container.text('Не хватает денег!');
-                this.done_container.show();
+
+                d = new Date();
+
+                this.error_ava.attr('src', input.friend_selected.pic_190+"?"+d.getTime()); 
+                this.error_gift.attr('src', img_path);
+                this.error_text.text(input.need);
+
+                this.done_container_error.show();
             }.bind(this));
 
             // Set category 
-            gifts_catalog.emitter.on('gift_catalog.set_category', function (e, input) { 
-                input.getGiftsByCategory(input.cat_id, 'popularity').done(function(gifts) {
-                    this.gifts = gifts;
-                    this.gpos = 0;
-                    this.scrollGifts();
-                }.bind(this));
+            gc.emitter.on('gift_catalog.set_category', function (e, input) { 
+                $("#"+this.category_id+input.cat_id).attr('class', 'active');
+                $("#"+this.category_id+input.prev_cat_id).attr('class', '');
+
+                $("#"+this.sort_id+'popularity').attr('class', 'active');
+                $("#"+this.sort_id+'created_at').attr('class', '');
+
+                this.gifts = input.gifts;
+                this.gpos = 0;
+
+                if (this.gifts.length <= this.gifts_to_show) {
+                    this.gifts_navi.hide();
+                } else {
+                    this.gifts_navi.show();
+                }
+
+                this.scrollGifts();
+                this.container.show();
         
             }.bind(this));
 
             // Sort gifts 
-            gifts_catalog.emitter.on('gift_catalog.sort_gifts', function (e, input) { 
+            gc.emitter.on('gift_catalog.sort_gifts', function (e, input) { 
+                if (input.sort == 'popularity') {
+                    $("#"+this.sort_id+'popularity').attr('class', 'active');
+                    $("#"+this.sort_id+'created_at').attr('class', '');
+                } else {
+                    $("#"+this.sort_id+'created_at').attr('class', 'active');
+                    $("#"+this.sort_id+'popularity').attr('class', '');
+                }
+
+                if (this.gifts.length <= this.gifts_to_show) {
+                    this.gifts_navi.hide();
+                } else {
+                    this.gifts_navi.show();
+                }
+
                 this.gifts = input.gifts;
                 this.gpos = 0;
                 this.scrollGifts();
+            }.bind(this));
+        },
+
+        showIndex: function(v, p, u, gc, g) {
+            v.hideBlocks();
+
+            g.clear();
+            p.clear();
+            v.my_gifts.clear();
+
+            v.selectMenu('index');
+
+            v.my_gifts.showGiftsBlock(g).done(function() {
+                this.loader.show();
+                gc.setCategory(util.default_gift_cat).done(function() {
+                    // Preload friends
+                    u.getFriends().done(function(friends) {
+
+                        // pic_128, pic_50, pic_190 
+
+                        imgs_to_load = {
+                            'pic_128': [],
+                            'pic_50':  [],
+                            'pic_190': []
+                        };
+
+                        $.each(friends, function() {
+                            imgs_to_load.pic_128.push( this.pic_128 );
+                            imgs_to_load.pic_50.push( this.pic_50 );
+                            imgs_to_load.pic_190.push( this.pic_190 );
+                        });
+
+                        preloadImages(imgs_to_load.pic_128); 
+                        preloadImages(imgs_to_load.pic_50); 
+                        preloadImages(imgs_to_load.pic_190); 
+                    });
+                }.bind(this));
             }.bind(this));
         },
 
@@ -354,20 +835,24 @@ $(document).ready(function() {
                 if (typeof(v) === 'object') {
                     img_path = util.thumbs_path+"/"+v.id+".png";
 
-                    this.gifts_list.append(
-                        "<a onclick='purchase.setGift("+v.id+", "+v.premium+")' href='#'><img src='"+img_path+"' /></a>"
-                    );
+                    this.gifts_list.append("<article><a onclick='purchase.setGift("+v.id+", "+v.premium+")' href='#'><img src='"+img_path+"' width='90' height='90' alt=' '></a></article>");
                 }
             }
+
+            return false;
         },
 
         showFriendsSelector: function(u) {
+            
+           this.friends_loader.show();
+
             u.getFriends().done(function(friends) {
                 this.users = friends;
                 this.pos = 0;
 
                 this.scrollFriends();
 
+                this.friends_loader.hide();
                 this.friends_container.show();
 
             }.bind(this));
@@ -398,17 +883,9 @@ $(document).ready(function() {
                 var v = this.users[i];
 
                 if (typeof(v) === 'object') {
-                    name = htmlEncode(v.first_name + " " + v.last_name);
-                    
-                    if (name.length === 1) {
-                        name = v.nick;
-                    }
-
-                    this.users[i].name = name;
-
                     this.friends_list.append(
-                        "<div><a href='#' onclick='view.gifts_catalog.chooseFriend(\""+i+"\")'><img src='"+
-                        v.pic+"' /><br />"+i+". "+name+"</a></div>");    
+                        "<article><div class='photo'><a href='#' onclick='view.gifts_catalog.chooseFriend(\""+i+"\")'><img src='"+v.pic_128+"' width='120' height='120' alt=' '></a></div>"+v.name+"</article>"
+                    );
                 }
             }
         },
@@ -419,8 +896,11 @@ $(document).ready(function() {
         },
 
         showDescriptionBlock: function() {
+            d = new Date();
+
             this.desc_gift.attr("src", util.images_path+"/"+purchase.gift_selected+".png");
             this.desc_gift_for.text( purchase.friend_selected.name );
+            this.desc_gift_for_ava.attr("src", purchase.friend_selected.pic_50+"?"+d.getTime());
 
             this.desc_text.val("");
             this.desc_is_private.removeAttr("checked");
@@ -457,11 +937,12 @@ $(document).ready(function() {
             this.covers_container.show();
         },
 
-        hide: function () {
+        hide: function() {
             this.container.hide();
         }
     };
 
+    // Part: My gifts
     view.my_gifts = {
         emitter:   $(document),
 
@@ -472,14 +953,29 @@ $(document).ready(function() {
             newest: $('#gifts_my_new')
         },
 
-        gift_img:    $("#show_gift_img"),
-        gift_text:   $("#show_gift_text"),
-        gift_from:   $("#show_gift_from"),
-        gift_avatar: $("#show_gift_from_img"),
+        gifts_holder: {
+            open:   $('#gifts_my_holder'),
+            newest: $('#gifts_newest_holder')
+        },
+
+        gifts_navi: {
+            open:   $('#open_navi'),
+            newest: $('#newest_navi')
+        },
+
+        gift_img:      $("#show_gift_img"),
+        gift_text:     $("#show_gift_text"),
+        gift_from:     $("#show_gift_from"),
+        gift_date:     $("#show_gift_date"),
+        gift_avatar:   $("#show_gift_from_img"),
+        gift_avatar_c: $("#show_gift_from_img_c"),
+        gift_answer:   $("#answer_gift"),
+
+        loader: $('#gifts_my_loader'),
 
         count: {
-            open:   3,
-            newest: 3,
+            open:   6,
+            newest: 6,
         },
 
         pos: {
@@ -489,15 +985,56 @@ $(document).ready(function() {
 
         gifts: { },
 
+        clear: function() {
+            this.pos.open   = 0;
+            this.pos.newest = 0;
+
+            this.gifts_container.open.html('');
+            this.gifts_container.newest.html('');
+        },
+
         showGiftsBlock: function(g) {
+            dfd = $.Deferred();
+
+            this.loader.show();
+
             g.getList().done(function(list) {
-                this.gifts.open = list.open;
+                this.gifts.open   = list.open;
                 this.gifts.newest = list.newest;
 
+                // Open
                 this.scrollGifts('open');
+
+                if (this.gifts.open.length < 1) {
+                    this.gifts_holder.open.hide();
+                } else {
+                    this.gifts_holder.open.show();
+                }
+                
+                if (this.gifts.open.length <= this.count.open) {
+                    this.gifts_navi.open.hide();
+                }
+
+                // Newest
                 this.scrollGifts('newest');
+
+                if (this.gifts.newest.length < 1) {
+                    this.gifts_holder.newest.hide();
+                } else {
+                    this.gifts_holder.newest.show();
+                }
+
+                if (this.gifts.newest.length <= this.count.newest) {
+                    this.gifts_navi.newest.hide();
+                }
+                
+                this.loader.hide();
                 this.container.show();
+
+                dfd.resolve(this);
             }.bind(this));
+
+            return dfd.promise();
         },
 
         scrollGifts: function(type, direction) {
@@ -529,7 +1066,7 @@ $(document).ready(function() {
 
                 if (typeof(v) === 'object') {
                     var path = util.thumbs_path+'/'+v.gift_id+'.png';
-                    if (type == 'new') {
+                    if (type == 'newest') {
                         path = util.covers_path+'/'+v.cover_id+'.png';
                     }
 
@@ -538,19 +1075,19 @@ $(document).ready(function() {
                         user_name = 'Инкогнито';
                     }
 
-                    container.append("<div><a class='inline' onclick='view.my_gifts.showGift("+i+", \""+type+"\")' href='#data'><img src='"+
-                        path+"' /></a><br />"+
-                        user_name+"<br />"+
-                        v.created_date
-                        +"</div>");    
+                    container.append(
+                        "<article><img src='"+path+"' width='90' height='90' alt=''><div class='descr'><a onclick='view.my_gifts.showGift("+i+", \""+type+"\", user, purchase)' href='#data' class='inline'><img src='"+path+"' width='90' height='90' alt=' '></a>"+user_name+"<div class='grey'>"+v.created_date+"</div></div></article>"
+                    );    
                 }
             }
 
             // Show dialog
             $(".inline").fancybox();
+
+            return false;
         },
 
-        showGift: function(id, type) {
+        showGift: function(id, type, u, p) {
             // Customize dialog
             gift        = this.gifts[type][id]; 
             avatar_path = 'http://avt.appsmail.ru/'+gift.user_box+'/'+gift.user_login+'/_avatarsmall';
@@ -558,13 +1095,34 @@ $(document).ready(function() {
             this.gift_img.attr("src", 
                 util.images_path+"/"+gift.gift_id+".png");
             this.gift_text.text(gift.text);
+            this.gift_date.text(gift.created_date);
 
             if (gift.incognito) {
                 this.gift_from.text('Инкогнито');
+                this.gift_avatar_c.hide();
+                this.gift_answer.hide();
             } else {
                 this.gift_from.text(gift.user_name);
                 this.gift_avatar.attr("src", avatar_path);
+                this.gift_avatar_c.show();
+                this.gift_answer.show();
             }
+
+            this.gift_answer.click(function() {
+                u.getFriends().done(function(friends) {
+
+                    $.each(friends, function(i, f) {
+                        link = 'http://my.mail.ru/' + gift.user_box + '/' + gift.user_login + '/';
+                        if (f.link == link) {
+                            p.setFriend(f);
+                        }
+                    });
+
+                    this.gift_answer.off('click');
+
+                    $.fancybox.close();
+                }.bind(this));
+            }.bind(this));
 
             if (type == 'newest') {
                 this.emitter.trigger('view.open_gift', gift.id);
@@ -579,14 +1137,22 @@ $(document).ready(function() {
     // Main init
     $.ajaxSetup({ cache: false });
 
-    // Init views
-    view.gifts_catalog.init(purchase, user, gifts_catalog);
+    mailru.loader.require('api', function() {
+        mailru.app.init(util.private);
+    });
 
+    // Init views
     purchase.init(view.gifts_catalog);
     gifts.my.init(view.my_gifts);
 
+    my_gifts = gifts.my;
+
+    view.gifts_catalog.init(view, view.my_gifts, purchase, user, gifts_catalog, my_gifts, gifts);
+
+    view.friends.init(view, user, friend, purchase);
+
     // Start work
-    view.my_gifts.showGiftsBlock(gifts.my);
+    view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts);
 });
 
 // Util 
@@ -599,3 +1165,13 @@ function htmlDecode(value){
     return $('<div/>').html(value).text();
 }
 
+function declOfNum(number, titles)  {  
+    cases = [2, 0, 1, 1, 1, 2];  
+    return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];  
+}  
+
+function preloadImages(aoi) {
+    $(aoi).each(function(){
+        $('<img/>')[0].src = this;
+    });
+}

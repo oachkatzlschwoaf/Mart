@@ -1,0 +1,18 @@
+<div class="block gft_block" id="covers_block" style="display:none">
+    <header class="title2">Выберите упаковку</header>
+    <section class="catalog">
+        {% for cover in covers %}
+            <article> 
+                <a href="#" onclick="purchase.setCover({{ cover.id }}, {{ cover.getCost() }})" >
+                    <img src="{{ asset(cover.getWebPath()) }}" width="90" height="90" alt=" ">
+                    {% if cover.getCost() == 0 %}
+                    <span class="cover free"></span>
+                    {% endif %}
+                </a> 
+            </article>
+        {% endfor %}
+    </section>
+    <!-- end .catalog--> 
+</div>
+<!-- end .block--> 
+

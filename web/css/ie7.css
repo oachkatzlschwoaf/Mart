@@ -1,0 +1,10 @@
+@charset "utf-8";
+
+.catalog {
+	padding-bottom:14px;
+}
+
+.slider2 .nav li {
+	display:inline;
+	margin:0 4px;
+}
