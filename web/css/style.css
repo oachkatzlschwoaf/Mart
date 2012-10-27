@@ -1145,51 +1145,41 @@ p {
 }
 
 .buy {
-	zoom:1;
-	position:relative;
-	margin:-5px 0 0 -44px;
-	top:9px;
-	left:22px;
-	font-size:16px;
-	line-height:16px;
-	color:#ccc;
+
 }
 
 .buy article {
-	zoom:1;
-	overflow:hidden;
-	border-top:1px solid #f2f2f2;
-	padding:18px 20px 15px 100px;
-	background:url(../images/coin.png) no-repeat 20px 10px;
+    margin: 0 0 10px 0px;
+    padding: 8px 0 0 5px;
+    height: 40px;
+    border: 1px solid white;
 }
 
-.buy article:first-child {
-	border:0;
+.buy article:hover {
+    background: #f3f6fa; 
+    border: 1px solid #dce7f1;
 }
 
-.buy .btn {
-	float:right;
-	padding:0 0 0 5px;
-	margin:12px 0 0 0;
+.buy .desc {
+    width: 130px; 
+    font-size: 16px; 
+    float: left;
+    height: 25px;
+    padding: 7px 0px 0px 0px;
 }
 
-.buy .btn span {
-	float:left;
-	padding:0 5px 0 0;
-	min-width:130px;
+.buy .desc_money {
+    width: 172px; 
+    font-weight: bold;
+    font-size: 18px; 
+    float: left;
+    height: 25px;
+    padding: 7px 0px 0px 42px;
+    background: url("../images/coins.png") no-repeat scroll 0 0px transparent
 }
 
-.buy strong {
-	display:block;
-	font-weight:normal;
-	font-size:42px;
-	line-height:42px;
-	zoom:1;
-	position:relative;
-	color:#484848;
-	letter-spacing:-2px;
-	margin:-5px 0 0 0;
-	top:5px;
+.buy .desc_money span {
+    color: #f09600;
 }
 
 .message {
@@ -1271,3 +1261,11 @@ p {
     height: 90px;
 }
 
+.mr_btn {border: 0; background: none; overflow: hidden; padding: 0; margin: 0 10px 0 0; cursor: pointer; display: inline-block; white-space: nowrap}
+.mr_btn span, .mr_btn em {background: url("http://img4.imgsmail.ru/r/my/app/connect/button-sprite.png") no-repeat; display: inline-block; height: 26px; font-size: 12px; line-height:18px;}
+.mr_btn span {background-position: 0 0;}
+.mr_btn em {background-position: 100% -30px; margin-left: 4px; padding: 3px 21px 0 15px; color: white; font-style: normal; font-weight: bold;}
+.mr_btn:hover span  {background-position: 0 -60px;}
+.mr_btn:hover em {background-position: 100% -90px;}
+.mr_btn:active span {background-position: 0 -120px;}
+.mr_btn:active em {background-position: 100% -150px;}

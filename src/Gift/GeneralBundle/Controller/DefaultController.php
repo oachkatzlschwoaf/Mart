@@ -8,9 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 # Entity
+use Gift\GeneralBundle\Entity\Gift;
 use Gift\GeneralBundle\Entity\CategoryGift;
 use Gift\GeneralBundle\Entity\User;
 use Gift\GeneralBundle\Entity\UserGift;
+use Gift\GeneralBundle\Entity\Transaction;
+use Gift\GeneralBundle\Entity\BillingConfig;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -143,13 +146,6 @@ class DefaultController extends Controller
         # Fetch user
         $user = $this->fetchUser($r);
 
-        # Get gifts
-        # Don't need anymore
-        $gifts = $this->getDoctrine()->getEntityManager()
-            ->createQuery('select p FROM GiftGeneralBundle:Gift p order by p.popularity7 DESC')
-            ->setMaxResults(6) // TODO: unhardcode
-            ->getResult();
-
         # Get covers 
         $rep = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:Cover');
@@ -161,20 +157,27 @@ class DefaultController extends Controller
             ->createQuery('select p FROM GiftGeneralBundle:Category p where p.rotation > 0 order by p.rotation ASC')
             ->getResult();
             
+
         # Get config
         $config = $this->getConfig();         
 
+        $bconfig = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:BillingConfig')
+            ->findAll();
+
         # Prepare template
         $name = $user->getNick();
+        $gift = new Gift;
 
         return $this->render('GiftGeneralBundle:Default:index.html.twig', 
             array(
                 'sk'         => $sk,
                 'user'       => $user,
-                'gifts'      => $gifts,
                 'covers'     => $covers,
-                'config'     => $config,
                 'categories' => $categories,
+                'config'     => $config,
+                'bconfig'    => $bconfig,
+                'gift'       => $gift,
         ));
     }
 
@@ -722,6 +725,80 @@ class DefaultController extends Controller
         $em->flush();
 
         $answer = array( 'done' => 'popularity saved' );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function increaseBalanceAction(Request $r) {
+        $app_id = $r->get('app_id');
+        $tid    = $r->get('transaction_id');
+        $sid    = $r->get('service_id');
+        $uid    = $r->get('uid');
+        $sig    = $r->get('sig');
+
+        $price   = round($r->get('mailiki_price'));
+        $o_price = round($r->get('other_price'));
+        $profit  = round($r->get('profit'));
+        $debug   = round($r->get('debug'));
+
+        $user = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:User p where p.uid = :uid')
+            ->setParameter('uid', $uid)
+            ->getResult();
+
+        if (!$user) {
+            $answer = array( 'status' => 2, 'error_code' => 701 );
+            $response = new Response(json_encode($answer));
+            return $response;
+        } else {
+            $user = $user[0];
+        }
+
+        // Check payment 
+        $bcs = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p from GiftGeneralBundle:BillingConfig p where p.service_id = :sid')
+            ->setParameter('sid', $sid)
+            ->getResult();
+
+        if (!$bcs) {
+            $answer = array( 'status' => 2, 'error_code' => 701 );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $bc = $bcs[0];
+
+        if ($sid != $bc->getServiceId() || $price != $bc->getMailiki()) {
+            $answer = array( 'status' => 2, 'error_code' => 701 );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $config = $this->getConfig();         
+        
+        $balance = $user->getBalance();
+
+        // Transaction
+
+        $t = new Transaction;
+        $t->setTid( $tid );
+        $t->setServiceId( $sid );
+        $t->setUid( $uid );
+        $t->setMailikiPrice( $price );
+        $t->setOtherPrice( $o_price );
+        $t->setProfit( $profit );
+        $t->setDebug( $debug );
+
+        // Increase user balance
+
+        $user->setBalance($balance + $config['mailik_course'] * $price); 
+        
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->persist($user);
+        $em->persist($t);
+        $em->flush();
+
+        $answer = array( 'status' => 1 );
         $response = new Response(json_encode($answer));
         return $response;
     }

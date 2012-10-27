@@ -349,6 +349,14 @@ $(document).ready(function() {
             $('.gft_loader').each( function() { 
                 $(this).hide(); 
             });
+        },
+
+        showPaymentDialog: function(sid, sname, mailiki) {
+            mailru.app.payments.showDialog({
+                service_id: sid,
+                service_name: sname,
+                mailiki_price: mailiki 
+            });
         }
     };
 
@@ -1082,7 +1090,9 @@ $(document).ready(function() {
             }
 
             // Show dialog
-            $(".inline").fancybox();
+            $(".inline").fancybox({
+                'overlayColor': '#fff'
+            });
 
             return false;
         },
@@ -1153,6 +1163,7 @@ $(document).ready(function() {
 
     // Start work
     view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts);
+
 });
 
 // Util 

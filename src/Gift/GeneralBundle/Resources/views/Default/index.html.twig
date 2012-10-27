@@ -32,9 +32,9 @@
     util.api_url.open_gift      = "{{ path("apiOpenGift", {'sk': sk}) }}";
     util.api_url.category_gifts = "{{ path("apiCategoryGiftsLite") }}";
 
-    util.images_path         = "{{ asset(gifts[0].getUploadDir('images')) }}";
-    util.thumbs_path         = "{{ asset(gifts[0].getUploadDir('thumbs')) }}";
-    util.covers_path         = "{{ asset(gifts[0].getUploadDir('covers')) }}";
+    util.images_path         = "{{ asset(gift.getUploadDir('images')) }}";
+    util.thumbs_path         = "{{ asset(gift.getUploadDir('thumbs')) }}";
+    util.covers_path         = "{{ asset(gift.getUploadDir('covers')) }}";
 
     util.price = { };
     util.price.gift         = {{ config.gift_price }};
@@ -47,6 +47,10 @@
 
     util.user_start_balance = {{ user.balance }};
     util.user_id            = {{ user.id }};
+
+    $("#inc_balance").fancybox({
+        'overlayColor': '#fff'
+    });
 </script>
 
 {% endblock %}

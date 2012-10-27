@@ -1,0 +1,22 @@
+Gift\GeneralBundle\Entity\BillingConfig:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\BillingConfigRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        service_id:
+            type: integer
+        service_name:
+            type: string
+            length: 255
+        mailiki:
+            type: integer
+        money:
+            type: integer
+        bonus:
+            type: integer
+    lifecycleCallbacks: {  }

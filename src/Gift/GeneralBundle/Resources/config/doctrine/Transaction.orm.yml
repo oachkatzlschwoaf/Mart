@@ -1,0 +1,27 @@
+Gift\GeneralBundle\Entity\Transaction:
+    type: entity
+    table: null
+    repositoryClass: Gift\GeneralBundle\Entity\TransactionRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        tid:
+            type: string
+            length: 255
+        service_id:
+            type: integer
+        uid:
+            type: string
+            length: 255
+        mailiki_price:
+            type: integer 
+        other_price:
+            type: integer
+        profit:
+            type: integer
+        debug:
+            type: boolean
+    lifecycleCallbacks: {  }

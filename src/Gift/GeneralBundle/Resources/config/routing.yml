@@ -118,3 +118,7 @@ apiSetGiftPopularity:
     requirements:
         _method:  POST
 
+
+apiBalance:
+    pattern: /api/user/balance/increase
+    defaults: { _controller: GiftGeneralBundle:Default:increaseBalance }
