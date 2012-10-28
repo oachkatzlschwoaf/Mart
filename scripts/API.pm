@@ -12,8 +12,10 @@ use Data::Dumper;
 sub new {
     my ($class) = @_;
 
+    my $path = './';
+
     my $y = YAML::Tiny->new();
-    my $conf = $y->read('config.yml');
+    my $conf = $y->read($path.'config.yml');
     $conf = $conf->[0];
 
     my $self = {
