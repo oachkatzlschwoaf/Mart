@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+use lib '/var/www/gift/main/scripts';
+
 use API;
 use Daemon::Generic;
 use Data::Dumper;
