@@ -87,6 +87,10 @@ sub gd_preconfig {
     return ();
 }
 
+sub gd_error {
+    print "Error... ".$@;
+}
+
 # MAIN LOOP
 
 sub gd_run {
