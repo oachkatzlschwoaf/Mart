@@ -7,7 +7,6 @@ use lib '/var/www/gift/main/scripts';
 
 use API;
 use DateTime;
-use Daemon::Generic;
 use Data::Dumper;
 
 $|++;
@@ -55,73 +54,49 @@ sub getGifts {
 }
 
 # MAIN
+print "\n\nWork start";
 
-newdaemon(
-    progname   => 'calc_gift_pop',
-    pidfile    => '/tmp/build_cat.pid',
-);
+# Get gifts users by days 
+my $dt = DateTime->now();
+my $gift_stat;
 
-sub gd_preconfig {
-    my ($self) = @_;
-    return ();
-}
+print "\n\nGifts stat day by day";
+print "\n================================\n";
 
-# MAIN LOOP
+for (my $i = 0; $i < $DAY_AGO; $i++) {
+    my $from = $dt->clone()->subtract( days => $i );
+    my $to   = $from->clone()->add( days => 1 );
 
-sub gd_run {
+    my $ps = getGiftPurchases($from->ymd(), $to->ymd());
 
-    while(42) {
-        print "\n\nWork start";
-
-        # Get gifts users by days 
-        my $dt = DateTime->now();
-        my $gift_stat;
-
-        print "\n\nGifts stat day by day";
-        print "\n================================\n";
-
-        for (my $i = 0; $i < $DAY_AGO; $i++) {
-            my $from = $dt->clone()->subtract( days => $i );
-            my $to   = $from->clone()->add( days => 1 );
-
-            my $ps = getGiftPurchases($from->ymd(), $to->ymd());
-
-            foreach my $p (@$ps) {
-                $gift_stat->{ $p->{'gift_id'} }++;
-            }
-
-            print "\n".$from->ymd()." gifts: ".scalar(@$ps);
-        }
-
-        print "\n\nGifts stat summary";
-        print "\n================================\n";
-
-        my $gifts = getGifts();
-        my %gift;
-
-        foreach my $g (@$gifts) {
-            $gift{ $g->{'id'} }= $g;
-        }
-
-        foreach my $gid (sort { $gift_stat->{$b} <=> $gift_stat->{$a} } keys %$gift_stat) {
-            delete($gift{$gid});
-
-            print "\nGift $gid: ".$gift_stat->{$gid};
-            setPopularity($gid, $gift_stat->{$gid});
-        }
-
-        foreach my $gid (keys %gift) {
-            print "\nGift $gid: 0";
-            setPopularity($gid, 0);
-        }
-
-        print "\n\nWork finish done!";
-        print "\n*************************************************\n";
-
-        sleep($SLEEP_TIME);
+    foreach my $p (@$ps) {
+        $gift_stat->{ $p->{'gift_id'} }++;
     }
+
+    print "\n".$from->ymd()." gifts: ".scalar(@$ps);
 }
 
+print "\n\nGifts stat summary";
+print "\n================================\n";
 
+my $gifts = getGifts();
+my %gift;
 
+foreach my $g (@$gifts) {
+    $gift{ $g->{'id'} }= $g;
+}
 
+foreach my $gid (sort { $gift_stat->{$b} <=> $gift_stat->{$a} } keys %$gift_stat) {
+    delete($gift{$gid});
+
+    print "\nGift $gid: ".$gift_stat->{$gid};
+    setPopularity($gid, $gift_stat->{$gid});
+}
+
+foreach my $gid (keys %gift) {
+    print "\nGift $gid: 0";
+    setPopularity($gid, 0);
+}
+
+print "\n\nWork finish done!";
+print "\n*************************************************\n";
