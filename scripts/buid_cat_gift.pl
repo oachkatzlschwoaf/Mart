@@ -77,6 +77,7 @@ sub removeGiftFromCategory {
 
 # MAIN
 
+=pod
 newdaemon(
     progname   => 'build_cat',
     pidfile    => '/tmp/build_cat.pid',
@@ -87,15 +88,12 @@ sub gd_preconfig {
     return ();
 }
 
-sub gd_error {
-    print "Error... ".$@;
-}
-
 # MAIN LOOP
 
 sub gd_run {
 
     while(42) {
+=cut
         print "\n\nWork start";
 
         # RUN
@@ -193,6 +191,7 @@ sub gd_run {
         print "\n\nWork finish done!";
         print "\n*************************************************\n";
 
+=pod
         sleep($SLEEP_TIME);
     }
 }
