@@ -1269,3 +1269,8 @@ p {
 .mr_btn:hover em {background-position: 100% -90px;}
 .mr_btn:active span {background-position: 0 -120px;}
 .mr_btn:active em {background-position: 100% -150px;}
+
+#fancybox-wrap {
+    position: absolute;
+    top: 50px !important;
+}

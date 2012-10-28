@@ -5,14 +5,19 @@ use warnings;
 
 use URI;
 use LWP::UserAgent;
+use YAML::Tiny;
 use JSON;
 use Data::Dumper;
 
 sub new {
     my ($class) = @_;
 
+    my $y = YAML::Tiny->new();
+    my $conf = $y->read('config.yml');
+    $conf = $conf->[0];
+
     my $self = {
-        api_url => 'http://10.211.55.7/gift/app_dev.php/api/'
+        api_url => $conf->{'api_url'}, 
     };
 
     bless($self, $class);
