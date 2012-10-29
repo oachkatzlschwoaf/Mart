@@ -791,7 +791,7 @@ class DefaultController extends Controller
 
         // Increase user balance
 
-        $user->setBalance($balance + $config['mailik_course'] * $price); 
+        $user->setBalance($balance + $bc->getMoney() + $bc->getBonus()); 
         
         $em = $this->getDoctrine()->getEntityManager();
         $em->persist($user);
