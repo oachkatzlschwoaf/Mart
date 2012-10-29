@@ -1167,6 +1167,10 @@ $(document).ready(function() {
     // Start work
     view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts);
 
+    mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
+        console.log(event);
+        $.fancybox.close();
+    });
 });
 
 // Util 
