@@ -584,7 +584,7 @@ $(document).ready(function() {
         gifts_container:   $('#gifts_block'),
         gifts_list:        $('#gifts_list'),
         gifts_navi:        $('#gifts_catalog_navi'),
-        gifts_to_show:     6,
+        gifts_to_show:     util.show_gifts,
 
         friends_container: $('#friends_block'),
         friends_list:      $('#friends'),
