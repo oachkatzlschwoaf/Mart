@@ -36,6 +36,8 @@
     util.thumbs_path         = "{{ asset(gift.getUploadDir('thumbs')) }}";
     util.covers_path         = "{{ asset(gift.getUploadDir('covers')) }}";
 
+    util.abs_path = "{{ app.request.uriForPath('/') }}";
+
     util.price = { };
     util.price.gift         = {{ config.gift_price }};
     util.price.gift_premium = {{ config.gift_price_premium }};

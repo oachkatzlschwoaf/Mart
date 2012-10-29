@@ -246,7 +246,10 @@ $(document).ready(function() {
             mailru.common.guestbook.post({
                'title': 'У меня для тебя подарок', 
                'text': this.text,
-               'img_url': util.images_path+"/"+purchase.gift_selected+".png",
+               'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
+               'action_links': [
+                    {'text': 'Посмотреть', 'href': 'show'},
+               ]
             }); 
         },
 
@@ -261,9 +264,9 @@ $(document).ready(function() {
             mailru.common.stream.post({
                 'title': 'Ура! Подарок!',
                 'text': this.text,
-                'img_url': util.images_path+"/"+purchase.gift_selected+".png",
+                'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
                 'action_links': [
-                    {'text': 'Посмотреть', 'href': 'http://example.com/test1'},
+                    {'text': 'Посмотреть', 'href': 'show'},
                 ]
             });
         },
