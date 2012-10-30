@@ -262,7 +262,7 @@ function main_init() {
 
         postStream: function() {
             mailru.common.stream.post({
-                'title': 'Ура! Подарок!',
+                'title': 'Сделал подарок для ' + purchase.friend_selected.name,
                 'text': this.text,
                 'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
                 'action_links': [
