@@ -718,7 +718,7 @@ function main_init() {
             purchase.emitter.on('user.update_balance', function (e, balance) { 
                 b = balance;
                 this.user_balance.text( b + ' ' + declOfNum(b, ['монета', 'монеты', 'монет']) );
-            };    
+            }.bind(this));    
 
             // Purchase done 
             purchase.emitter.on('purchase.done', function (e, input) { 
