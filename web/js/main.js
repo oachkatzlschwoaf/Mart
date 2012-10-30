@@ -325,7 +325,13 @@ function main_init() {
             });
 
             this.emitter.trigger('user.search_friend', { 'result' : serp });
-        }
+        },
+
+        updateBalance() {
+            this.balance = this.balance + this.amount; 
+
+            this.emitter.trigger('user.update_balance', this.balance);
+        },
     };
 
     // Views 
@@ -354,7 +360,9 @@ function main_init() {
             });
         },
 
-        showPaymentDialog: function(sid, sname, mailiki) {
+        showPaymentDialog: function(sid, sname, mailiki, money, bonus, u) {
+            u.amount = money + bonus;
+
             mailru.app.payments.showDialog({
                 service_id: sid,
                 service_name: sname,
@@ -706,11 +714,18 @@ function main_init() {
                 this.send_loader.hide();
             }.bind(this));
 
+            // Update balance
+            purchase.emitter.on('user.update_balance', function (e, balance) { 
+                b = balance;
+                this.user_balance.text( b + ' ' + declOfNum(b, ['монета', 'монеты', 'монет']) );
+            };    
+
             // Purchase done 
             purchase.emitter.on('purchase.done', function (e, input) { 
                 img_path = util.thumbs_path+"/"+input.gift_selected+".png";
 
-                b = user.balance - input.cost;
+                user.balance = user.balance - input.cost;
+                b = user.balance;
                 this.user_balance.text( b + ' ' + declOfNum(b, ['монета', 'монеты', 'монет']) );
 
                 d = new Date();
@@ -1168,10 +1183,17 @@ function main_init() {
     view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts);
 
     mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
-        console.log(event);
+        
+        if (event.status == 'success') {
+            user.updateBalance();
+        }
+
         $.fancybox.close();
     });
 
+    mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
+        $.fancybox.close();
+    });
 }
 
 // MAIN

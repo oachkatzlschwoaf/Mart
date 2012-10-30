@@ -15,7 +15,7 @@
         <header class="title">Пополнение баланса</header>
         <section class="buy">
             {% for b in bconfig %} 
-                <article onclick="view.showPaymentDialog('{{ b.serviceId }}', '{{ b.serviceName }}', '{{ b.mailiki }}')"> 
+                <article onclick="view.showPaymentDialog('{{ b.serviceId }}', '{{ b.serviceName }}', '{{ b.mailiki }}', '{{ b.money }}'  ,'{{ b.bonus }}, user)'"> 
                     <div class="desc_money">{{ b.money }} 
                         {% if b.bonus %}
                         <span>+{{ b.bonus }}</span> 
