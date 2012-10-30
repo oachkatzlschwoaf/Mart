@@ -518,8 +518,12 @@ $(document).ready(function() {
             return false;
         },
 
-        showFriendsPage: function(v, u) {
+        showFriendsPage: function(v, p, g, u) {
             v.hideBlocks();
+
+            g.clear();
+            p.clear();
+            v.my_gifts.clear();
 
             this.loader.show();
 
