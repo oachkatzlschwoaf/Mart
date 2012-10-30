@@ -11,7 +11,7 @@ var util = {
     api_url: { },
 };
 
-$(document).ready(function() {
+function main_init() {
 
     // Friend
     friend = {
@@ -1154,10 +1154,6 @@ $(document).ready(function() {
     // Main init
     $.ajaxSetup({ cache: false });
 
-    mailru.loader.require('api', function() {
-        mailru.app.init(util.private);
-    });
-
     // Init views
     purchase.init(view.gifts_catalog);
     gifts.my.init(view.my_gifts);
@@ -1174,6 +1170,19 @@ $(document).ready(function() {
     mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
         console.log(event);
         $.fancybox.close();
+    });
+
+}
+
+// MAIN
+
+$(document).ready(function() {
+
+    mailru.loader.require('api', function() {
+        mailru.app.init(util.private);
+
+        // MAIN INIT
+        main_init();
     });
 });
 
