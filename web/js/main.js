@@ -327,7 +327,7 @@ function main_init() {
             this.emitter.trigger('user.search_friend', { 'result' : serp });
         },
 
-        updateBalance() {
+        updateBalance: function() {
             this.balance = this.balance + this.amount; 
 
             this.emitter.trigger('user.update_balance', this.balance);
