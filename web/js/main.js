@@ -328,7 +328,12 @@ function main_init() {
         },
 
         updateBalance: function() {
+            console.log('b: '+this.balance);
+            console.log('a: '+this.amount);
+
             this.balance = this.balance + this.amount; 
+
+            console.log('b final: '+this.balance);
 
             this.emitter.trigger('user.update_balance', this.balance);
         },
@@ -361,7 +366,12 @@ function main_init() {
         },
 
         showPaymentDialog: function(sid, sname, mailiki, money, bonus, u) {
+            console.log('money: '+money);
+            console.log('bonus: '+bonus);
+
             u.amount = money + bonus;
+
+            console.log('amount: '+u.amount);
 
             mailru.app.payments.showDialog({
                 service_id: sid,
