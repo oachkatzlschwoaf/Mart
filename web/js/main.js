@@ -182,11 +182,15 @@ function main_init() {
                 this.cost += util.price.gift_premium;
             }
 
+            _kmq.push(['record', 'set gift']);
+
             this.emitter.trigger('purchase.gift_selected', this);
         },
 
         setFriend: function (u) {
             this.friend_selected = u;
+
+            _kmq.push(['record', 'set friend']);
 
             this.emitter.trigger('purchase.friend_selected', this);
         },
@@ -204,6 +208,8 @@ function main_init() {
                 this.cost += util.price.incognito;
             }
 
+            _kmq.push(['record', 'set description']);
+
             this.emitter.trigger('purchase.desc_selected', this);
         },
 
@@ -211,12 +217,21 @@ function main_init() {
             this.cover_selected = cvid;
             this.cost += cvcost;
 
+            _kmq.push(['record', 'set cover']);
+
             this.emitter.trigger('purchase.cover_selected', this);
         },
 
 
         process: function() {
             this.emitter.trigger('show_send_loader', this);
+
+            _kmq.push(['record', 'process purchase', { 
+                'gift':      this.gift_selected,
+                'privacy':   this.privacy,
+                'incognito': this.incognito,
+                'cover':     this.cover_selected,
+            }]);
 
             $.post(util.api_url.purchase, {
                     gift:      this.gift_selected,
@@ -232,8 +247,12 @@ function main_init() {
                     this.emitter.trigger('hide_send_loader', this);
 
                     if (data.done == 'gift sended') {
+                        _kmq.push(['record', 'finish purchase', { 'result': 'done' }]);
                         this.emitter.trigger('purchase.done', this);
+
                     } else if (data.balance_error == 'need more money') {
+                        _kmq.push(['record', 'finish purchase', { 'result': 'need_money' }]);
+
                         this.need = data.need;
                         this.error_balance = 1;
                         this.emitter.trigger('purchase.error_balance', this);
@@ -653,6 +672,7 @@ function main_init() {
                 } else {
                     this.showDescriptionBlock(purchase);
                 }
+
             }.bind(this));
 
             // Friends search
@@ -748,8 +768,6 @@ function main_init() {
                     this.done_text2.text('Напишите ему об этом сообщение!');
                 }
 
-                _kmq.push(['record', 'view purchase done']);
-                
                 this.done_container_ok.show();
             }.bind(this));
 
@@ -761,9 +779,7 @@ function main_init() {
 
                 this.error_ava.attr('src', input.friend_selected.pic_190+"?"+d.getTime()); 
                 this.error_gift.attr('src', img_path);
-                this.error_text.text(input.need);
-
-                _kmq.push(['record', 'view purchase error']);
+                this.error_text.text(input.need + ' ' + declOfNum(input.need, ['монета', 'монеты', 'монет']));
 
                 this.done_container_error.show();
 
@@ -897,9 +913,6 @@ function main_init() {
 
                 this.friends_loader.hide();
                 this.friends_container.show();
-
-                _kmq.push(['record', 'view friends select']);
-
             }.bind(this));
         },
 
@@ -951,8 +964,6 @@ function main_init() {
             this.desc_is_private.removeAttr("checked");
             this.desc_incognito.removeAttr("checked");
 
-            _kmq.push(['record', 'view description']);
-
             this.desc_container.show();
         },
 
@@ -981,7 +992,6 @@ function main_init() {
         },
 
         showCoverBlock: function() {
-            _kmq.push(['record', 'view covers']);
             this.covers_container.show();
         },
 
