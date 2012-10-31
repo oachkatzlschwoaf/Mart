@@ -182,8 +182,6 @@ function main_init() {
                 this.cost += util.price.gift_premium;
             }
 
-            _kmq.push(['record', 'My Event']);
-
             this.emitter.trigger('purchase.gift_selected', this);
         },
 
