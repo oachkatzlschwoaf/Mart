@@ -609,4 +609,47 @@ class User
     {
         return $this->balance;
     }
+
+    public function getAge() {
+        if ($this->birthday) {
+            $date = $this->birthday;
+            $now = new \DateTime;
+            $interval = $now->diff($date);
+            return $interval->y;
+        } else {
+            return 0;
+        }
+    }
+
+    public function getAgeInterval() {
+        $age = $this->getAge();
+
+        if ($age) {
+            if ($age < 10) {
+                return "_10";
+            } else if ($age >= 10 && $age < 15) {
+                return "10_15";
+            } else if ($age >= 15 && $age < 20) {
+                return "15_20";
+            } else if ($age >= 20 && $age < 25) {
+                return "20_25";
+            } else if ($age >= 25 && $age < 30) {
+                return "25_30";
+            } else if ($age >= 30 && $age < 35) {
+                return "30_35";
+            } else if ($age >= 35 && $age < 40) {
+                return "35_40";
+            } else if ($age >= 40 && $age < 45) {
+                return "40_45";
+            } else if ($age >= 45 && $age < 50) {
+                return "45_50";
+            } else if ($age >= 50 && $age < 55) {
+                return "50_55";
+            } else if ($age >= 55) {
+                return "55_";
+            }
+        } else {
+            return 0;
+        }
+    }
 }

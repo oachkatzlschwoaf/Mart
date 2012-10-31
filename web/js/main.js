@@ -477,6 +477,7 @@ function main_init() {
 
             this.friend_container.show();
 
+            _kmq.push(['record', 'view friend page']);
         },
 
         scrollGifts: function(direction) {
@@ -546,6 +547,8 @@ function main_init() {
 
                 this.loader.hide();
                 this.container.show();
+
+                _kmq.push(['record', 'view friends page']);
             }.bind(this));
         },
 
@@ -744,6 +747,8 @@ function main_init() {
                     this.done_text.text('он его скорее получил');
                     this.done_text2.text('Напишите ему об этом сообщение!');
                 }
+
+                _kmq.push(['record', 'view purchase done']);
                 
                 this.done_container_ok.show();
             }.bind(this));
@@ -757,6 +762,8 @@ function main_init() {
                 this.error_ava.attr('src', input.friend_selected.pic_190+"?"+d.getTime()); 
                 this.error_gift.attr('src', img_path);
                 this.error_text.text(input.need);
+
+                _kmq.push(['record', 'view purchase error']);
 
                 this.done_container_error.show();
 
@@ -818,11 +825,12 @@ function main_init() {
             v.my_gifts.showGiftsBlock(g).done(function() {
                 this.loader.show();
                 gc.setCategory(util.default_gift_cat).done(function() {
+                    _kmq.push(['record', 'view index']);
+
                     // Preload friends
                     u.getFriends().done(function(friends) {
 
                         // pic_128, pic_50, pic_190 
-
                         imgs_to_load = {
                             'pic_128': [],
                             'pic_50':  [],
@@ -890,6 +898,8 @@ function main_init() {
                 this.friends_loader.hide();
                 this.friends_container.show();
 
+                _kmq.push(['record', 'view friends select']);
+
             }.bind(this));
         },
 
@@ -941,6 +951,8 @@ function main_init() {
             this.desc_is_private.removeAttr("checked");
             this.desc_incognito.removeAttr("checked");
 
+            _kmq.push(['record', 'view description']);
+
             this.desc_container.show();
         },
 
@@ -969,6 +981,7 @@ function main_init() {
         },
 
         showCoverBlock: function() {
+            _kmq.push(['record', 'view covers']);
             this.covers_container.show();
         },
 

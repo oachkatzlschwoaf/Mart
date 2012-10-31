@@ -3,6 +3,10 @@
 
 <script type="text/javascript">
     _kmq.push(['identify', '{{ user.email }}']);
+    _kmq.push(['set', {'gender': '{{ sex }}'}]);
+    _kmq.push(['set', {'age_interval': '{{ age_interval }}'}]);
+
+    _kmq.push(['record', 'load page']);
 </script>
 
 {% include 'GiftGeneralBundle:Default:top_nav.html.twig' %}

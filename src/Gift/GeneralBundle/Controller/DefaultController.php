@@ -169,15 +169,27 @@ class DefaultController extends Controller
         $name = $user->getNick();
         $gift = new Gift;
 
+        # User config
+        $sex = 'male';
+        if ($user->getGender() == 1) {
+            $sex = 'female';
+        }
+
+        $age = $user->getAge();
+        $age_interval = $user->getAgeInterval();
+
         return $this->render('GiftGeneralBundle:Default:index.html.twig', 
             array(
-                'sk'         => $sk,
-                'user'       => $user,
-                'covers'     => $covers,
-                'categories' => $categories,
-                'config'     => $config,
-                'bconfig'    => $bconfig,
-                'gift'       => $gift,
+                'sk'           => $sk,
+                'user'         => $user,
+                'sex'          => $sex,
+                'age'          => $age,
+                'age_interval' => $age_interval,
+                'covers'       => $covers,
+                'categories'   => $categories,
+                'config'       => $config,
+                'bconfig'      => $bconfig,
+                'gift'         => $gift,
         ));
     }
 
