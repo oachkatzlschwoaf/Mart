@@ -752,6 +752,7 @@ function main_init() {
 
             // Purchase balance error 
             purchase.emitter.on('purchase.error_balance', function (e, input) { 
+                img_path = util.thumbs_path+"/"+input.gift_selected+".png";
 
                 d = new Date();
 
@@ -760,6 +761,7 @@ function main_init() {
                 this.error_text.text(input.need);
 
                 this.done_container_error.show();
+
             }.bind(this));
 
             // Set category 
