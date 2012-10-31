@@ -169,6 +169,8 @@ function main_init() {
             delete this.privacy;
             delete this.incognito;
             delete this.cover;
+            delete this.need;
+            delete this.error_balance;
         },
 
         setGift: function (gid, premium) {
@@ -235,6 +237,7 @@ function main_init() {
                         this.emitter.trigger('purchase.done', this);
                     } else if (data.balance_error == 'need more money') {
                         this.need = data.need;
+                        this.error_balance = 1;
                         this.emitter.trigger('purchase.error_balance', this);
                     }
                 }.bind(this),
@@ -716,6 +719,8 @@ function main_init() {
 
             // Show send loader 
             purchase.emitter.on('show_send_loader', function (e, input) { 
+                this.done_container_ok.hide(); 
+                this.done_container_error.hide(); 
                 this.send_loader.show();
             }.bind(this));
 
@@ -1196,6 +1201,10 @@ function main_init() {
         
         if (event.status == 'success') {
             user.updateBalance();
+
+            if (purchase.error_balance == 1) {
+                purchase.process();
+            }
         }
 
         $.fancybox.close();
