@@ -248,7 +248,7 @@ function main_init() {
         postGuestbook: function() {
             mailru.common.guestbook.post({
                'title': 'У меня для тебя подарок', 
-               'text': this.text,
+               'text': 'Отправил тебе подарок: '+this.text,
                'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
                'action_links': [
                     {'text': 'Посмотреть', 'href': 'show'},
@@ -259,14 +259,14 @@ function main_init() {
         sendMessage: function() {
             mailru.common.messages.send({
                 'uid': this.friend_selected.uid,
-                'text': this.text
+                'text': 'Отправил тебе подарок! Смотри скорее! '+this.text
             });
         },
 
         postStream: function() {
             mailru.common.stream.post({
                 'title': 'Сделал подарок для ' + purchase.friend_selected.name,
-                'text': this.text,
+                'text': 'Это тебе: '+this.text,
                 'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
                 'action_links': [
                     {'text': 'Посмотреть', 'href': 'show'},
