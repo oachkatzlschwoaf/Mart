@@ -24,4 +24,9 @@ Gift\GeneralBundle\Entity\Transaction:
             type: integer
         debug:
             type: boolean
-    lifecycleCallbacks: {  }
+        created_at:
+            type: datetime
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]
