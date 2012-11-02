@@ -95,12 +95,14 @@ class DefaultController extends Controller
                     $user->setRefType( $uinfo->referer_type );
                     $user->setRefId( $uinfo->referer_id );
 
-                    $user->setCountryId( $uinfo->location->country->id );
-                    $user->setCountryName( $uinfo->location->country->name );
-                    $user->setCityId( $uinfo->location->city->id );
-                    $user->setCityName( $uinfo->location->city->name );
-                    $user->setRegionId( $uinfo->location->region->id );
-                    $user->setRegionName( $uinfo->location->region->name );
+                    if (isset($uinfo->location) && isset($uinfo->location->country)) {
+                        $user->setCountryId( $uinfo->location->country->id );
+                        $user->setCountryName( $uinfo->location->country->name );
+                        $user->setCityId( $uinfo->location->city->id );
+                        $user->setCityName( $uinfo->location->city->name );
+                        $user->setRegionId( $uinfo->location->region->id );
+                        $user->setRegionName( $uinfo->location->region->name );
+                    }
 
                     $user->setBalance(0); # Default balance value for newbie
 
