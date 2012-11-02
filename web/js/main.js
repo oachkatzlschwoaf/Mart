@@ -265,11 +265,11 @@ function main_init() {
         postGuestbook: function() {
             mailru.common.guestbook.post({
                'title': 'У меня для тебя подарок', 
-               'text': 'Отправил тебе подарок! '+this.text,
-               'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
-               'action_links': [
-                    {'text': 'Посмотреть', 'href': 'show'},
-               ]
+               'text': 'Отправил тебе подарок! '+this.text
+               //'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png",
+               //'action_links': [
+               //     {'text': 'Посмотреть', 'href': 'show'},
+               //]
             }); 
         },
 
