@@ -232,7 +232,7 @@ class Transaction
      * @param \DateTime $createdAt
      * @return Transaction
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt()
     {
         $this->created_at = new \DateTime;
     
