@@ -600,7 +600,7 @@ function main_init() {
 
                 if (typeof(v) === 'object') {
                     this.friends_list.append(
-                        "<article><div class='photo'><a href='#' onclick='friend.select(\""+i+"\",user.friends)'><img src='"+v.pic_128+"' width='120' height='120' alt=' '></a></div>"+v.name+"</article>"
+                        "<article><div class='photo'><a href='#' onclick='friend.select(\""+i+"\",view.friends.users)'><img src='"+v.pic_128+"' width='120' height='120' alt=' '></a></div>"+v.name+"</article>"
                     );
                 }
             }
@@ -1223,6 +1223,15 @@ function main_init() {
 
     mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
         $.fancybox.close();
+    });
+
+    // Other handlers
+    $('#friend_all_query').focus(function() {
+        $(this).val('');
+    });
+
+    $('#friend_search_query').focus(function() {
+        $(this).val('');
     });
 }
 
