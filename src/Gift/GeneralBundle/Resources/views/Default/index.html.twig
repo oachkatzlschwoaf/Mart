@@ -56,6 +56,8 @@
 
     util.user_start_balance = {{ user.balance }};
     util.user_id            = {{ user.id }};
+    util.is_install         = {{ is_install }};
+    util.ref                = "{{ ref }}";
 
     $("#inc_balance").fancybox({
         'overlayColor': '#fff'
@@ -64,6 +66,15 @@
     $("#inc_balance_err").fancybox({
         'overlayColor': '#fff'
     });
+
+
+    // Events
+
+    {% if is_install %}
+        _kmq.push(['record', 'install', {
+            'ref': util.ref, 
+        }]);
+    {% endif %}
 </script>
 
 {% endblock %}

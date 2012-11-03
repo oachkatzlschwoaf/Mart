@@ -31,6 +31,7 @@ class DefaultController extends Controller
         # Request user from session
         $user;
         $suid = $mc->get("sk_u-$sk");
+        $is_install = 0;
 
         if ($suid) { 
             # We got a session!
@@ -118,6 +119,8 @@ class DefaultController extends Controller
                     $em->persist($user);
                     $em->flush();
 
+                    $is_install = 1;
+
                 } else {
                     throw new \Exception('User from API not correct');
                 }
@@ -133,7 +136,7 @@ class DefaultController extends Controller
         $mc->set("u_sk-".$user->getId(), $sk, 86400);
         $mc->set("sk_u-$sk", $user->getId(), 86400);
 
-        return $user;
+        return array($user, $is_install);
     }
 
     public function getConfig() {
@@ -153,9 +156,10 @@ class DefaultController extends Controller
     public function indexAction(Request $r) {
         $sk  = $r->get('session_key');
         $uid = $r->get('oid');
+        $ref = $r->get('referer_type');
 
         # Fetch user
-        $user = $this->fetchUser($r);
+        list($user, $is_install) = $this->fetchUser($r);
 
         # Get covers 
         $rep = $this->getDoctrine()
@@ -189,18 +193,19 @@ class DefaultController extends Controller
         $age = $user->getAge();
         $age_interval = $user->getAgeInterval();
 
-        return $this->render('GiftGeneralBundle:Default:index.html.twig', 
-            array(
-                'sk'           => $sk,
-                'user'         => $user,
-                'sex'          => $sex,
-                'age'          => $age,
-                'age_interval' => $age_interval,
-                'covers'       => $covers,
-                'categories'   => $categories,
-                'config'       => $config,
-                'bconfig'      => $bconfig,
-                'gift'         => $gift,
+        return $this->render('GiftGeneralBundle:Default:index.html.twig', array(
+            'sk'           => $sk,
+            'user'         => $user,
+            'sex'          => $sex,
+            'age'          => $age,
+            'age_interval' => $age_interval,
+            'covers'       => $covers,
+            'categories'   => $categories,
+            'config'       => $config,
+            'bconfig'      => $bconfig,
+            'gift'         => $gift,
+            'is_install'   => $is_install,
+            'ref'          => $ref,
         ));
     }
 

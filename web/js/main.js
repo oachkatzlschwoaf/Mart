@@ -839,7 +839,9 @@ function main_init() {
             v.my_gifts.showGiftsBlock(g).done(function() {
                 this.loader.show();
                 gc.setCategory(util.default_gift_cat).done(function() {
-                    _kmq.push(['record', 'view index']);
+                    _kmq.push(['record', 'view index', {
+                        'ref': util.ref, 
+                    }]);
 
                     // Preload friends
                     u.getFriends().done(function(friends) {
