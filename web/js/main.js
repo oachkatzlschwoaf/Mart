@@ -137,7 +137,11 @@ function main_init() {
             $.post(util.api_url.open_gift, {
                     ugid: id,
                 },
-                function(data) { },
+                function(data) { 
+                    if (data.first_time) {
+                        _kmq.push(['record', 'open new gift']);
+                    }
+                },
                 "json"
             );
         }
@@ -249,6 +253,8 @@ function main_init() {
                     if (data.done == 'gift sended') {
                         _kmq.push(['record', 'finish purchase', { 'result': 'done' }]);
                         this.emitter.trigger('purchase.done', this);
+
+                        _kmq.push(['record', 'send gift']);
 
                     } else if (data.balance_error == 'need more money') {
                         _kmq.push(['record', 'finish purchase', { 'result': 'need_money' }]);
@@ -380,6 +386,7 @@ function main_init() {
 
         showPaymentDialog: function(sid, sname, mailiki, money, bonus, u) {
             u.amount = money + bonus;
+            u.money = mailiki;
 
             mailru.app.payments.showDialog({
                 service_id: sid,
@@ -1214,6 +1221,12 @@ function main_init() {
         
         if (event.status == 'success') {
             user.updateBalance();
+
+            _kmq.push(['record', 'billed', { 
+                'Billing Amount': user.mailiki,
+                'Amount': user.amount,
+            }]);
+
 
             if (purchase.error_balance == 1) {
                 purchase.process();

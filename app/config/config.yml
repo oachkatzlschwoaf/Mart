@@ -23,6 +23,7 @@ twig:
     strict_variables: %kernel.debug%
     globals:
         mm_private_key: %mm_private_key%
+        km_key:         %km_key%
 
 # Assetic Configuration
 assetic:
@@ -64,6 +65,7 @@ swiftmailer:
 parameters:
     mm_private_key: '838b5576ff2c60cf14d1fd4cbe2929e1'
     mm_secret_key:  '3f1c2cbd21fdaedd981f1e0ae5fa8593'
+    km_key: 'b99b3ac372dd7a08f3104b142252150b2c279fb5'
 
     social_api.networks:
         mm:
@@ -79,4 +81,7 @@ services:
     social_api:
         class: Gift\GeneralBundle\SocialApi
         arguments: [%social_api.networks%]
+    kiss_metrics:
+        class: Gift\GeneralBundle\KissMetrics
+        arguments: [%km_key%]
 
