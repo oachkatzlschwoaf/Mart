@@ -1222,12 +1222,6 @@ function main_init() {
         if (event.status == 'success') {
             user.updateBalance();
 
-            _kmq.push(['record', 'billed', { 
-                'Billing Amount': user.mailiki,
-                'Amount': user.amount,
-            }]);
-
-
             if (purchase.error_balance == 1) {
                 purchase.process();
             }
