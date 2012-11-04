@@ -45,23 +45,27 @@ class SocialApi {
         ]['app_id']; 
     }        
 
-    private function request($params) {
+    private function request($params, $opt) {
 
         if ($curl = curl_init()) {
 
                 $url = $this->getApiUrl().'?'.http_build_query($params);
 
-                # Try find in cache 
-                $cache = $this->cache;
-                $md5_url = md5($url);
-                $res = $cache->get("api-$md5_url");
+                $res  = null;
                 $data = array();
-                $out = '';
 
-                if ($res) {
-                    # Get from cache
-                    $data = json_decode($res);
-                } 
+                if (!isset($opt['not_cache'])) {
+                    # Try find in cache 
+                    $cache = $this->cache;
+                    $md5_url = md5($url);
+                    $res = $cache->get("api-$md5_url");
+                    $out = '';
+
+                    if ($res) {
+                        # Get from cache
+                        $data = json_decode($res);
+                    } 
+                }
 
                 if (!$res || (!is_array($data) && $data->error->error_code)) {
                     # Process API request
@@ -70,7 +74,9 @@ class SocialApi {
                     $out = curl_exec($curl);
                     curl_close($curl);
 
-                    $cache->set("api-$md5_url", $out, 60 * 60);
+                    if (!isset($opt['not_cache'])) {
+                        $cache->set("api-$md5_url", $out, 60 * 60);
+                    }
 
                     $data = json_decode($out);
                 }
@@ -85,7 +91,7 @@ class SocialApi {
 
     }
 
-    public function requestSecure($method, $params) {
+    public function requestSecure($method, $params, $opt) {
 
         $need_params = array(
             'method' => $method, 
@@ -96,7 +102,7 @@ class SocialApi {
         $query = array_merge($need_params, $params); 
         $query['sig'] = $this->calcSecureSig($query);
 
-        $data = $this->request($query);
+        $data = $this->request($query, $opt);
 
         return $data;
 
@@ -145,10 +151,16 @@ class SocialApi {
 
     }
 
-
     public function get() {
         return 3;
     }
 
+    public function sendNotify($uid, $text) {
+        $data = $this->requestSecure(
+            'notifications.send', 
+            array('uids' => $uid, 'text' => $text),
+            array('not_cache' => 1)
+        ); 
+    }
 }
 

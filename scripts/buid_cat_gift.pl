@@ -9,8 +9,8 @@ use API;
 use Data::Dumper;
 
 $|++;
-my $SLEEP_TIME = 60;
 
+my $SLEEP_TIME    = 60;
 my $TAG_ALL_GIFTS = 'all';
 
 sub getGifts {

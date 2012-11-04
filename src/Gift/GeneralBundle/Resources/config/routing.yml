@@ -118,7 +118,20 @@ apiSetGiftPopularity:
     requirements:
         _method:  POST
 
-
 apiBalance:
     pattern: /api/user/balance/increase
     defaults: { _controller: GiftGeneralBundle:Default:increaseBalance }
+
+apiUsers:
+    pattern: /api/users
+    defaults: { _controller: GiftGeneralBundle:Default:getUsers }
+
+apiUsersCount:
+    pattern: /api/users/count
+    defaults: { _controller: GiftGeneralBundle:Default:getUsersCount }
+
+apiNotify:
+    pattern: /api/user/{uid}/notify
+    defaults: { _controller: GiftGeneralBundle:Default:notify }
+    requirements:
+        _method:  POST

@@ -899,4 +899,67 @@ class DefaultController extends Controller
         $response = new Response(json_encode($answer));
         return $response;
     }
+
+    public function getUsersCountAction() {
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $count = $em->createQuery("select count(p.id) from GiftGeneralBundle:User p")
+            ->getSingleResult();
+
+        $answer = array( 'count' => $count[1] );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function getUsersAction(Request $r) {
+        $limit = $r->get('limit');
+        $offset = $r->get('offset');
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $users = $this->getDoctrine()->getRepository('GiftGeneralBundle:User')
+            ->findBy(array(), array(), $limit, $offset);        
+        
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($users, 'json');
+        $response = new Response($json);
+        return $response;
+    }
+
+    public function notifyAction(Request $r) {
+        $uid = $r->get('uid');
+        $tid = $r->get('text_id');
+
+        # Get user
+        $rep = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'user not found' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        # Get text
+        $rep = $this->getDoctrine()->getRepository('GiftGeneralBundle:NotifyText');
+        $text = $rep->find($tid);
+
+        if (!$text) {
+            $answer = array( 'error' => 'text not found' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $mess = $text->getText();
+
+        $mess = preg_replace('/\%user\%/', $user->getNick(), $mess);
+
+        $api = $this->get('social_api');
+        $api->setNetwork('mm');
+        $uinfo = $api->sendNotify( $user->getUid(), $mess );
+        
+        $answer = array( 'done' => 'sended' );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
 }
