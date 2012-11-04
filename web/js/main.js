@@ -1234,6 +1234,13 @@ function main_init() {
         $.fancybox.close();
     });
 
+    // Welcome
+    if (util.is_install) {
+        $("#welcome").fancybox({
+            'overlayColor': '#fff'
+        }).trigger('click');
+    }
+
     // Other handlers
     $('#friend_all_query').focus(function() {
         $(this).val('');

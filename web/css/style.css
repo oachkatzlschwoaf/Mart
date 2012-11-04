@@ -1274,3 +1274,10 @@ p {
     position: absolute;
     top: 50px !important;
 }
+
+.bonus_text {
+    font-weight: bold;
+    font-size: 18px; 
+    height: 25px;
+    text-align: center;
+}

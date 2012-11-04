@@ -63,7 +63,7 @@ class DefaultController extends Controller
         return;
     }
 
-    public function fetchUser(Request $r) {
+    public function fetchUser(Request $r, $config) {
         $sk  = $r->get('session_key');
         $uid = $r->get('oid');
 
@@ -157,7 +157,7 @@ class DefaultController extends Controller
                         }
                     }
 
-                    $user->setBalance(0); # Default balance value for newbie
+                    $user->setBalance($config['start_bonus']); # Default balance value for newbie
 
                     $em->persist($user);
                     $em->flush();
@@ -210,8 +210,14 @@ class DefaultController extends Controller
         $uid = $r->get('oid');
         $ref = $r->get('referer_type');
 
+        $dt = new \DateTime;
+        $today = $dt->format("Y-m-d");
+
+        # Get config
+        $config = $this->getConfig();         
+
         # Fetch user
-        list($user, $is_install) = $this->fetchUser($r);
+        list($user, $is_install) = $this->fetchUser($r, $config);
 
         # Get covers 
         $rep = $this->getDoctrine()
@@ -223,10 +229,6 @@ class DefaultController extends Controller
         $categories = $this->getDoctrine()->getEntityManager()
             ->createQuery('select p FROM GiftGeneralBundle:Category p where p.rotation > 0 order by p.rotation ASC')
             ->getResult();
-            
-
-        # Get config
-        $config = $this->getConfig();         
 
         $bconfig = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:BillingConfig')
@@ -258,6 +260,7 @@ class DefaultController extends Controller
             'gift'         => $gift,
             'is_install'   => $is_install,
             'ref'          => $ref,
+            'today'        => $today,
         ));
     }
 

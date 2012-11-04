@@ -31,3 +31,45 @@
     </div>
     <!-- end .modal-->
 </div>
+
+<div style="display: none"> 
+    <a href="#welcome_box" id="welcome" style="display:none"></a>
+    <div id="welcome_box" style="width: 400px;">
+        <div class="person">
+            <div class="ava" id="show_gift_from_img_c"><img id="show_gift_from_img" width="50" height="50" src="http://avt.appsmail.ru/mail/ester.lastochkina/_avatar50"></div>
+            <div class="text" id="show_gift_from">Эстер Ласточкина</div>
+        </div>
+        <!-- end .person-->
+
+        <div class="message">
+            <div id="show_gift_text" style="font-size: 14px; line-height: 18px; margin-bottom: 8px;">
+                Привет, {{ user.nick }}!
+                <br />
+                Добро пожаловать в Мои подарки!
+                <br />
+                <br />
+                Здесь ты сможешь радовать друзей классными подарками в Моем Мире. 
+                Все мы любим дарить и получать подарки!
+                <br />
+                <br />
+                <b>Я начислила тебе бонус: {{ config.start_bonus }} монет</b>! 
+                <br />
+                Порадуй друзей сегодня!
+            </div>
+            <div class="date" id="show_gift_date">{{ today }}</div>
+            <div class="arr"></div>
+        </div>
+        <!-- end .message-->
+
+        <div class="bonus_text">
+            <img src="../images/coins.png" style="display: inline" />
+            <span style="display: inline-block; padding: 7px 0px 0px 5px">
+            Бонус: <span style="color: #f09600">+{{ config.start_bonus }} монет</span> 
+            </span>
+        </div>
+
+        <div style="margin-top: 15px; text-align: center">
+            <button class="mr_btn" onclick="$.fancybox.close()"><span><em>Спасибо!</em></span></button>  
+        </div>
+    </div>
+</div>
