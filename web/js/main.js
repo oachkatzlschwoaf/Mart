@@ -1235,7 +1235,7 @@ function main_init() {
     });
 
     // Welcome
-    if (util.is_install) {
+    if (util.is_install > 0) {
         $("#welcome").fancybox({
             'overlayColor': '#fff'
         }).trigger('click');
