@@ -14,6 +14,7 @@ use Gift\GeneralBundle\Entity\User;
 use Gift\GeneralBundle\Entity\UserGift;
 use Gift\GeneralBundle\Entity\Transaction;
 use Gift\GeneralBundle\Entity\BillingConfig;
+use Gift\GeneralBundle\Entity\UserFriendBonus;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -21,6 +22,47 @@ use Gift\GeneralBundle\KissMetrics;
 
 class DefaultController extends Controller
 {
+    public function addFriendInviteBonus($uid, $fid) {
+        # Lookup user by uid
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        $users = $em->createQuery("select p from GiftGeneralBundle:User p WHERE p.uid = :uid")
+            ->setParameter('uid', $uid)
+            ->getResult();
+
+        if ($users && count($users) > 0) {
+            $u = $users[0];
+
+            # Check was bonus in present?
+            $ubp = $em->createQuery("select p from GiftGeneralBundle:UserFriendBonus p WHERE p.user_id = :uid and p.friend_id = :fid")
+            ->setParameter('uid', $u->getId())
+            ->setParameter('fid', $fid)
+            ->getResult();
+
+            if (!$ubp) {
+                $config = $this->getConfig();         
+
+                # Increase balance
+                $balance = $u->getBalance();
+                $u->setBalance( $balance + $config['invite_bonus'] );
+                $em->persist($u);
+
+                # Persist bonus 
+                $ub = new UserFriendBonus;  
+
+                $ub->setUserId( $u->getId() );
+                $ub->setFriendId( $fid );
+                $em->persist($ub);
+
+                $em->flush();
+
+                return 1;
+            }
+        }
+
+        return;
+    }
+
     public function fetchUser(Request $r) {
         $sk  = $r->get('session_key');
         $uid = $r->get('oid');
@@ -51,7 +93,7 @@ class DefaultController extends Controller
             $q = $rep->createQueryBuilder('p')
                 ->where('p.uid = :uid')
                 ->setParameters(array(
-                    'uid'     => $uid
+                    'uid' => $uid
                 ))
                 ->getQuery();
 
@@ -122,6 +164,17 @@ class DefaultController extends Controller
 
                     $is_install = 1;
 
+                    # Check friend invite bonus
+                    if ($user->getRefType() == 'invitation' && $user->getRefId()) {
+                        # Add bonus to inviter
+                        if ( $this->addFriendInviteBonus($user->getRefId(), $user->getId()) ) {
+                            // Kiss metrics trac
+                            $km_api = $this->get('kiss_metrics');
+                            $km_api::identify($user->getEmail());
+                            $res = $km_api::record('bonus invite');
+                        }
+                    }
+
                 } else {
                     throw new \Exception('User from API not correct');
                 }
@@ -130,8 +183,6 @@ class DefaultController extends Controller
                 $user = $user[0];
             }
         }
-
-        # Here we got a User
 
         # Set session
         $mc->set("u_sk-".$user->getId(), $sk, 86400);
