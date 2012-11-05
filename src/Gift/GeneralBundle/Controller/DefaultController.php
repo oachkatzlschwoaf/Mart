@@ -649,7 +649,7 @@ class DefaultController extends Controller
 
     public function sendNotifyAction(Request $r) {
         $uid = $r->get('uid');
-        $tid = $r->get('tid');
+        $tid = $r->get('text_id');
 
         $em = $this->getDoctrine()->getEntityManager();
 
