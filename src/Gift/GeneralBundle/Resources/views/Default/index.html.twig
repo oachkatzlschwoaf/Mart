@@ -36,6 +36,7 @@
     util.api_url.my_gifts       = "{{ path("apiUserGifts", {'sk': sk}) }}";
     util.api_url.open_gift      = "{{ path("apiOpenGift", {'sk': sk}) }}";
     util.api_url.category_gifts = "{{ path("apiCategoryGiftsLite") }}";
+    util.api_url.send_notify    = "{{ path("apiSendNotify") }}";
 
     util.images_path         = "{{ asset(gift.getUploadDir('images')) }}";
     util.thumbs_path         = "{{ asset(gift.getUploadDir('thumbs')) }}";

@@ -256,6 +256,15 @@ function main_init() {
 
                         _kmq.push(['record', 'send gift']);
 
+                        // Send notify
+                        $.post(util.api_url.send_notify, {
+                                uid:     this.friend_selected.uid,
+                                text_id: 1, // Text: you received gift
+                            },
+                            function(data) { },
+                            "json"
+                        );
+
                     } else if (data.balance_error == 'need more money') {
                         _kmq.push(['record', 'finish purchase', { 'result': 'need_money' }]);
 

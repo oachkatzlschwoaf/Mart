@@ -81,6 +81,10 @@ class SocialApi {
                     $data = json_decode($out);
                 }
 
+                if (!$data) {
+                    return;
+                }
+
                 if (!is_array($data) && $data->error->error_code) {
                     return;
                 }

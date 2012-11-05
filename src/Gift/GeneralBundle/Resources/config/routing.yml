@@ -137,10 +137,10 @@ apiNotify:
         _method:  POST
 
 apiSendNotify:
-    pattern: /api/user/{uid}/notify/send
+    pattern: /api/user/notify/send
     defaults: { _controller: GiftGeneralBundle:Default:sendNotify }
-    #requirements:
-    #    _method:  POST
+    requirements:
+        _method:  POST
 
 apiNotifications:
     pattern: /api/notify
