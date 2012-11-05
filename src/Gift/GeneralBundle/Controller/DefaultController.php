@@ -109,7 +109,7 @@ class DefaultController extends Controller
 
                 if ($uinfo && $uinfo->uid == $uid) {
                     $email_arr = array();
-                    preg_match("/my.mail.ru\/(\w+)\/(\w+)/", $uinfo->link, $email_arr);
+                    preg_match("/my.mail.ru\/(\S+)\/(\S+)/", $uinfo->link, $email_arr);
                     $box   = $email_arr[1];
                     $login = $email_arr[2];
                     $email = '';
