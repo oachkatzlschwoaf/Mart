@@ -337,6 +337,17 @@ function main_init() {
             serp = new Array();
 
             $.each(this.friends, function(k, v) {
+                if (v.nick.toLowerCase().indexOf(query) >= 0) {
+                    serp.push(v);
+                } else if (v.first_name.toLowerCase().indexOf(query) >= 0) { 
+                    serp.push(v);
+                } else if (v.last_name.toLowerCase().indexOf(query) >= 0) {
+                    serp.push(v);
+                } else if (v.link.toLowerCase().indexOf(query) >= 0) {
+                    serp.push(v);
+                }
+
+                /*
                 if ( v.nick.match(query, 'i') ) {
                     serp.push(v);
                 } else if ( v.first_name.match(query, 'i') ) {
@@ -346,6 +357,7 @@ function main_init() {
                 } else if ( v.link.match(query, 'i') ) {
                     serp.push(v);
                 }
+                */
             });
 
             this.emitter.trigger('user.search_friend', { 'result' : serp });
@@ -438,6 +450,17 @@ function main_init() {
             u.emitter.on('friend.select', function (e, input) { 
                 this.showFriendPage(v, input, f, p);
             }.bind(this));
+
+            // Handlers
+            this.friends_search.focus(function() {
+                $(this).val('');
+            });
+
+            this.friends_search.keypress(function() {
+                var query = this.friends_search.val();  
+                u.searchFriend(query);
+            }.bind(this));
+
         },
 
         showFriendPage: function(v, f_info, f, p) {
@@ -574,11 +597,6 @@ function main_init() {
 
                 _kmq.push(['record', 'view friends page']);
             }.bind(this));
-        },
-
-        searchFriend: function() {
-            var query = this.friends_search.val();  
-            user.searchFriend(query);
         },
 
         scrollFriends: function(direction) {
@@ -831,6 +849,11 @@ function main_init() {
                 this.gifts = input.gifts;
                 this.gpos = 0;
                 this.scrollGifts();
+            }.bind(this));
+
+            // Other handlers
+            this.friends_search.focus(function() {
+                this.friends_search.val('');
             }.bind(this));
         },
 
@@ -1225,14 +1248,6 @@ function main_init() {
     }
 
     // Other handlers & listeners
-    $('#friend_all_query').focus(function() {
-        $(this).val('');
-    });
-
-    $('#friend_search_query').focus(function() {
-        $(this).val('');
-    });
-
     mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
         $.fancybox.close();
     });
