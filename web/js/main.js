@@ -1061,6 +1061,7 @@ function main_init() {
         },
 
         gift_img:      $("#show_gift_img"),
+        gift_mess:     $("#show_gift_message"),
         gift_text:     $("#show_gift_text"),
         gift_from:     $("#show_gift_from"),
         gift_date:     $("#show_gift_date"),
@@ -1193,8 +1194,13 @@ function main_init() {
 
             this.gift_img.attr("src", 
                 util.images_path+"/"+gift.gift_id+".png");
-            this.gift_text.text(gift.text);
-            this.gift_date.text(gift.created_date);
+
+            this.gift_mess.hide();
+            if (gift.text) {
+                this.gift_mess.show();
+                this.gift_text.text(gift.text);
+                this.gift_date.text(gift.created_date);
+            }
 
             if (gift.incognito) {
                 this.gift_from.text('Инкогнито');
