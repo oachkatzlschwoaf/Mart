@@ -15,6 +15,7 @@ use Gift\GeneralBundle\Entity\UserGift;
 use Gift\GeneralBundle\Entity\Transaction;
 use Gift\GeneralBundle\Entity\BillingConfig;
 use Gift\GeneralBundle\Entity\UserFriendBonus;
+use Gift\GeneralBundle\Entity\Notify;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -646,6 +647,39 @@ class DefaultController extends Controller
         return $response;
     }
 
+    public function sendNotifyAction(Request $r) {
+        $uid = $r->get('uid');
+        $tid = $r->get('tid');
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $user = $em->createQuery('select p FROM GiftGeneralBundle:User p where p.uid = :uid')
+            ->setParameter('uid', $uid)
+            ->getResult();
+
+        $rep = $this->getDoctrine()->getRepository('GiftGeneralBundle:NotifyText');
+        $text = $rep->find($tid);
+
+        if ($user && $text) {
+            $user = $user[0];
+
+            $n = new Notify;
+            $n->setUserId($user->getId());
+            $n->setTextId($text->getId());
+            
+            $em->persist($n);
+            $em->flush();
+
+            $answer = array( 'done' => 'sended' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $answer = array( 'error' => 'no user' );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
     public function getUserGiftsAction(Request $request) {
         // Check session
         $sk      = $request->get('sk');
@@ -960,6 +994,26 @@ class DefaultController extends Controller
         
         $answer = array( 'done' => 'sended' );
         $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function getNotifyAction(Request $r) {
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:Notify');
+        
+        $notify = $rep->findAll();
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($notify, 'json');
+        $response = new Response($json);
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        foreach ($notify as $n) {
+            $em->remove($n);
+            $em->flush();
+        }
+
         return $response;
     }
 }

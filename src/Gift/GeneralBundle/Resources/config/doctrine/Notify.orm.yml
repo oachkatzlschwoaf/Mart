@@ -1,0 +1,19 @@
+Gift\GeneralBundle\Entity\Notify:
+    type: entity
+    table: null
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        user_id:
+            type: integer
+        text_id:
+            type: integer
+        created_at:
+            type: datetime
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]

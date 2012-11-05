@@ -1,0 +1,83 @@
+<?php
+
+namespace Gift\GeneralBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Gift\GeneralBundle\Entity\Notify
+ */
+class Notify
+{
+    /**
+     * @var integer $id
+     */
+    private $id;
+
+    /**
+     * @var integer $user_id
+     */
+    private $user_id;
+
+    /**
+     * @var integer $text_id
+     */
+    private $text_id;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set user_id
+     *
+     * @param integer $userId
+     * @return Notify
+     */
+    public function setUserId($userId)
+    {
+        $this->user_id = $userId;
+    
+        return $this;
+    }
+
+    /**
+     * Get user_id
+     *
+     * @return integer 
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * Set text_id
+     *
+     * @param integer $textId
+     * @return Notify
+     */
+    public function setTextId($textId)
+    {
+        $this->text_id = $textId;
+    
+        return $this;
+    }
+
+    /**
+     * Get text_id
+     *
+     * @return integer 
+     */
+    public function getTextId()
+    {
+        return $this->text_id;
+    }
+}

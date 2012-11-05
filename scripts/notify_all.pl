@@ -18,7 +18,7 @@ sub sendNotify {
     my ($uid, $tid) = @_;
 
     my $r = {
-        'call'    => "user/$uid/notify",
+        'call'    => "user/$uid/notify/push",
         'text_id' => $tid,
     };
 

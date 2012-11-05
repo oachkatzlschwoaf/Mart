@@ -131,7 +131,17 @@ apiUsersCount:
     defaults: { _controller: GiftGeneralBundle:Default:getUsersCount }
 
 apiNotify:
-    pattern: /api/user/{uid}/notify
+    pattern: /api/user/{uid}/notify/push
     defaults: { _controller: GiftGeneralBundle:Default:notify }
     requirements:
         _method:  POST
+
+apiSendNotify:
+    pattern: /api/user/{uid}/notify/send
+    defaults: { _controller: GiftGeneralBundle:Default:sendNotify }
+    #requirements:
+    #    _method:  POST
+
+apiNotifications:
+    pattern: /api/notify
+    defaults: { _controller: GiftGeneralBundle:Default:getNotify }
