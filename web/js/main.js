@@ -272,7 +272,7 @@ function main_init() {
             mailru.common.guestbook.post({
                'uid': this.friend_selected.uid,
                'title': 'У меня для тебя подарок', 
-               'text': 'Отправил тебе подарок! '+this.text,
+               'text': 'Тебе подарок! Посмотри скорее! '+this.text,
                'img_url': util.abs_path + util.images_path+"/"+purchase.gift_selected+".png"
             }); 
         },
@@ -280,7 +280,7 @@ function main_init() {
         sendMessage: function() {
             mailru.common.messages.send({
                 'uid': this.friend_selected.uid,
-                'text': 'Отправил тебе подарок! Смотри скорее! '+this.text
+                'text': 'Тебе подарок! Посмотри скорее! '+this.text
             });
         },
 
@@ -1217,6 +1217,26 @@ function main_init() {
     // Start work
     view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts);
 
+    // Welcome
+    if (util.is_install > 0) {
+        $("#welcome").fancybox({
+            'overlayColor': '#fff'
+        }).trigger('click');
+    }
+
+    // Other handlers & listeners
+    $('#friend_all_query').focus(function() {
+        $(this).val('');
+    });
+
+    $('#friend_search_query').focus(function() {
+        $(this).val('');
+    });
+
+    mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
+        $.fancybox.close();
+    });
+
     mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
         
         if (event.status == 'success') {
@@ -1230,24 +1250,28 @@ function main_init() {
         $.fancybox.close();
     });
 
-    mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
-        $.fancybox.close();
+    mailru.events.listen(mailru.common.events.guestbookPublish, function(event) {
+        if (event.status == 'publishSuccess') {
+            _kmq.push(['record', 'api publish guestbook']);
+        }
     });
 
-    // Welcome
-    if (util.is_install > 0) {
-        $("#welcome").fancybox({
-            'overlayColor': '#fff'
-        }).trigger('click');
-    }
-
-    // Other handlers
-    $('#friend_all_query').focus(function() {
-        $(this).val('');
+    mailru.events.listen(mailru.common.events.message.send, function(event) {
+        if (event.status == 'publishSuccess') {
+            _kmq.push(['record', 'api send message']);
+        }
     });
 
-    $('#friend_search_query').focus(function() {
-        $(this).val('');
+    mailru.events.listen(mailru.common.events.message.send, function(event) {
+        if (event.status == 'publishSuccess') {
+            _kmq.push(['record', 'api send message']);
+        }
+    });
+
+    mailru.events.listen(mailru.common.events.streamPublish, function(event) {
+        if (event.status == 'publishSuccess') {
+            _kmq.push(['record', 'api publish stream']);
+        }
     });
 }
 

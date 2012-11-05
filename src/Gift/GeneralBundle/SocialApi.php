@@ -91,7 +91,7 @@ class SocialApi {
 
     }
 
-    public function requestSecure($method, $params, $opt) {
+    public function requestSecure($method, $params, $opt = array()) {
 
         $need_params = array(
             'method' => $method, 
