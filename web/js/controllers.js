@@ -69,7 +69,6 @@ function loadControllers() {
 
             // show "My gifts" block
             this.scrollMyGifts().done(function() {
-                this.ev.emitter.trigger('block_mygifts.show');
 
                 // show catalog
                 this.setCatalogCategory(util.default_gift_cat).done(function() {
@@ -126,12 +125,19 @@ function loadControllers() {
             dfd = $.Deferred();
 
             this.mdl_user.getGifts().done(function(input) {
-                scroll(
-                    this.slide_params.my_gifts, 
-                    input, 
-                    direction, 
-                    this.v_mygifts.fill.bind( this.v_mygifts )
-                );
+                if (input.length > 0) {
+                    this.ev.emitter.trigger('block_mygifts.show');
+
+                    scroll(
+                        this.slide_params.my_gifts, 
+                        input, 
+                        direction, 
+                        this.v_mygifts.fill.bind( this.v_mygifts )
+                    );
+
+                } else {
+                    this.ev.emitter.trigger('block_mygifts.hide');
+                }
 
                 dfd.resolve();
             }.bind(this));

@@ -1,3 +1,6 @@
+// GLOBAL VARS 
+// ======================================================
+
 // Event container
 var events = {
     emitter: $(document)
@@ -8,9 +11,10 @@ var util = {
     api_url: { },
 };
 
-// Initialization 
+// INITIALIZATION 
 // ======================================================
 
+// Init function
 function main_init() {
     // Preinit
     $.ajaxSetup({ cache: false });
@@ -30,7 +34,6 @@ function main_init() {
 }
 
 // Loading (on document ready) 
-// ======================================================
 $(document).ready(function() {
 
     mailru.loader.require('api', function() {
