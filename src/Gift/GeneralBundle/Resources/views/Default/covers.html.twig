@@ -2,7 +2,7 @@
     <header class="title2">Выберите упаковку</header>
     <section class="catalog">
         {% for cover in covers %}
-            <article> 
+            <article style="margin-left: 12px;"> 
                 <a href="#" onclick="cntrl_purchase.setCover({{ cover.id }})" >
                     <img src="{{ asset(cover.getWebPath()) }}" width="90" height="90" alt=" ">
                     {% if cover.getCost() == 0 %}
