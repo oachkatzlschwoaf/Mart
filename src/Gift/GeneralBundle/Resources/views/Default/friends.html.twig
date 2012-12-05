@@ -1,6 +1,4 @@
-<div id="friends_all_loader" class="loader gft_loader" style="display: none"></div>
-
-<div class="block gft_block" id="friends_all_block" style="display:none">
+<div class="block gft_block" id="friends_all_block">
     <div class="search">
         <fieldset>
             <input id="friend_all_query" value="Начните вводить имя друга..." type="text">
@@ -17,12 +15,11 @@
                 </li>
             </ul>
         </div>
-        <!-- end .hold-->
-        <div class="prev" onclick="view.friends.scrollFriends('back'); return false;"></div>
-        <div class="next" onclick="view.friends.scrollFriends('forward'); return false;"></div>
-    </div>
-    <!-- end .slider2--> 
-</div>
-<!-- end .block--> 
 
+        <div id="friends_all_nav">
+            <div class="prev" onclick="cntrl_friends.scrollFriends('back'); return false;"></div>
+            <div class="next" onclick="cntrl_friends.scrollFriends('forward'); return false;"></div>
+        </div>
+    </div>
+</div>
 

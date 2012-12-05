@@ -1,75 +1,22 @@
-<nav class="topline">
-    <ul class="nav1">
-        <li id="nav_index" class="active gft_mnu"><a href="#" onclick="view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts)"><span><span class="bg-home">Главная</span></span></a></li>
-        <li id="nav_friends" class="gft_mnu"><a href="#" onclick="view.friends.showFriendsPage(view, purchase, my_gifts, user)"><span><span class="bg-people">Мои друзья</span></span></a></li>
+<div class="avatar_cnt">
+    <img id="main_avatar" src="" style="width: 190px; height: 190px;">
+</div>
+<nav>
+    <ul class="left_menu">
+        <li id="nav_index" class="gft_mnu">
+            <a href="#" onclick="cntrl_index.show()">
+                Главная
+            </a>
+        </li>
+        <li id="nav_friends" class="gft_mnu">
+            <a href="#" onclick="cntrl_friends.show()">
+                Мои друзья
+            </a>
+        </li>
     </ul>
-    <!-- end .nav1-->
 
-    <div class="money"><span id="user_balance" class="fl">{{ user.balance }} монет</span> <a class="btn" href='#balance_window' id='inc_balance'><span>Пополнить</span></a></div>
-    <!-- end .money--> 
+    <div class="balance">
+        <span class="str" id="user_balance"></span> 
+        <a href="#balance_window" class="increase_balance">пополнить</a> 
+    </div>
 </nav>
-<!-- end .topline-->
-
-<div style="display: none"> 
-    <div id="balance_window" style="width: 450px; height: 310px">
-        <header class="title">Пополнение баланса</header>
-        <section class="buy">
-            {% for b in bconfig %} 
-                <article onclick="view.showPaymentDialog('{{ b.serviceId }}', '{{ b.serviceName }}', {{ b.mailiki }}, {{ b.money }}, {{ b.bonus }}, user)"> 
-                    <div class="desc_money">{{ b.money }} 
-                        {% if b.bonus %}
-                        <span>+{{ b.bonus }}</span> 
-                        {% endif %}
-                        монет
-                    </div>
-                    <div class="desc">за {{ b.mailiki }} мэйликов</div>
-                    <button class="mr_btn"><span><em>Купить</em></span></button>  
-                </article>
-            {% endfor %}
-        </section>
-        <!-- end .buy--> 
-    </div>
-    <!-- end .modal-->
-</div>
-
-<div style="display: none"> 
-    <a href="#welcome_box" id="welcome" style="display:none"></a>
-    <div id="welcome_box" style="width: 400px;">
-        <div class="person">
-            <div class="ava"><img width="50" height="50" src="http://avt.appsmail.ru/mail/ester.lastochkina/_avatar50"></div>
-            <div class="text">Эстер Ласточкина</div>
-        </div>
-        <!-- end .person-->
-
-        <div class="message">
-            <div style="font-size: 14px; line-height: 18px; margin-bottom: 8px;">
-                Привет, {{ user.nick }}!
-                <br />
-                Добро пожаловать в Мои подарки!
-                <br />
-                <br />
-                Здесь ты сможешь радовать друзей классными подарками в Моем Мире. 
-                Все мы любим дарить и получать подарки!
-                <br />
-                <br />
-                <b>Я начислила тебе бонус: {{ config.start_bonus }} монет</b>! 
-                <br />
-                Порадуй друзей сегодня!
-            </div>
-            <div class="date">{{ today }}</div>
-            <div class="arr"></div>
-        </div>
-        <!-- end .message-->
-
-        <div class="bonus_text">
-            <img src="../images/coins.png" style="display: inline" />
-            <span style="display: inline-block; padding: 7px 0px 0px 5px">
-            Бонус: <span style="color: #f09600">+{{ config.start_bonus }} монет</span> 
-            </span>
-        </div>
-
-        <div style="margin-top: 15px; text-align: center">
-            <button class="mr_btn" onclick="$.fancybox.close()"><span><em>Спасибо!</em></span></button>  
-        </div>
-    </div>
-</div>

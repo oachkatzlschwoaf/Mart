@@ -10,40 +10,70 @@
     _kmq.push(['set', {'city': '{{ user.getCityName() }}'}]);
 </script>
 
-{% include 'GiftGeneralBundle:Default:top_nav.html.twig' %}
+{% include 'GiftGeneralBundle:Default:windows.html.twig' %}
 
-{% include 'GiftGeneralBundle:Default:my_gifts.html.twig' %}
+<div class="left_nav">
+    {% include 'GiftGeneralBundle:Default:top_nav.html.twig' %}
+</div>
 
-{% include 'GiftGeneralBundle:Default:gifts_catalog.html.twig' %}
+<div class="right_content">
+    <div id="right_loader" class="loader gft_loader" style="display: none"></div>
 
-{% include 'GiftGeneralBundle:Default:friends_catalog.html.twig' %}
+    <div id="page_index" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:my_gifts.html.twig' %}
+        {% include 'GiftGeneralBundle:Default:gifts_catalog.html.twig' %}
+    </div>
 
-{% include 'GiftGeneralBundle:Default:description.html.twig' %}
+    <div id="page_friends_sel" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:friends_catalog.html.twig' %}
+    </div>
 
-{% include 'GiftGeneralBundle:Default:covers.html.twig' %}
+    <div id="page_description" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:description.html.twig' %}
+    </div>
 
-{% include 'GiftGeneralBundle:Default:send_done.html.twig' %}
+    <div id="page_covers" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:covers.html.twig' %}
+    </div>
 
-{% include 'GiftGeneralBundle:Default:friends.html.twig' %}
+    <div id="page_done" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:send_done.html.twig' %}
+    </div>
 
-{% include 'GiftGeneralBundle:Default:friend.html.twig' %}
+    <div id="page_friends" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:friends.html.twig' %}
+    </div>
+
+    <div id="page_friend" class="gft_page" style="display: none">
+        {% include 'GiftGeneralBundle:Default:friend.html.twig' %}
+    </div>
+</div>
 
 <script>
-    // INIT
+    // UTIL
+    // =======================================
 
+    // Api
+    // ---------------------------------------
     util.api_url.friends_get    = "{{ path("apiUserFriends", {'sk': sk}) }}";
     util.api_url.purchase       = "{{ path("apiPurchase", {'sk': sk}) }}";
     util.api_url.my_gifts       = "{{ path("apiUserGifts", {'sk': sk}) }}";
     util.api_url.open_gift      = "{{ path("apiOpenGift", {'sk': sk}) }}";
     util.api_url.category_gifts = "{{ path("apiCategoryGiftsLite") }}";
     util.api_url.send_notify    = "{{ path("apiSendNotify") }}";
+    util.api_url.get_uid        = "{{ path("apiGetUid") }}";
 
+    // Paths & Hosts
+    // ---------------------------------------
     util.images_path         = "{{ asset(gift.getUploadDir('images')) }}";
     util.thumbs_path         = "{{ asset(gift.getUploadDir('thumbs')) }}";
     util.covers_path         = "{{ asset(gift.getUploadDir('covers')) }}";
+    util.abs_path            = "{{ app.request.uriForPath('/') }}";
 
-    util.abs_path = "{{ app.request.uriForPath('/') }}";
+    util.avatar_host         = "http://avt.appsmail.ru/";
 
+    // Prices 
+    // ---------------------------------------
     util.price = { };
     util.price.gift         = {{ config.gift_price }};
     util.price.gift_premium = {{ config.gift_price_premium }};
@@ -51,26 +81,67 @@
     util.price.incognito    = {{ config.incognito_cost }};
     util.private            = "{{ mm_private_key }}"; 
 
-    util.show_gifts = "{{ config.gifts_to_show }}";
-
+    // Gifts Categories
+    // ---------------------------------------
     util.default_gift_cat = "{{ config.default_category }}";
 
+    util.gift_category = {};
+    {% for c in categories %}
+        util.gift_category[ {{ c.id }} ] = '{{ c.name }}'; 
+    {% endfor %}
+
+    util.category_sort = {
+        'popularity': 1,
+        'created_at': 2
+    };
+
+    // User Params 
+    // ---------------------------------------
     util.user_start_balance = {{ user.balance }};
     util.user_id            = {{ user.id }};
+    util.user_login         = "{{ user.login }}";
+    util.user_box           = "{{ user.box }}";
     util.is_install         = {{ is_install }};
     util.ref                = "{{ ref }}";
 
-    $("#inc_balance").fancybox({
+    // Sliders config
+    // ---------------------------------------
+    util.show_friends  = 6;
+    util.show_gifts    = "{{ config.gifts_to_show }}";
+    util.show_gifts_my = 6;
+    util.show_gifts_friend = 3;
+
+    // Covers
+    // ---------------------------------------
+    util.covers = {};
+    {% for c in covers %}
+        util.covers[ {{ c.id }} ] = {};
+        util.covers[ {{ c.id }} ].cost = {{ c.getCost() }};
+    {% endfor %}
+
+
+    // Balance config
+    // ---------------------------------------
+    util.bconfig = {};
+
+    {% for b in bconfig %} 
+        util.bconfig[ {{ b.id }} ] = { };
+        util.bconfig[ {{ b.id }} ].id = {{ b.serviceId }};
+        util.bconfig[ {{ b.id }} ].name = '{{ b.serviceName }}';
+        util.bconfig[ {{ b.id }} ].money = {{ b.money }};
+        util.bconfig[ {{ b.id }} ].bonus = {{ b.bonus }};
+        util.bconfig[ {{ b.id }} ].mailiki = {{ b.mailiki }};
+    {% endfor %}
+
+    // INIIT 
+    // =======================================
+
+    $(".increase_balance").fancybox({
         'overlayColor': '#fff'
     });
-
-    $("#inc_balance_err").fancybox({
-        'overlayColor': '#fff'
-    });
-
 
     // Events
-
+    // ---------------------------------------
     {% if is_install %}
         _kmq.push(['record', 'install', {
             'ref': util.ref, 

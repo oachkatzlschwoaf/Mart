@@ -1,28 +1,25 @@
-<div id="friends_loader" class="loader gft_loader" style="display: none"></div>
-
-<div class="block gft_block" id="friends_block" style="display:none">
+<div class="block gft_block" id="friends_block">
     <div class="search">
         <fieldset>
-            <input onkeypress="view.gifts_catalog.searchFriend()" id="friend_search_query" value="Начните вводить имя друга..." type="text">
+            <input id="friend_search_query" value="Начните вводить имя друга..." type="text">
         </fieldset>
     </div>
+
     <header class="title2" style="width: 200px">Выберите друга</header>
+
     <div class="slider2 people-slider">
         <div class="hold">
             <ul>
                 <li>
                     <section class="people2" id="friends">
                     </section>
-                    <!-- end .people2--> 
                 </li>
             </ul>
         </div>
-        <!-- end .hold-->
-        <div class="prev" onclick="view.gifts_catalog.scrollFriends('back'); return false;"></div>
-        <div class="next" onclick="view.gifts_catalog.scrollFriends('forward'); return false;"></div>
+
+        <div id="friends_sel_nav">
+            <div class="prev" onclick="cntrl_friends_sel.scrollFriends('back'); return false;"></div>
+            <div class="next" onclick="cntrl_friends_sel.scrollFriends('forward'); return false;"></div>
+        </div>
     </div>
-    <!-- end .slider2--> 
 </div>
-<!-- end .block--> 
-
-

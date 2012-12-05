@@ -1,8 +1,8 @@
-<div id="send_loader" class="loader_special gft_loader" style="display: none">
+<div id="send_loader" class="loader_special gft_loader">
     <p class="big">Подарок отправляется...</p>
 </div>
 
-<div class="block sending gft_block" id="done_ok" style="display: none">
+<div class="block sending gft_block" id="done_ok">
     <header>Спасибо!</header>
     <div class="done">
         <div class="photo" style="width:190px; height:190px;">
@@ -14,18 +14,16 @@
         <p class="big">Ваш подарок отправлен <span id="done_for"></span>!</p>
         <p class="grey">Что нужно сделать, чтобы <span id="done_text">он его скорее получил</span>?</p>
         <ul>
-            <li><a class="btn" onclick="purchase.postGuestbook()" href="#"><span>Отправьте подарок в гостевую</span></a></li>
-            <li><a class="btn" onclick="purchase.sendMessage()" href="#"><span id="done_text2">Напишите ему об этом сообщение!</span></a></li>
-            <li><a class="btn" onclick="purchase.postStream()" href="#"><span>Расскажите своим друзьям!</span></a></li>
+            <li><a class="btn" onclick="cntrl_purchase.postGuestbook()" href="#"><span>Отправьте подарок в гостевую</span></a></li>
+            <li><a class="btn" onclick="cntrl_purchase.sendMessage()" href="#"><span id="done_text2">Напишите ему об этом сообщение!</span></a></li>
+            <li><a class="btn" onclick="cntrl_purchase.postStream()" href="#"><span>Расскажите своим друзьям!</span></a></li>
         </ul>
 
-        <a class="back" onclick="view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts)" href="#">Вернуться к мои подаркам</a> 
+        <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
     </div>
-    <!-- end .done--> 
 </div>
-<!-- end .block--> 
 
-<div class="block sending gft_block" id="done_error" style="display: none">
+<div class="block sending gft_block" id="done_error">
     <header>Спасибо!</header>
     <div class="done">
         <div class="photo" style="width:190px; height:190px;">
@@ -34,14 +32,12 @@
         </div>
         <!-- end .photo-->
         <p class="big">Упс! Кажется, вам не хватает <span id="error_text"></span>!</p>
-        <p class="btn-hold"><a class="btn" href='#balance_window' id="inc_balance_err"><span>Пополните баланс!</span></a></p>
+        <p class="btn-hold"><a href="#balance_window" class="btn increase_balance"><span>Пополните баланс!</span></a></p>
         <p class="info2 grey">
             За каждого друга, который установит<br>
             приложение вы получаете <span class="orange">+{{ config.invite_bonus }} монет!</span></p>
-        <p class="btn-hold"><a class="btn" href="#" onclick="purchase.inviteFriends()"><span>Пригласить друзей!</span></a></p>
-        <a class="back" onclick="view.gifts_catalog.showIndex(view, purchase, user, gifts_catalog, my_gifts)" href="#">Вернуться к мои подаркам</a> 
-    </div>
-    <!-- end .done--> 
-</div>
-<!-- end .block--> 
+        <p class="btn-hold"><a class="btn" href="#" onclick="cntrl_purchase.inviteFriends()"><span>Пригласить друзей!</span></a></p>
 
+        <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
+    </div>
+</div>

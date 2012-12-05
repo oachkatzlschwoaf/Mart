@@ -34,7 +34,7 @@ class DefaultController extends Controller
         if ($users && count($users) > 0) {
             $u = $users[0];
 
-            # Check was bonus in present?
+            # Check was bonus in present
             $ubp = $em->createQuery("select p from GiftGeneralBundle:UserFriendBonus p WHERE p.user_id = :uid and p.friend_id = :fid")
             ->setParameter('uid', $u->getId())
             ->setParameter('fid', $fid)
@@ -1014,6 +1014,17 @@ class DefaultController extends Controller
             $em->flush();
         }
 
+        return $response;
+    }
+
+    public function getUidAction(Request $r) {
+        $id = $r->get('id'); 
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($id);
+        
+        $answer = array( 'uid' => $user->getUid() );
+        $response = new Response(json_encode($answer));
         return $response;
     }
 }

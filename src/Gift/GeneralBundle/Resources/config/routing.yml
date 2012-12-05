@@ -145,3 +145,9 @@ apiSendNotify:
 apiNotifications:
     pattern: /api/notify
     defaults: { _controller: GiftGeneralBundle:Default:getNotify }
+
+apiGetUid:
+    pattern: /api/user/uid
+    defaults: { _controller: GiftGeneralBundle:Default:getUid }
+    requirements:
+        _method:  POST

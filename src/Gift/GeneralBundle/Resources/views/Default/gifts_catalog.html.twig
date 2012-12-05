@@ -1,20 +1,18 @@
-<div id="gifts_catalog_loader" class="loader gft_loader"></div>
+<div class="block gft_block" id="gifts_catalog">
 
-<div class="block gft_block" id="gifts_catalog" style="display: none">
     <div class="info grey">Цена: {{ config.gift_price }} монет, Премиум: {{ config.gift_price_premium }} монет</div>
     <header class="title2">Подарить</header>
 
     <ul class="tabs">
         {% for c in categories %}
-           <li><a href="#" id="category_{{ c.id }}" onclick="gifts_catalog.setCategory('{{ c.id }}'); return false;"><span><span>{{ c.name }}</span></span></a></li>
+           <li><a href="#" id="category_{{ c.id }}" onclick="cntrl_index.setCatalogCategory('{{ c.id }}'); return false;"><span><span>{{ c.name }}</span></span></a></li>
         {% endfor %}
     </ul>
-    <!-- end .tabs-->
 
     <ul class="tabs">
         <li style="width: 90px">Сортировать:</li>
-        <li><a href="#" id="sort_popularity" onclick="gifts_catalog.sortGifts('popularity'); return false;"><span><span>Популярные</span></span></a></li> 
-        <li><a href="#" id="sort_created_at" onclick="gifts_catalog.sortGifts('created_at'); return false;"><span><span>Новые</span></span></a></li>
+        <li><a href="#" id="sort_popularity" onclick="cntrl_index.setCatalogSort('popularity'); return false;"><span><span>Популярные</span></span></a></li> 
+        <li><a href="#" id="sort_created_at" onclick="cntrl_index.setCatalogSort('created_at'); return false;"><span><span>Новые</span></span></a></li>
     </ul>
 
     <div id="gifts_block" class="slider2">
@@ -25,12 +23,8 @@
         </section>
 
         <div id="gifts_catalog_navi">
-            <div class="prev" onclick="view.gifts_catalog.scrollGifts('back')"></div>
-            <div class="next" onclick="view.gifts_catalog.scrollGifts('forward')"></div>
+            <div class="prev" onclick="cntrl_index.scrollGiftsCat('back')"></div>
+            <div class="next" onclick="cntrl_index.scrollGiftsCat('forward')"></div>
         </div>
     </div>
-
-    <!-- end .catalog--> 
 </div>
-<!-- end .block--> 
-

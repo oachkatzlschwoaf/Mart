@@ -23,8 +23,7 @@ fieldset {
 
 input,
 select,
-textarea,
-button {
+textarea {
 	font:normal 12px Arial, Helvetica, sans-serif;
 	color:#343333;
 	outline:none;
@@ -57,6 +56,7 @@ a {
 
 a:hover {
 	text-decoration:none;
+	color:#f26d00;
 }
 
 table {
@@ -67,7 +67,7 @@ p {
 	margin:0 0 14px 0;
 }
 
-.orange {
+.attention {
 	color:#f0a109;
 }
 
@@ -97,8 +97,7 @@ p {
 }
 
 .wrapper {
-	width:700px;
-	padding:0 30px;
+	width:990px;
 	position:relative;
 	margin:0 auto;
 	overflow:hidden;
@@ -112,6 +111,73 @@ p {
 	overflow:hidden;
 	padding:0 7px 0 11px;
 	background:url(../images/topline.png) no-repeat;
+}
+
+.left_nav {
+    width: 200px; 
+    min-height:100px; 
+    margin: 0px 15px 0px 0px; 
+    float: left;
+}
+
+.left_nav .avatar_cnt {
+    border: 1px solid #a1c2ed;
+    padding: 4px 0px 4px 4px;
+    margin-bottom: 10px;
+}
+
+.left_nav nav {
+    border-right: 1px solid #d9d9d9;
+    padding: 5px 10px 1px 1px;
+    margin: 0px 0px 10px 0px;
+    font: 12px Arial;
+    min-height: 250px;
+}
+
+.left_menu {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.left_menu li {
+    line-height: 15px;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+.left_menu a {
+    text-decoration: none;
+}
+
+.left_menu .active a {
+    color: #000000;
+    font-weight: bold;
+}
+
+.balance {
+    line-height: 17px; 
+    padding: 12px 0px 2px 0px; 
+    border-top: 1px solid rgb(217, 217, 217); 
+    border-bottom: 1px solid rgb(217, 217, 217);
+    min-height: 30px;
+}
+
+.balance .str {
+	background: url(../images/icons.png) no-repeat 0 -196px;
+    padding-left: 20px;
+}
+
+.balance a {
+    text-decoration: none;
+    display: inline-block;
+    border-bottom: 1px dashed;
+}
+
+.balance a:hover {
+    border: none;
 }
 
 .nav1 {
@@ -322,7 +388,7 @@ p {
 	width:90px;
 	height:90px;
 	text-align:center;
-	margin:14px 12px;
+	margin:14px 6px;
 }
 
 .catalog article:hover {
@@ -393,6 +459,7 @@ p {
 
 .slider .hold {
 	height:90px;
+    margin-left: 32px;
 	position:relative;
 }
 
@@ -427,7 +494,7 @@ p {
 }
 
 .slider .catalog article {
-	margin:0 13px 0 0;
+	margin:0 17px 0 0;
 }
 
 .block {
@@ -443,8 +510,6 @@ p {
 	zoom:1;
 	position:relative;
 	padding:11px;
-	margin:0 0 14px -22px;
-	left:10px;
 }
 
 .block:after {
@@ -840,7 +905,7 @@ p {
 	height:auto;
 }
 
-.profile .name {
+.name {
 	font-size:32px;
 	line-height:36px;
 	margin:0 0 10px 4px;
@@ -1237,13 +1302,19 @@ p {
 }
 
 .loader {
-	background:url(../images/preloader_circle_32.gif) no-repeat scroll 320px 20px transparent;
+	background:url(../images/preloader_circle_32.gif) no-repeat scroll 350px 80px transparent;
     width: 100%;
-    height: 90px;
+    height: 190px;
+}
+
+.right_content {
+    width: 770px; 
+    min-height:100px; 
+    float: left; 
 }
 
 .loader_special {
-	background:url(../images/preloader_circle_32.gif) no-repeat scroll 330px 180px transparent;
+	background:url(../images/preloader_circle_32.gif) no-repeat scroll 365px 180px transparent;
     width: 100%;
     height: 400px;
 }
@@ -1264,7 +1335,7 @@ p {
 .mr_btn {border: 0; background: none; overflow: hidden; padding: 0; margin: 0 10px 0 0; cursor: pointer; display: inline-block; white-space: nowrap}
 .mr_btn span, .mr_btn em {background: url("http://img4.imgsmail.ru/r/my/app/connect/button-sprite.png") no-repeat; display: inline-block; height: 26px; font-size: 12px; line-height:18px;}
 .mr_btn span {background-position: 0 0;}
-.mr_btn em {background-position: 100% -30px; margin-left: 4px; padding: 3px 21px 0 15px; color: white; font-style: normal; font-weight: bold;}
+.mr_btn em {background-position: 100% -30px; margin-left: 3px; padding: 3px 21px 0 15px; color: white; font-style: normal; font-weight: bold;}
 .mr_btn:hover span  {background-position: 0 -60px;}
 .mr_btn:hover em {background-position: 100% -90px;}
 .mr_btn:active span {background-position: 0 -120px;}
@@ -1272,7 +1343,7 @@ p {
 
 #fancybox-wrap {
     position: absolute;
-    top: 50px !important;
+    top: 10px !important;
 }
 
 .bonus_text {
@@ -1281,3 +1352,26 @@ p {
     height: 25px;
     text-align: center;
 }
+
+.button_icon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+}
+
+.make_gift {
+	background:url(../images/icon_make_gift.png) no-repeat;
+}
+
+.bb {
+    vertical-align: top;
+}
+
+.bb span {
+    position: relative;
+    top: -2px;
+}
+

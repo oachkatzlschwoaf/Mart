@@ -1,64 +1,15 @@
-<div style="display: none">
-    <div id="data" class="gift" style="width: 300px">
-        <header class="title">Подарок</header>
-        <div class="img"><img id="show_gift_img" width="250" height="250" alt=" "></div>
-        <!-- end .img-->
-
-        <div class="person">
-            <div class="ava" id="show_gift_from_img_c"><a href="#"><img id="show_gift_from_img" width="50" height="50" alt=" "></a></div>
-            <div class="text" id="show_gift_from"></div>
+<div id="gifts_my_block" class="gft_block">
+    <header class="title">Мои подарки</header>
+    <div class="slider">
+        <div class="hold">
+            <section id="gifts_my" class="catalog">
+            </section>
+            <!-- end .catalog--> 
         </div>
-        <!-- end .person-->
 
-        <div id="show_gift_message" class="message">
-            <div id="show_gift_text"></div>
-            <div class="date" id="show_gift_date"></div>
-            <div class="arr"></div>
+        <div id="open_navi">
+            <div onclick="cntrl_index.scrollMyGifts('back')" class="prev"></div>
+            <div onclick="cntrl_index.scrollMyGifts('forward')" class="next"></div>
         </div>
-        <!-- end .message-->
-        <div class="answer"><a id="answer_gift" class="btn" href="#"><span>Сделать ответный подарок</span></a></div>
-    </div>
-</div>
-
-<div id="gifts_my_loader" class="loader gft_loader" style="display: none"></div>
-
-<div id="gifts_my_block" class="gft_block" style="display: none">
-    <div id="gifts_newest_holder" style="display: none">
-        <header class="title">Новые подарки</header>
-        <!-- end .title-->
-
-        <div class="slider">
-            <div class="hold">
-                <section id="gifts_my_new" class="catalog">
-                    <!-- end article-->
-                </section>
-                <!-- end .catalog--> 
-            </div>
-            <!-- end .hold-->
-
-            <div id="newest_navi">
-                <div onclick="view.my_gifts.scrollGifts('newest', 'back')" class="prev"></div>
-                <div onclick="view.my_gifts.scrollGifts('newest', 'forward')" class="next"></div>
-            </div>
-        </div>
-        <!-- end .slider-->
-    </div>
-
-    <div id="gifts_my_holder" style="display: none">
-        <header class="title">Мои подарки</header>
-        <!-- end .title-->
-        <div class="slider">
-            <div class="hold">
-                <section id="gifts_my" class="catalog">
-                </section>
-                <!-- end .catalog--> 
-            </div>
-            <!-- end .hold-->
-            <div id="open_navi">
-                <div onclick="view.my_gifts.scrollGifts('open', 'back')" class="prev"></div>
-                <div onclick="view.my_gifts.scrollGifts('open', 'forward')" class="next"></div>
-            </div>
-        </div>
-        <!-- end .slider-->
     </div>
 </div>
