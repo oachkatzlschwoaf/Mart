@@ -111,9 +111,11 @@ function loadControllers() {
         showPaymentWindow: function(id) {
             p = util.bconfig[id];
 
+            console.log(p);
+
             mailru.app.payments.showDialog({
-                service_id: p.service_id,
-                service_name: p.service_name,
+                service_id: p.id,
+                service_name: p.name,
                 mailiki_price: p.mailiki 
             });
         },
