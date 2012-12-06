@@ -1027,4 +1027,31 @@ class DefaultController extends Controller
         $response = new Response(json_encode($answer));
         return $response;
     }
+
+    public function getBalanceAction(Request $request) {
+        // Check session
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+        
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $answer = array( 'balance' => $user->getBalance() );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
 }

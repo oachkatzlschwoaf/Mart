@@ -122,6 +122,10 @@ apiBalance:
     pattern: /api/user/balance/increase
     defaults: { _controller: GiftGeneralBundle:Default:increaseBalance }
 
+apiGetBalance:
+    pattern: /api/user/{sk}/balance
+    defaults: { _controller: GiftGeneralBundle:Default:getBalance }
+
 apiUsers:
     pattern: /api/users
     defaults: { _controller: GiftGeneralBundle:Default:getUsers }

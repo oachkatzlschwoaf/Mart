@@ -21,6 +21,7 @@ function loadViews() {
     view_global = {
         init: function(ev, map) {
             this.map = map; 
+            this.ev  = ev;
 
             // Listener 
             ev.emitter.on('pages.hide', function (e, input) { 
@@ -53,18 +54,18 @@ function loadViews() {
 
             // API Listener
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
+                this.ev.emitter.trigger('user_balance.update_force');
                 $.fancybox.close();
-            });
+            }.bind(this));
 
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
+                this.ev.emitter.trigger('user_balance.update_force');
                 
-                if (event.status == 'success') {
-                    user.updateBalance();
-
-                    if (purchase.error_balance == 1) {
-                        purchase.process();
-                    }
-                }
+                //if (event.status == 'success') {
+                    //if (purchase.error_balance == 1) {
+                        //purchase.process();
+                    //}
+                //}
 
                 $.fancybox.close();
             });

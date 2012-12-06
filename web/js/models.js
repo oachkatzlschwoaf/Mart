@@ -22,6 +22,17 @@ function loadModels() {
             return util.avatar_host + this.box + '/' + this.login + '/_avatar' + size;
         },
 
+        getBalance: function() {
+            dfd = $.Deferred();
+
+            $.getJSON(util.api_url.balance, function(data) {
+                this.balance = data.balance;
+                dfd.resolve(data.balance);
+            }.bind(this));
+
+            return dfd.promise();
+        },
+
         getGifts: function() {
             dfd = $.Deferred();
 

@@ -43,6 +43,10 @@ function loadControllers() {
             ev.emitter.on('gifts_catalog.show', function (e, input) { 
                 this.showGiftsCatalog();
             }.bind(this));
+
+            ev.emitter.on('user_balance.update_force', function (e, input) { 
+                this.updateBalance();
+            }.bind(this));
         },
 
         // General 
@@ -111,13 +115,17 @@ function loadControllers() {
         showPaymentWindow: function(id) {
             p = util.bconfig[id];
 
-            console.log(p);
-
             mailru.app.payments.showDialog({
                 service_id: p.id,
                 service_name: p.name,
                 mailiki_price: p.mailiki 
             });
+        },
+
+        updateBalance: function() {
+            this.mdl_user.getBalance().done(function(input) {
+                this.ev.emitter.trigger('user_balance.update', input);
+            }.bind(this));
         },
 
         // My gifts 
