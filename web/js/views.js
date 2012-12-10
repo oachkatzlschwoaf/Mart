@@ -61,11 +61,9 @@ function loadViews() {
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
                 
-                //if (event.status == 'success') {
-                    //if (purchase.error_balance == 1) {
-                        //purchase.process();
-                    //}
-                //}
+                if (event.status == 'success') {
+                    this.ev.emitter.trigger('purchase.try_again');
+                }
 
                 $.fancybox.close();
             });

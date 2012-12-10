@@ -256,6 +256,12 @@ function loadControllers() {
             ev.emitter.on('description.complete', function (e, input) { 
                 this.setDescription(input);
             }.bind(this));
+
+            ev.emitter.on('purchase.try_again', function (e, input) { 
+                if (this.error_money == 1) {
+                    this.process();
+                }
+            }.bind(this));
         },
 
         purge: function() {
@@ -265,6 +271,7 @@ function loadControllers() {
             delete this.incognito;
             delete this.privacy;
             delete this.cover;
+            delete this.error_money;
         },
 
         setGift: function(gift_id) {
@@ -391,11 +398,15 @@ function loadControllers() {
 
                         this.ev.emitter.trigger('user_balance.update', data.balance);
 
+                        delete this.error_money;
+
                         // stat
                         _kmq.push(['record', 'finish purchase', { 'result': 'done' }]);
                         _kmq.push(['record', 'send gift']);
 
                     } else if (data.balance_error == 'need more money') {
+                        this.error_money = 1;
+
                         this.ev.emitter.trigger('send_error_block.show', {
                             gift: gift,
                             friend: friend,
