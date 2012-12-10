@@ -61,7 +61,9 @@ function loadViews() {
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
                 
+                console.log('incoming payment!');
                 if (event.status == 'success') {
+                    console.log('success');
                     this.ev.emitter.trigger('purchase.try_again');
                 }
 
