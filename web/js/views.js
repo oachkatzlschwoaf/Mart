@@ -55,6 +55,7 @@ function loadViews() {
             // API Listener
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
+                console.log(event);
                 $.fancybox.close();
             }.bind(this));
 
