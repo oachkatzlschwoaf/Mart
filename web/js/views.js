@@ -56,8 +56,10 @@ function loadViews() {
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
 
-                console.log('try!');
-                this.ev.emitter.trigger('purchase.try_again');
+                if (event.status == 'closed') {
+                    console.log('try!');
+                    this.ev.emitter.trigger('purchase.try_again');
+                }
 
                 $.fancybox.close();
             }.bind(this));
