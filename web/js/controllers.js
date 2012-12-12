@@ -258,9 +258,7 @@ function loadControllers() {
             }.bind(this));
 
             ev.emitter.on('purchase.try_again', function (e, input) { 
-                console.log('try again!');
                 if (this.error_money == 1) {
-                    console.log('error money --> ok!');
                     this.process();
                 }
             }.bind(this));

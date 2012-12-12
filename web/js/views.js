@@ -57,7 +57,6 @@ function loadViews() {
                 this.ev.emitter.trigger('user_balance.update_force');
 
                 if (event.status == 'closed') {
-                    console.log('try!');
                     this.ev.emitter.trigger('purchase.try_again');
                 }
 
@@ -68,7 +67,7 @@ function loadViews() {
                 this.ev.emitter.trigger('user_balance.update_force');
 
                 $.fancybox.close();
-            });
+            }.bind(this));
 
             mailru.events.listen(mailru.common.events.guestbookPublish, function(event) {
                 if (event.status == 'publishSuccess') {
