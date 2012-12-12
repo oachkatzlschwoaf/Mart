@@ -60,24 +60,22 @@ function loadViews() {
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
 
+                if (event.status == 'opened') {
+                    $.fancybox.close();
+                }
+
                 if (event.status == 'closed') {
                     this.ev.emitter.trigger('purchase.try_again');
                 }
-
-                $.fancybox.close();
             }.bind(this));
 
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
 
-                console.log(event);
-
                 if (event.status == 'success') {
-                    console.log('ok!');
                     this.ev.emitter.trigger('money_thanks.show');
                 }
 
-                $.fancybox.close();
             }.bind(this));
 
             mailru.events.listen(mailru.common.events.guestbookPublish, function(event) {
