@@ -52,6 +52,10 @@ function loadViews() {
                 this.showWelcome();
             }.bind(this));
 
+            ev.emitter.on('money_thanks.show', function (e, input) { 
+                this.showMoneyThanks();
+            }.bind(this));
+
             // API Listener
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
@@ -65,6 +69,10 @@ function loadViews() {
 
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
+
+                if (event.status == 'success') {
+                    this.ev.emitter.trigger('money_thanks.show');
+                }
 
                 $.fancybox.close();
             }.bind(this));
@@ -134,6 +142,12 @@ function loadViews() {
 
         showWelcome: function() {
             this.map.welcome.fancybox({
+                'overlayColor': '#fff'
+            }).trigger('click');
+        },
+
+        showMoneyThanks: function() {
+            this.map.money_thanks.fancybox({
                 'overlayColor': '#fff'
             }).trigger('click');
         }
@@ -624,6 +638,7 @@ function mapElementsViews() {
     elms_map.main_avatar = $('#main_avatar');  // main avatar
     elms_map.loader = $('#right_loader'); // right loader
     elms_map.welcome = $('#welcome'); // welcome window 
+    elms_map.money_thanks = $('#money_thanks'); // money thanks window 
 
     // Balance
     elms_map.user_balance = $('#user_balance');

@@ -1353,6 +1353,12 @@ p {
     text-align: center;
 }
 
+.bonus_text .small {
+    font-weight: normal;
+    font-size: 12px;
+    margin: 5px;
+}
+
 .button_icon {
     position: relative;
     top: 1px;
