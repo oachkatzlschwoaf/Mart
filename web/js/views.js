@@ -70,7 +70,10 @@ function loadViews() {
             mailru.events.listen(mailru.app.events.incomingPayment, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
 
+                console.log(event);
+
                 if (event.status == 'success') {
+                    console.log('ok!');
                     this.ev.emitter.trigger('money_thanks.show');
                 }
 
