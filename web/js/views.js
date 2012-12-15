@@ -10,6 +10,7 @@ var view_desc        = {};
 var view_done        = {};
 var view_friends     = {};
 var view_friend      = {};
+var view_holidays    = {};
 
 // Functions
 
@@ -248,6 +249,98 @@ function loadViews() {
                 'overlayColor': '#fff'
             });
         },
+    };
+
+    // Holidays
+    // ======================================================
+    view_holidays = {
+        init: function(ev, map) {
+            this.ev  = ev;
+            this.map = map; 
+
+            // Listener 
+            ev.emitter.on('holidays.show', function (e, input) { 
+                this.show(input);
+            }.bind(this));
+
+            ev.emitter.on('holidays.hide', function (e, input) { 
+                this.hide();
+            }.bind(this));
+
+            ev.emitter.on('holidays.fill', function (e, input) { 
+                this.fill(input);
+            }.bind(this));
+        },
+
+        show: function(data) {
+            this.map.holidays.block.show();
+        },
+
+        hide: function() {
+            this.map.holidays.block.hide();
+        },
+
+        fill: function(data) {
+            var i = 0;
+
+            this.map.holidays.list.html('');
+
+            $.each(data, function(d, e) {
+                i++;
+
+                if (i < 3) {
+                    // Today and Tomorrow (special styles)
+
+                    dname = 'Сегодня';
+                    if (i == 2) {
+                        dname = 'Завтра';
+                    }
+
+                    this.map.holidays.list.append("<article class='today'><div class='big'>"+dname+"</div><ul id='"+this.map.holidays.hlist_pfx+i+"' class='holi_list'></ul><div class='bday' id='"+this.map.holidays.bday_pfx+i+"'></div></article>");
+                    
+                    if (Object.size(e.friends) > 0) {
+                        $("#"+this.map.holidays.bday_pfx+i).append("Дни рождения:<ul id="+this.map.holidays.bday_list_pfx+i+"></ul>"); 
+
+                        var j = 0;
+                        $.each(e.friends, function(fid, f) {
+                            j++;
+                            if (j < 6) {
+                                $("#"+this.map.holidays.bday_list_pfx+i).append("<li><a href='#' onclick='cntrl_purchase.setFriend(\""+f.uid+"\")'><img title='"+htmlEncode(f.name)+"' src='"+f.pic_32+"' /></a></li>"); 
+                            }
+                        }.bind(this));
+
+                    } else {
+                        $("#"+this.map.holidays.hlist_pfx+i).append("<li>нет праздников</li>"); 
+                    }
+
+                } else {
+                    // Other dates
+
+                    style_add = "";
+                    if (i == 5) {
+                        style_add = "style='border-right: none'"; 
+                    }
+
+                    this.map.holidays.list.append("<article "+style_add+"><div class='date_title'>"+e.dname+"</div><div id='"+this.map.holidays.date_no_holiday+i+"' class='no_holiday'>нет праздников</div><div class='bday' id='"+this.map.holidays.date_bdays+i+"'>Дни рождения:<ul id='"+this.map.holidays.date_bdays_list+i+"'></ul></div></article>");
+
+                    if (Object.size(e.friends) > 0) {
+                        $("#"+this.map.holidays.date_no_holiday+i).html('');
+                        $("#"+this.map.holidays.date_bdays+i).show();
+
+                        var j = 0;
+                        $.each(e.friends, function(fid, f) {
+                            j++;
+                            if (j < 3) {
+                                $("#"+this.map.holidays.date_bdays_list+i).append("<li><a href='#' onclick='cntrl_purchase.setFriend(\""+f.uid+"\")'><img title='"+htmlEncode(f.name)+"' src='"+f.pic_32+"' /></a></li>"); 
+                            }
+                        }.bind(this));
+
+                    } else {
+                        $("#"+this.map.holidays.date_bdays+i).hide();
+                    }
+                }
+            }.bind(this));
+        }
     };
 
     // Gifts Catalog 
@@ -734,6 +827,17 @@ function mapElementsViews() {
     elms_map.friend.no_gifts_text = $('#friend_gifts_none_text'); // text: he hasn't gifts
     elms_map.friend.button = {};
     elms_map.friend.button.send_gift = $('#friend_send_gift'); // button: send gift
+    
+    // Holidays
+    elms_map.holidays = {};
+    elms_map.holidays.block = $('#holidays'); // block
+    elms_map.holidays.list = $('#holidays_list'); // list 
+    elms_map.holidays.bday_pfx = 'bdays_'; // bday elements prefix
+    elms_map.holidays.bday_list_pfx = 'bdays_list_'; // bday list prefix
+    elms_map.holidays.hlist_pfx = 'hlist_'; // holidays elements list prefix
+    elms_map.holidays.date_no_holiday = 'date_no_hday_'; // no holidays in date element prefix 
+    elms_map.holidays.date_bdays = 'date_bdays_'; // bdays in date element prefix 
+    elms_map.holidays.date_bdays_list = 'date_bdays_list_'; // bdays list in date element prefix 
 
 }
 
@@ -784,6 +888,11 @@ function initViews() {
     );
 
     view_friend.init(
+        events,
+        elms_map
+    );
+
+    view_holidays.init(
         events,
         elms_map
     );

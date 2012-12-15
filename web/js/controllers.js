@@ -73,22 +73,28 @@ function loadControllers() {
 
             // show "My gifts" block
             this.scrollMyGifts().done(function() {
+                
+                // show holidays
+                this.showHolidays().done(function() {
 
-                // show catalog
-                this.setCatalogCategory(util.default_gift_cat).done(function() {
-                    this.ev.emitter.trigger('block_gifts_cat.show');
-                    this.ev.emitter.trigger('loading.finish');
-                    this.ev.emitter.trigger('page.show', 'index');
+                    // show catalog
+                    this.setCatalogCategory(util.default_gift_cat).done(function() {
+                        this.ev.emitter.trigger('block_gifts_cat.show');
+                        this.ev.emitter.trigger('loading.finish');
+                        this.ev.emitter.trigger('page.show', 'index');
 
-                    // show welcome
-                    if (util.is_install > 0) {
-                        this.ev.emitter.trigger('welcome.show');
-                    }
+                        // show welcome
+                        if (util.is_install > 0) {
+                            this.ev.emitter.trigger('welcome.show');
+                        }
 
-                    // preload friends
-                    this.mdl_user.getFriends().done(function(input) {
+                        // preload friends
+                        this.mdl_user.getFriends().done(function(input) {
+                        }.bind(this));
                     }.bind(this));
+
                 }.bind(this));
+
             }.bind(this));
 
             // stat
@@ -97,8 +103,24 @@ function loadControllers() {
             }]);
         },
 
+        showHolidays: function() {
+            dfd = $.Deferred();
+
+            this.ev.emitter.trigger('holidays.hide');
+
+            this.mdl_user.getHolidays().done(function(input) {
+                this.ev.emitter.trigger('holidays.fill', input);
+                this.ev.emitter.trigger('holidays.show');
+
+                dfd.resolve();
+            }.bind(this));
+
+            return dfd.promise();
+        },
+
         showGiftsCatalog: function() {
             this.ev.emitter.trigger('block_mygifts.hide');
+            this.ev.emitter.trigger('holidays.hide');
 
             // loading 
             this.ev.emitter.trigger('pages.hide');

@@ -11,8 +11,9 @@ function loadModels() {
         login: util.user_login,
         api:   util.api_url,
 
-        gifts:   {},
-        friends: {},
+        gifts:    {},
+        friends:  {},
+        holidays: {},
 
         init: function() {
             this.balance = util.user_start_balance;
@@ -29,6 +30,21 @@ function loadModels() {
                 this.balance = data.balance;
                 dfd.resolve(data.balance);
             }.bind(this));
+
+            return dfd.promise();
+        },
+
+        getHolidays: function() {
+            dfd = $.Deferred();
+
+            if (Object.size(this.holidays) == 0) {
+                $.getJSON(util.api_url.holidays, function(data) {
+                    this.holidays = data;
+                    dfd.resolve(data);
+                }.bind(this));
+            } else {
+                dfd.resolve(this.holidays);
+            }
 
             return dfd.promise();
         },

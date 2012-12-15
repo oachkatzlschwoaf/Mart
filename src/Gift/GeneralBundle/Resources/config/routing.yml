@@ -155,3 +155,8 @@ apiGetUid:
     defaults: { _controller: GiftGeneralBundle:Default:getUid }
     requirements:
         _method:  POST
+
+apiGetHolidays:
+    pattern: /api/user/{sk}/holidays
+    defaults: { _controller: GiftGeneralBundle:Default:getHolidays }
+

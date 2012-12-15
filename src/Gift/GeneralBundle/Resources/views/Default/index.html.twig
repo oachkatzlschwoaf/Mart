@@ -21,6 +21,7 @@
 
     <div id="page_index" class="gft_page" style="display: none">
         {% include 'GiftGeneralBundle:Default:my_gifts.html.twig' %}
+        {% include 'GiftGeneralBundle:Default:holidays.html.twig' %}
         {% include 'GiftGeneralBundle:Default:gifts_catalog.html.twig' %}
     </div>
 
@@ -63,6 +64,7 @@
     util.api_url.send_notify    = "{{ path("apiSendNotify") }}";
     util.api_url.get_uid        = "{{ path("apiGetUid") }}";
     util.api_url.balance        = "{{ path("apiGetBalance", {'sk': sk}) }}";
+    util.api_url.holidays       = "{{ path("apiGetHolidays", {'sk': sk}) }}";
 
     // Paths & Hosts
     // ---------------------------------------

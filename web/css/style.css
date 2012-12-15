@@ -1381,3 +1381,89 @@ p {
     top: -2px;
 }
 
+
+.holiday_catalog {
+	zoom:1;
+	position:relative;
+	overflow: hidden;
+	clear:both;
+	display: block;
+}
+
+.holiday_catalog .today {
+	float:left;
+	position:relative;
+	width: 200px;
+	height: 140px;
+	text-align:center;
+}
+
+.holiday_catalog .today .big {
+	font:italic 26px/30px Georgia, "Times New Roman", Times, serif;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.holiday_catalog .today .holi_list {
+    color: #555;
+    text-align: left;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    padding: 0px;
+    margin: 5px 0px 0px 0px;
+    height: 40px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.holi_list li {
+    margin-bottom: 3px;
+}
+
+.holiday_catalog .bday {
+    color: #555;
+    text-align: left;
+    height: 55px;
+}
+
+.bday ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    padding: 0px;
+    margin: 7px 0px 0px 0px;
+}
+
+.bday ul li {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.holiday_catalog article {
+	float:left;
+	position:relative;
+	width:100px;
+	height: 140px;
+	text-align:center;
+	margin:5px 2px 10px 5px;
+    padding-right: 5px;
+    border-right: 1px solid #ccc;
+}
+
+.holiday_catalog .date_title {
+	font:italic 26px/30px Georgia, "Times New Roman", Times, serif;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.holiday_catalog .date_title p {
+    font-size: 20px;
+}
+
+.no_holiday {
+    color: #aaa;
+    text-align: center;
+    min-height: 14px;
+    overflow: hidden;
+}

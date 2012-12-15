@@ -477,7 +477,7 @@ class DefaultController extends Controller
             $user = $rep->find($uid);
 
             if ($user) {
-                # Fetch user via API
+                # Fetch friends  via API
                 $api = $this->get('social_api');
                 $api->setNetwork('mm');
                 $api->setCache($mc);
@@ -1052,6 +1052,91 @@ class DefaultController extends Controller
 
         $answer = array( 'balance' => $user->getBalance() );
         $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function getHolidaysAction(Request $request) {
+        // Check session
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+        
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $now = new \DateTime;
+
+        # Birthdays: Friends fetch via API
+        $api = $this->get('social_api');
+        $api->setNetwork('mm');
+        $api->setCache($mc);
+        $friends = $api->getUserFriendsBySk( $sk );
+
+        $fr_array = array();
+
+        foreach ($friends as $f) {
+            if ($f->{'birthday'}) {
+                $date = \DateTime::createFromFormat('d.m.Y', $f->{'birthday'});
+
+                $interval = $now->diff($date);
+
+                $f->{'name'} = $f->{'nick'};
+                if ($f->{'first_name'} && $f->{'last_name'}) {
+                    $f->{'name'} = $f->{'first_name'}.' '.$f->{'last_name'};
+                } 
+                
+                # Get users, with bday in next ten days
+                if ($interval->m == 0 && $interval->d < 5 &&
+                    $now->format('j') <= $date->format('j')) {
+
+                    $d = $date->format('m-d');
+                    $fr_array[$d][ $f->uid ] = $f;
+                }
+            }
+        }
+
+        # Answer prepare
+        $res_array = array();
+        $dt = $now;
+
+        $months = array(1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля', 
+        5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа', 
+        9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря');
+
+        for ($i = 0; $i < 5; $i++) {
+            $ymd = $dt->format('Y-m-d');
+            $md = $dt->format('m-d');
+
+            $res_array[$ymd] = array();
+            $res_array[$ymd]['friends'] = array();
+
+            if (isset($fr_array[$md])) {
+                $res_array[$ymd]['friends'] = $fr_array[$md];
+            }
+
+            $rus_month = $months[ $dt->format('m') ];    
+
+            $res_array[$ymd]['dname'] = $dt->format('d').' '.$months[ $dt->format('m') ];
+
+            # next
+            $dt->modify("+1 day");
+        }
+
+        $response = new Response(json_encode($res_array));
+
         return $response;
     }
 }
