@@ -309,9 +309,21 @@ function loadViews() {
                             }
                         }.bind(this));
 
+                    } 
+
+                    if (Object.size(e.holidays) > 0) {
+                        var j = 0;
+                        $.each(e.holidays, function(hid, h) {
+                            j++;
+                            if (j < 3) {
+                                $("#"+this.map.holidays.hlist_pfx+i).append("<li><a href='#' onclick='cntrl_index.showGiftsCatalog()'>"+h.name+"</a></li>"); 
+                            }
+                        }.bind(this));
+
                     } else {
                         $("#"+this.map.holidays.hlist_pfx+i).append("<li>нет праздников</li>"); 
                     }
+
 
                 } else {
                     // Other dates
@@ -337,6 +349,16 @@ function loadViews() {
 
                     } else {
                         $("#"+this.map.holidays.date_bdays+i).hide();
+
+                        if (Object.size(e.holidays) > 0) {
+                            var j = 0;
+                            $.each(e.holidays, function(hid, h) {
+                                j++;
+                                if (j < 2) {
+                                    $("#"+this.map.holidays.date_no_holiday+i).html("<a href='#' onclick='cntrl_index.showGiftsCatalog()'>"+h.name+"</a>"); 
+                                }
+                            }.bind(this));
+                        }
                     }
                 }
             }.bind(this));

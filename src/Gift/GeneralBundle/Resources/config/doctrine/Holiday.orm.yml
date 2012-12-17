@@ -1,0 +1,30 @@
+Gift\GeneralBundle\Entity\Holiday:
+    type: entity
+    table: null
+    indexes:
+        month_day_idx:
+            columns: [month, day]
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        holiday_id:
+            type: integer
+        name:
+            type: string
+            length: 255
+        day:
+            type: integer
+        month:
+            type: integer
+        type:
+            type: integer
+        description:
+            type: string
+            length: 255
+    uniqueConstraints:
+        hid_idx:
+            columns: holiday_id 
+    lifecycleCallbacks: {  }

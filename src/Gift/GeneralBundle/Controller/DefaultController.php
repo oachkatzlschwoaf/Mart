@@ -16,6 +16,7 @@ use Gift\GeneralBundle\Entity\Transaction;
 use Gift\GeneralBundle\Entity\BillingConfig;
 use Gift\GeneralBundle\Entity\UserFriendBonus;
 use Gift\GeneralBundle\Entity\Notify;
+use Gift\GeneralBundle\Entity\Holiday;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -1055,6 +1056,17 @@ class DefaultController extends Controller
         return $response;
     }
 
+    public function _get_holidays($month, $day) {
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $holidays = $em->createQuery("select p from GiftGeneralBundle:Holiday p WHERE p.month = :month and p.day = :day")
+            ->setParameter('month', $month)
+            ->setParameter('day', $day)
+            ->getResult();
+
+        return $holidays;
+    }
+
     public function getHolidaysAction(Request $request) {
         // Check session
         $sk = $request->get('sk');
@@ -1121,15 +1133,31 @@ class DefaultController extends Controller
             $md = $dt->format('m-d');
 
             $res_array[$ymd] = array();
+
+            # birthdays
             $res_array[$ymd]['friends'] = array();
 
             if (isset($fr_array[$md])) {
                 $res_array[$ymd]['friends'] = $fr_array[$md];
             }
 
-            $rus_month = $months[ $dt->format('m') ];    
+            # rus month
+            $month = $dt->format('m');
+            $day = $dt->format('d');
+            $rus_month = $months[ $month ];    
 
-            $res_array[$ymd]['dname'] = $dt->format('d').' '.$months[ $dt->format('m') ];
+            $res_array[$ymd]['dname'] = $day.' '.$months[ $month ];
+
+            # holidays
+            $res_array[$ymd]['holidays'] = array();
+            $holidays = $this->_get_holidays($month, $day);
+            
+            foreach ($holidays as $h) {
+                $res_array[$ymd]['holidays'][$h->getHolidayId()] = array(
+                    'name' => $h->getName(),
+                    'desc' => $h->getDescription()
+                );  
+            }
 
             # next
             $dt->modify("+1 day");
