@@ -106,6 +106,14 @@ function loadViews() {
                     _kmq.push(['record', 'api publish stream']);
                 }
             });
+
+            mailru.events.listen(mailru.app.events.readHash, function(result){
+                $.each(result, function(p, v) {
+                    if (p == 'showFriend') {
+                        cntrl_friend.show(v);
+                    }
+                });
+            });
         },
 
         hidePages: function() {
@@ -478,8 +486,8 @@ function loadViews() {
             d = new Date();
 
             this.map.desc.img.attr("src", util.images_path+"/"+p.gift.id+".png");
-            this.map.desc.for.text( p.friend.name );
-            this.map.desc.for_ava.attr("src", p.friend.pic_50+"?"+d.getTime());
+            this.map.desc.for.text( p.friend.getName() );
+            this.map.desc.for_ava.attr("src", p.friend.getAvatar(50)+"?"+d.getTime());
 
             this.map.desc.text.val("");
             this.map.desc.private.removeAttr("checked");
@@ -581,8 +589,8 @@ function loadViews() {
         showError: function(p) {
             d = new Date();
 
-            this.map.done.error.ava.attr('src', p.friend.pic_190+"?"+d.getTime()); 
-            this.map.done.error.for.text(p.friend.name); 
+            this.map.done.error.ava.attr('src', p.friend.getAvatar(190)+"?"+d.getTime()); 
+            this.map.done.error.for.text(p.friend.getName()); 
             this.map.done.error.gift.attr('src', util.thumbs_path+"/"+gift.id+".png");
 
             this.map.done.error.text.text(p.need + ' ' + declOfNum(p.need, ['монета', 'монеты', 'монет']));
@@ -593,11 +601,11 @@ function loadViews() {
         showDone: function(p) {
             d = new Date();
 
-            this.map.done.ok.ava.attr('src', p.friend.pic_190+"?"+d.getTime()); 
-            this.map.done.ok.for.text(p.friend.name); 
+            this.map.done.ok.ava.attr('src', p.friend.getAvatar(190)+"?"+d.getTime()); 
+            this.map.done.ok.for.text(p.friend.getName()); 
             this.map.done.ok.gift.attr('src', util.thumbs_path+"/"+gift.id+".png");
 
-            if (p.friend.sex == 1) {
+            if (p.friend.getSex() == 1) {
                 this.map.done.ok.text.text('она его скорее получила');
                 this.map.done.ok.text2.text('Напишите ей об этом сообщение!');
             } else {
@@ -626,11 +634,11 @@ function loadViews() {
 
         postStream: function(p) {
             mailru.common.stream.post({
-                'title': 'Сделал подарок для ' + p.friend.name,
+                'title': 'Сделал подарок для ' + p.friend.getName(),
                 'text': 'Это тебе! '+p.purchase.text,
                 'img_url': util.abs_path + util.images_path+"/"+p.purchase.gift_selected+".png",
                 'action_links': [
-                    {'text': 'Посмотреть', 'href': 'show'},
+                    {'text': 'Посмотреть', 'href': 'showFriend=' + p.friend.uid},
                 ]
             });
         },
@@ -696,13 +704,15 @@ function loadViews() {
         show: function(p) {
             friend = p.friend;
 
-            this.map.friend.name.text(friend.info.name);
+            this.map.friend.name.text( friend.getName() );
             this.map.friend.block.show();     
 
-            if (friend.info.sex == 1) {
+            if (friend.getSex() == 1) {
                 this.map.friend.no_gifts_text.text('У неё еще нет подарков, сделайте первый подарок!');
+                this.map.friend.title.text('Её подарки');
             } else {
                 this.map.friend.no_gifts_text.text('У него еще нет подарков, сделайте первый подарок!');
+                this.map.friend.title.text('Его подарки');
             }
 
             // Behaivor
@@ -847,6 +857,7 @@ function mapElementsViews() {
     elms_map.friend.gifts_nav = $('#friend_gifts_nav'); // navi
     elms_map.friend.make_gift_btn = $('#friend_make_gift'); // button: make gift
     elms_map.friend.no_gifts_text = $('#friend_gifts_none_text'); // text: he hasn't gifts
+    elms_map.friend.title = $('#friend_title'); // her/his gifts
     elms_map.friend.button = {};
     elms_map.friend.button.send_gift = $('#friend_send_gift'); // button: send gift
     

@@ -30,7 +30,10 @@ function main_init() {
     initModels();
 
     // Run! 
-    cntrl_index.show(); // show index page
+    //cntrl_index.checkHash();
+    //cntrl_index.show(); // show index page
+
+    cntrl_friend.show('10410773191171615989'); // test
 }
 
 // Loading (on document ready) 

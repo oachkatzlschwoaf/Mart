@@ -1167,4 +1167,39 @@ class DefaultController extends Controller
 
         return $response;
     }
+
+    public function getUserInfoAction(Request $request) {
+        $uid = $request->get('uid');
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+        
+        $em = $this->getDoctrine()->getEntityManager();
+        $users = $em->createQuery("select p from GiftGeneralBundle:User p WHERE p.uid = :uid")
+            ->setParameter('uid', $uid)
+            ->getResult();
+
+        if ($users && count($users) > 0) {
+            $u = $users[0];
+
+            // Prepare API answer
+            $serializer = $this->get('serializer');
+            $json = $serializer->serialize($u, 'json');
+            $response = new Response($json);
+            return $response;
+            
+        } else {
+            $mc = $this->get('beryllium_cache');
+            $api = $this->get('social_api');
+            $api->setNetwork('mm');
+            $api->setCache($mc);
+            $uinfo = $api->getUserInfo( $uid );
+            $response = new Response(json_encode($uinfo));
+            return $response;
+        }
+
+    }
 }

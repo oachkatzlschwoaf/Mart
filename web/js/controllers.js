@@ -52,6 +52,10 @@ function loadControllers() {
         // General 
         // ----------------------------------------- 
 
+        checkHash: function() {
+            mailru.app.utils.hash.read();
+        },
+
         show: function() {
             // loading 
             this.ev.emitter.trigger('pages.hide');
@@ -269,9 +273,10 @@ function loadControllers() {
     // Purchase 
     // ======================================================
     cntrl_purchase = {
-        init: function(ev, mdl_user, mdl_gifts_cat) {
+        init: function(ev, mdl_user, mdl_friend, mdl_gifts_cat) {
             this.ev = ev;
             this.mdl_user = mdl_user;
+            this.mdl_friend = mdl_friend;
             this.mdl_gifts_cat = mdl_gifts_cat;
 
             // Listener 
@@ -304,7 +309,7 @@ function loadControllers() {
 
             if (typeof this.friend_selected != 'undefined') {
                 gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
-                friend = this.mdl_user.friends[ this.friend_selected ];
+                friend = this.mdl_friend.users[ this.friend_selected ];
 
                 this.ev.emitter.trigger('desc.show', {
                     gift: gift,
@@ -339,22 +344,31 @@ function loadControllers() {
         },
 
         setFriend: function(friend_id, type) {
+            this.ev.emitter.trigger('pages.hide');
+            this.ev.emitter.trigger('loading.start');
+
+            // get friend id
             this._set_friend(friend_id, type).done(function() {
                 if (this.friend_selected) {
                     // stat
                     _kmq.push(['record', 'set friend']);
 
-                    if (typeof this.gift_selected != 'undefined') {
-                        gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
-                        friend = this.mdl_user.friends[ this.friend_selected ];
+                    // friend init and get info about them
+                    this.mdl_friend.lookup(this.friend_selected).done(function() {
+                        this.ev.emitter.trigger('loading.finish');
 
-                        this.ev.emitter.trigger('desc.show', {
-                            gift: gift,
-                            friend: friend
-                        });
-                    } else {
-                        this.ev.emitter.trigger('gifts_catalog.show');
-                    }
+                        if (typeof this.gift_selected != 'undefined') {
+                            gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
+                            friend = this.mdl_friend.users[ this.friend_selected ];
+
+                            this.ev.emitter.trigger('desc.show', {
+                                gift: gift,
+                                friend: friend
+                            });
+                        } else {
+                            this.ev.emitter.trigger('gifts_catalog.show');
+                        }
+                    }.bind(this));
                 }
             }.bind(this));
         },
@@ -408,7 +422,7 @@ function loadControllers() {
                 function(data) {
                     this.ev.emitter.trigger('send_done_block.load.finish');
                     gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
-                    friend = this.mdl_user.friends[ this.friend_selected ];
+                    friend = this.mdl_friend.users[ this.friend_selected ];
 
                     if (data.done == 'gift sended') {
                         this.ev.emitter.trigger('send_done_block.show', {
@@ -456,7 +470,7 @@ function loadControllers() {
         },
 
         postStream: function() {
-            friend = this.mdl_user.friends[ this.friend_selected ];
+            friend = this.mdl_friend.users[ this.friend_selected ];
 
             this.ev.emitter.trigger('send_done_block.stream.post', {
                 purchase: this,
@@ -677,20 +691,25 @@ function loadControllers() {
             this.ev.emitter.trigger('pages.hide');
             this.ev.emitter.trigger('loading.start');
 
+            this.show_user_uid = uid;
+
             // Init friend 
-            this.mdl_friend.init(uid, this.mdl_user); 
-            this.v_global.showAvatar( this.mdl_friend.info.pic_180 );
+            this.mdl_friend.lookup(uid).done(function() {
+                this.v_global.showAvatar(  
+                    this.mdl_friend.users[uid].getAvatar(180)
+                );
 
-            this.scrollFriendGifts().done(function() {
+                this.scrollFriendGifts().done(function() {
+                    this.ev.emitter.trigger('friend.block.show', { 
+                        friend: this.mdl_friend.users[uid]
+                    });
 
-                this.ev.emitter.trigger('friend.block.show', { 
-                    friend: this.mdl_friend 
-                });
+                    this.ev.emitter.trigger('loading.finish');
+                    this.ev.emitter.trigger('page.show', 'friend');
 
-                this.ev.emitter.trigger('loading.finish');
-                this.ev.emitter.trigger('page.show', 'friend');
-
-            }.bind(this));
+                }.bind(this));
+            
+            }.bind(this)); 
 
             // stat
             _kmq.push(['record', 'view friend page']);
@@ -699,7 +718,7 @@ function loadControllers() {
         scrollFriendGifts: function(direction) {
             dfd = $.Deferred();
 
-            this.mdl_friend.getGifts().done(function(input) {
+            this.mdl_friend.users[ this.show_user_uid ].getGifts().done(function(input) {
                 
                 if (input.length > 0) {
                     scroll(
@@ -710,7 +729,7 @@ function loadControllers() {
                     );
                 } else {
                     this.ev.emitter.trigger('friend.block.show_empty_gifts', { 
-                        sex: this.mdl_friend.info.sex
+                        sex: this.mdl_friend.users[ this.show_user_uid ].sex
                     }); 
                 }
 
@@ -736,6 +755,7 @@ function initControllers() {
     cntrl_purchase.init(
         events, 
         model_user,
+        model_friend,
         model_gifts_catalog
     );
 

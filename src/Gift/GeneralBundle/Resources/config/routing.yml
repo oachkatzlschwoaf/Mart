@@ -160,3 +160,6 @@ apiGetHolidays:
     pattern: /api/user/{sk}/holidays
     defaults: { _controller: GiftGeneralBundle:Default:getHolidays }
 
+apiGetUserInfo:
+    pattern: /api/user
+    defaults: { _controller: GiftGeneralBundle:Default:getUserInfo }

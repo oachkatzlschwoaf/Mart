@@ -3,6 +3,8 @@ var model_user          = {};
 var model_gifts_catalog = {};
 var model_friend        = {};
 
+function blank_friend() { };
+
 // Functions
 function loadModels() {
 
@@ -174,12 +176,10 @@ function loadModels() {
         }
     };
 
-    model_friend = {
-        init: function(uid, user) {
-            if (uid) {
-                this.info = user.friends[uid];
-                this.uid = uid;
-            }
+    blank_friend.prototype = {
+        getAvatar: function(size) {
+            var info = this.link.match('http:\/\/my.mail.ru\/(.+)\/(.+)\/');
+            return util.avatar_host + info[1] + '/' + info[2] + '/_avatar' + size;
         },
 
         getGifts: function() {
@@ -191,6 +191,62 @@ function loadModels() {
                     dfd.resolve(data);
                 }.bind(this)
             );
+
+            return dfd.promise();
+        },
+
+        getName: function() {
+            name = htmlEncode(this.first_name + " " + this.last_name);
+            
+            if (name.length === 1) {
+                name = this.nick;
+            }
+
+            return name;
+        },
+
+        getSex: function() {
+            if (this.id) {
+                if (!this.gender) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+
+            } else {
+                return this.sex;
+            }
+        }
+    };
+
+    model_friend = {
+        users: {},
+
+        init: function() {
+
+        },
+        
+        lookup: function(uid) {
+            dfd = $.Deferred();
+
+            if (typeof(this.users[uid]) === 'undefined') {
+                $.getJSON(util.api_url.user_info, 
+                    { 'uid': uid }, 
+
+                    function(data) {
+                        var bf = new blank_friend();
+                        this.users[uid] = bf;
+
+                        $.each(data, function(p, v) {
+                            this.users[uid][p] = v;
+                        }.bind(this));
+
+                        dfd.resolve();
+                    }.bind(this)
+                );
+            } else {
+                dfd.resolve();
+            }
 
             return dfd.promise();
         }
