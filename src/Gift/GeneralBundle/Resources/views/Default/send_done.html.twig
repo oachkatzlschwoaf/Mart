@@ -12,11 +12,9 @@
         <!-- end .photo-->
 
         <p class="big">Ваш подарок отправлен <span id="done_for"></span>!</p>
-        <p class="grey">Что нужно сделать, чтобы <span id="done_text">он его скорее получил</span>?</p>
+        <p class="grey">Что нужно сделать, чтобы подарок скорее дошел?</p>
         <ul>
-            <li><a class="btn" onclick="cntrl_purchase.postGuestbook()" href="#"><span>Отправьте подарок в гостевую</span></a></li>
-            <li><a class="btn" onclick="cntrl_purchase.sendMessage()" href="#"><span id="done_text2">Напишите ему об этом сообщение!</span></a></li>
-            <li><a class="btn" onclick="cntrl_purchase.postStream()" href="#"><span>Расскажите своим друзьям!</span></a></li>
+            <li><button onclick="cntrl_purchase.sendRequest()" class="button green">Напишите сообщение!</button></li>
         </ul>
 
         <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
@@ -24,7 +22,7 @@
 </div>
 
 <div class="block sending gft_block" id="done_error">
-    <header>Спасибо!</header>
+    <header>Oй!</header>
     <div class="done">
         <div class="photo" style="width:190px; height:190px;">
             <img id="error_ava_for" width="190" height="190" alt=" ">
@@ -32,12 +30,52 @@
         </div>
         <!-- end .photo-->
         <p class="big">Упс! Кажется, вам не хватает <span id="error_text"></span>!</p>
-        <p class="btn-hold"><a href="#balance_window" class="btn increase_balance"><span>Пополните баланс!</span></a></p>
+        <p class="btn-hold"><button href="#balance_window" class="button green increase_balance">Пополните баланс!</button></p>
         <p class="info2 grey">
             За каждого друга, который установит<br>
-            приложение вы получаете <span class="orange">+{{ config.invite_bonus }} монет!</span></p>
-        <p class="btn-hold"><a class="btn" href="#" onclick="cntrl_purchase.inviteFriends()"><span>Пригласить друзей!</span></a></p>
+            приложение вы получаете <b style="color: orange">+{{ config.invite_bonus }} монет!</b></p>
+        <p class="btn-hold"><button class="button orange small" onclick="cntrl_purchase.inviteFriends()">Пригласить друзей!</button></p>
 
         <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
     </div>
 </div>
+
+<div class="block sending gft_block" id="heart_send_ok">
+    <header>Спасибо!</header>
+    <div class="done">
+        <div class="photo" style="width:190px; height:190px;">
+            <img id="heart_done_ava_for" width="190" height="190" alt=" ">
+            <span class="cover"><img width="128" height="128" src="{{ asset("images/heart128.png") }}"></span>
+        </div>
+        <!-- end .photo-->
+
+        <p class="big">Вы подарили сердечко для <span id="heart_done_for"></span>!</p>
+        <p class="grey">Что нужно сделать, чтобы сердечко скорее пришло?</p>
+        <ul>
+            <li><button class="button green" onclick="cntrl_heart.sendMessage()">Напишите в гостевую!</button></li>
+        </ul>
+
+        <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
+    </div>
+</div>
+
+<div class="block sending gft_block" id="heart_send_error">
+    <header>Oй!</header>
+    <div class="done">
+        <div class="photo" style="width:190px; height:190px;">
+            <img id="heart_error_ava_for" width="190" height="190" alt=" ">
+            <span class="cover"><img width="128" height="128" src="{{ asset("images/heart-broken.png") }}"></span>
+        </div>
+        <!-- end .photo-->
+        <p class="big">Вы уже отправили бесплатное сердечко сегодня! <br />Чтобы отправить еще сердечко не хватает <span id="heart_error_text"></span>!</p>
+        <p class="btn-hold"><button href="#balance_window" class="button green increase_balance">Пополните баланс!</button></p>
+        <p class="info2 grey">
+            За каждого друга, который установит<br>
+            приложение вы получаете <b style="color: orange">+{{ config.invite_bonus }} монет!</b></p>
+        <p class="btn-hold"><button class="button orange small" onclick="cntrl_purchase.inviteFriends()">Пригласить друзей!</button></p>
+
+        <a class="back" onclick="cntrl_index.show()" href="#">Вернуться к мои подаркам</a> 
+    </div>
+</div>
+
+

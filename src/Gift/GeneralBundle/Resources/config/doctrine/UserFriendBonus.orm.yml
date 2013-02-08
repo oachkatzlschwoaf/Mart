@@ -1,6 +1,11 @@
 Gift\GeneralBundle\Entity\UserFriendBonus:
     type: entity
     table: null
+    indexes:
+        user_id_idx:
+            columns: [user_id]
+        friend_id_idx:
+            columns: [friend_id]
     fields:
         id:
             type: integer

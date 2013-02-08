@@ -652,4 +652,32 @@ class User
             return 0;
         }
     }
+    /**
+     * @var integer
+     */
+    public $hearts;
+
+
+    /**
+     * Set hearts
+     *
+     * @param integer $hearts
+     * @return User
+     */
+    public function setHearts($hearts)
+    {
+        $this->hearts = $hearts;
+    
+        return $this;
+    }
+
+    /**
+     * Get hearts
+     *
+     * @return integer 
+     */
+    public function getHearts()
+    {
+        return $this->hearts;
+    }
 }

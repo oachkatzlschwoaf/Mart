@@ -1,15 +1,6 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
-<script type="text/javascript">
-    _kmq.push(['identify', '{{ user.email }}']);
-    _kmq.push(['set', {'gender': '{{ sex }}'}]);
-    _kmq.push(['set', {'age_interval': '{{ age_interval }}'}]);
-    _kmq.push(['set', {'country': '{{ user.getCountryName() }}'}]);
-    _kmq.push(['set', {'region': '{{ user.getRegionName() }}'}]);
-    _kmq.push(['set', {'city': '{{ user.getCityName() }}'}]);
-</script>
-
 {% include 'GiftGeneralBundle:Default:windows.html.twig' %}
 
 <div class="left_nav">
@@ -20,8 +11,6 @@
     <div id="right_loader" class="loader gft_loader" style="display: none"></div>
 
     <div id="page_index" class="gft_page" style="display: none">
-        {% include 'GiftGeneralBundle:Default:my_gifts.html.twig' %}
-        {% include 'GiftGeneralBundle:Default:holidays.html.twig' %}
         {% include 'GiftGeneralBundle:Default:gifts_catalog.html.twig' %}
     </div>
 
@@ -66,6 +55,10 @@
     util.api_url.balance        = "{{ path("apiGetBalance", {'sk': sk}) }}";
     util.api_url.holidays       = "{{ path("apiGetHolidays", {'sk': sk}) }}";
     util.api_url.user_info      = "{{ path("apiGetUserInfo") }}";
+    util.api_url.send_heart     = "{{ path("apiSendHeart", {'sk': sk }) }}";
+    util.api_url.friends_hearts_top = "{{ path("apiGetTopFriendsHearts", {'sk': sk }) }}";
+    util.api_url.get_hearts     = "{{ path("apiGetHearts") }}";
+    util.api_url.hearts_top     = "{{ path("apiGetTopHearts", {'sk': sk }) }}";
 
     // Paths & Hosts
     // ---------------------------------------
@@ -107,6 +100,7 @@
     util.user_box           = "{{ user.box }}";
     util.is_install         = {{ is_install }};
     util.ref                = "{{ ref }}";
+    util.user_hearts        = {{ hearts_count }};
 
     // Sliders config
     // ---------------------------------------
@@ -144,13 +138,11 @@
         'overlayColor': '#fff'
     });
 
-    // Events
+    // Hearts 
     // ---------------------------------------
-    {% if is_install %}
-        _kmq.push(['record', 'install', {
-            'ref': util.ref, 
-        }]);
-    {% endif %}
+    util.heart_cost = {{ config.heart_cost }};
+    util.heart_interval = {{ config.heart_interval / (60 * 60) }}
+    util.hearts_limit = new Date({{ hearts_limit.y }}, {{ hearts_limit.m - 1 }}, {{ hearts_limit.d }}, {{ hearts_limit.h }}, {{ hearts_limit.i }});
 </script>
 
 {% endblock %}

@@ -85,6 +85,7 @@ function loadModels() {
                 if (Object.size(this.friends_raw) == 0) {
                     $.getJSON(this.api.friends_get, function(data) {
                         var res = {};
+
                         $.each(data, function() {
                             name = htmlEncode(this.first_name + " " + this.last_name);
                             
@@ -247,6 +248,19 @@ function loadModels() {
             } else {
                 dfd.resolve();
             }
+
+            return dfd.promise();
+        },
+
+        getHearts: function(uid) {
+            dfd = $.Deferred();
+
+            $.getJSON(util.api_url.get_hearts, 
+                { 'uid': uid }, 
+                function(data) {
+                    dfd.resolve(data.hearts);
+                }.bind(this)
+            ); 
 
             return dfd.promise();
         }

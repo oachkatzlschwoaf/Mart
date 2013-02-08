@@ -9,9 +9,9 @@ body {
 body {
 	margin:0;
 	padding:0;
-	background:#fff;
 	font:normal 12px/14px Arial, Helvetica, sans-serif;
 	color:#343333;
+    background: #faf7e8;
 }
 
 form,
@@ -121,13 +121,12 @@ p {
 }
 
 .left_nav .avatar_cnt {
-    border: 1px solid #a1c2ed;
+    border: 1px solid #bbad7a;
     padding: 4px 0px 4px 4px;
     margin-bottom: 10px;
 }
 
 .left_nav nav {
-    border-right: 1px solid #d9d9d9;
     padding: 5px 10px 1px 1px;
     margin: 0px 0px 10px 0px;
     font: 12px Arial;
@@ -160,8 +159,8 @@ p {
 .balance {
     line-height: 17px; 
     padding: 12px 0px 2px 0px; 
-    border-top: 1px solid rgb(217, 217, 217); 
-    border-bottom: 1px solid rgb(217, 217, 217);
+    border-top: 1px solid #bbad7a; 
+    border-bottom: 1px solid #bbad7a;
     min-height: 30px;
 }
 
@@ -499,13 +498,13 @@ p {
 
 .block {
 	background:#fff;
-	border:1px solid #ccc;
+	border:1px solid #b2996c;
 	border-radius:3px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
-	box-shadow:2px 2px 4px rgba(0, 0, 0, 0.37);
-	-moz-box-shadow:2px 2px 4px rgba(0, 0, 0, 0.37);
-	-webkit-box-shadow:2px 2px 4px rgba(0, 0, 0, 0.37);
+	box-shadow:2px 2px 4px rgba(243, 197, 111, 0.37);
+	-moz-box-shadow:2px 2px 4px rgba(243, 197, 111, 0.37);
+	-webkit-box-shadow:2px 2px 4px rgba(243, 197, 111, 0.37);
 	behavior: url(js/PIE.htc);
 	zoom:1;
 	position:relative;
@@ -702,7 +701,7 @@ p {
 .slider2 {
 	clear:both;
 	position:relative;
-	padding:0 0 48px 0;
+	padding:0 0 5px 0;
 	margin:0 0 5px 0;
 	zoom:1;
 }
@@ -841,12 +840,42 @@ p {
 	margin:0 25px 0 0;
 }
 
+.people2 .article80 {
+	float:left;
+	width:80px;
+	height:130px;
+	margin:0 10px 0 0;
+}
+
+
 .people2 .photo {
 	width:120px;
 	height:120px;
 	position:relative;
 	overflow:hidden;
 	margin:0 0 5px 0;
+}
+
+.people2 .photo80 {
+	width:80px;
+	height:80px;
+	position:relative;
+	overflow:hidden;
+	margin:0 0 5px 0;
+}
+
+.people2 .subtitle {
+    margin-top: 5px; 
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #620d0f;
+}
+
+.people2 .subtitle .text {
+    display: inline-block;
+    position: relative;
+    top: -5px;
 }
 
 .profile {
@@ -1466,4 +1495,65 @@ p {
     text-align: center;
     min-height: 14px;
     overflow: hidden;
+}
+
+.big_title {
+	font:italic 26px/30px Georgia, "Times New Roman", Times, serif;
+    text-align: center;
+}
+
+.ava_heart_count {
+    position: absolute;
+    top: 150px;
+    left: 140px;
+	background:url(../images/heart.png) no-repeat 0 0;
+    width: 64px;
+    height: 64px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 25px;
+    padding-top: 25px;
+}
+
+.heart_block {
+    height: 200px;
+	background:url(../images/heart_back.jpg) no-repeat 0 0;
+    margin-bottom: 10px;
+}
+
+.heart_block h1 {
+	font:italic 30px Georgia, "Times New Roman", Times, serif;
+    text-align: center;
+    font-weight: bold;
+    color: #620d0f;
+    margin: 0px 0px 10px 0px;
+}
+
+.heart_block p {
+    font-size: 14px;
+    text-align: center;
+}
+
+.heart_wings {
+    position: relative;
+    margin-top: -50px;
+    margin-left: 260px;
+    height: 130px;
+    width: 200px;
+	background:url(../images/heart_wings.png) no-repeat 0 0;
+    overflow: hidden;
+}
+
+.attention_block {
+    background: #f8f7c2;
+    margin-bottom: 10px;
+}
+
+.ava_heart {
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+	background:url(../images/heart_small.png) no-repeat 0 0;
+    margin-right: 7px;
 }

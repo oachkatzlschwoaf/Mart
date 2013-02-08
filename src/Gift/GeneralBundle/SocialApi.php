@@ -133,6 +133,12 @@ class SocialApi {
         }
     }
 
+    public function getMultiUserInfo($uid) {
+        $data = $this->requestSecure('users.getInfo', array('uids' => $uid)); 
+
+        return $data;
+    }
+
     public function getUserFriendsBySk($sk) {
         $data = $this->requestSecure('friends.get', array('session_key' => $sk, "ext" => 1)); 
 

@@ -1,0 +1,18 @@
+Gift\GeneralBundle\Entity\UserHeartCount:
+    type: entity
+    table: null
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        uid:
+            type: string
+            length: 255
+        count:
+            type: integer
+    uniqueConstraints:
+        uid_idx:
+            columns: uid 
+    lifecycleCallbacks: {  }

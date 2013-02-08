@@ -11,6 +11,8 @@ var view_done        = {};
 var view_friends     = {};
 var view_friend      = {};
 var view_holidays    = {};
+var view_friends_hearts_top = {};
+var view_hearts_top  = {};
 
 // Functions
 
@@ -57,6 +59,14 @@ function loadViews() {
                 this.showMoneyThanks();
             }.bind(this));
 
+            ev.emitter.on('index.pleaseHearts', function (e, input) { 
+                this.pleaseHearts();
+            }.bind(this));
+
+            ev.emitter.on('hearts_limit.check', function (e, input) { 
+                this.checkHeartsLimit();
+            }.bind(this));
+
             // API Listener
             mailru.events.listen(mailru.app.events.paymentDialogStatus, function(event) {
                 this.ev.emitter.trigger('user_balance.update_force');
@@ -67,6 +77,7 @@ function loadViews() {
 
                 if (event.status == 'closed') {
                     this.ev.emitter.trigger('purchase.try_again');
+                    this.ev.emitter.trigger('heart.try_again');
                 }
             }.bind(this));
 
@@ -82,28 +93,24 @@ function loadViews() {
             mailru.events.listen(mailru.common.events.guestbookPublish, function(event) {
                 if (event.status == 'publishSuccess') {
                     // stat
-                    _kmq.push(['record', 'api publish guestbook']);
                 }
             });
 
             mailru.events.listen(mailru.common.events.message.send, function(event) {
                 if (event.status == 'publishSuccess') {
                     // stat
-                    _kmq.push(['record', 'api send message']);
                 }
             });
 
             mailru.events.listen(mailru.common.events.message.send, function(event) {
                 if (event.status == 'publishSuccess') {
                     // stat
-                    _kmq.push(['record', 'api send message']);
                 }
             });
 
             mailru.events.listen(mailru.common.events.streamPublish, function(event) {
                 if (event.status == 'publishSuccess') {
                     // stat
-                    _kmq.push(['record', 'api publish stream']);
                 }
             });
 
@@ -113,6 +120,44 @@ function loadViews() {
                         cntrl_friend.show(v);
                     }
                 });
+            });
+        },
+
+        checkHeartsLimit: function() {
+            var now = new Date();
+            var interval = now - util.hearts_limit;
+
+            if (interval < 0) {
+                interval = Math.abs(Math.round(interval / 1000));
+                var hours = Math.floor(interval / (60 * 60));
+                var min = Math.round((interval - hours * 60 * 60) / 60);
+
+                this.map.hearts.text_limit_interval.text( 
+                    hours + ' ' + declOfNum(hours, ['час', 'часа', 'часов']) + ' ' +
+                    min + ' ' + declOfNum(min, ['минуту', 'минуты', 'минут'])
+                );
+
+                this.map.hearts.send_button.text('Отправить сердечко за ' + util.heart_cost + ' монет');
+
+                this.map.hearts.text_ok.hide();
+                this.map.hearts.text_limit.show();
+
+            } else {
+                this.map.hearts.send_button.text('Отправить сердечко!');
+                this.map.hearts.text_ok.show();
+                this.map.hearts.text_limit.hide();
+
+            }
+        },
+
+        pleaseHearts: function() {
+            mailru.common.stream.post({
+                'title': 'Ребята, пришлите мне сердечек!',
+                'text': 'Подарите мне сердечек, чтобы победить! Это бесплатно! И всех с праздниками!',
+                'img_url': util.abs_path + "/images/heart.png",
+                'action_links': [
+                    {'text': 'Посмотреть' },
+                ]
             });
         },
 
@@ -148,6 +193,10 @@ function loadViews() {
 
         showAvatar: function(ava) {
             this.map.main_avatar.attr('src', ava);
+        },
+
+        updateHearts: function(count) {
+            this.map.hearts.count.html(count);
         },
 
         showWelcome: function() {
@@ -239,9 +288,6 @@ function loadViews() {
 
             $.each(list, function(i, e) {
                 var path = util.thumbs_path+'/'+e.gift_id+'.png';
-                if (e.is_open == '0' || e.is_open == false) {
-                    path = util.covers_path+'/'+e.cover_id+'.png';
-                }
 
                 user_name = e.user_name;
                 if (e.incognito) {
@@ -373,6 +419,77 @@ function loadViews() {
         }
     };
 
+    // Friends Hearts Top 
+    // ======================================================
+    view_friends_hearts_top = {
+        init: function(ev, map) {
+            this.ev  = ev;
+            this.map = map; 
+
+            // Listener 
+            ev.emitter.on('friends_hearts_top.show', function (e, input) { 
+                this.show(input);
+            }.bind(this));
+
+            ev.emitter.on('friends_hearts_top.hide', function (e, input) { 
+                this.hide();
+            }.bind(this));
+        },
+
+        show: function(data) {
+            if (Object.size(data) > 0) {
+                this.map.friends_hearts_top.list.html('');
+
+                $.each(data, function(id, el) {
+                    e = el.user;
+                    this.map.friends_hearts_top.list.append("<article class='article80'><div class='photo80'><a href='#' onclick='cntrl_friend.show(\""+e.uid+"\")'><img src='"+e.pic_128+"' width='80' height='80' alt=' '></a></div><div class='subtitle'><span class='ava_heart'></span><span class='text'>"+el.count+"</span></article></div>");
+                }.bind(this));
+
+                this.map.friends_hearts_top.block.show();
+            }
+        },
+
+        hide: function() {
+            this.map.friends_hearts_top.block.hide();
+        },
+    };
+
+    // Hearts Top 
+    // ======================================================
+    view_hearts_top = {
+        init: function(ev, map) {
+            this.ev  = ev;
+            this.map = map; 
+
+            // Listener 
+            ev.emitter.on('hearts_top.show', function (e, input) { 
+                this.show(input);
+            }.bind(this));
+
+            ev.emitter.on('hearts_top.hide', function (e, input) { 
+                this.hide();
+            }.bind(this));
+        },
+
+        show: function(data) {
+            if (Object.size(data) > 0) {
+                this.map.hearts_top.list.html('');
+
+                $.each(data, function(id, el) {
+                    e = el.user;
+
+                    this.map.hearts_top.list.append("<article class='article80'><div class='photo80'><a href='#' onclick='cntrl_friend.show(\""+e.uid+"\")'><img src='"+e.pic_128+"' width='80' height='80' alt=' '></a></div><div class='subtitle'><span class='ava_heart'></span><span class='text'>"+el.count+"</span></article></div>");
+                }.bind(this));
+
+                this.map.hearts_top.block.show();
+            }
+        },
+
+        hide: function() {
+            this.map.hearts_top.block.hide();
+        },
+    };
+
     // Gifts Catalog 
     // ======================================================
     view_gifts_cat = {
@@ -383,6 +500,22 @@ function loadViews() {
             // Listener
             ev.emitter.on('block_gifts_cat.show', function (e, input) { 
                 this.show();
+            }.bind(this));
+
+            ev.emitter.on('attention_top.show', function (e, input) { 
+                this.showAttentionTop();
+            }.bind(this));
+
+            ev.emitter.on('attention_top.hide', function (e, input) { 
+                this.hideAttentionTop();
+            }.bind(this));
+
+            ev.emitter.on('hearts_promo.show', function (e, input) { 
+                this.showHeartsPromo();
+            }.bind(this));
+
+            ev.emitter.on('hearts_promo.hide', function (e, input) { 
+                this.hideHeartsPromo();
             }.bind(this));
 
             ev.emitter.on('gift_cat.set_category', function (e, input) { 
@@ -396,6 +529,22 @@ function loadViews() {
 
         show: function() {
             this.map.gifts_cat_block.show(); 
+        },
+
+        showAttentionTop: function() {
+            this.map.attention_top.block.show(); 
+        },
+
+        hideAttentionTop: function() {
+            this.map.attention_top.block.hide(); 
+        },
+
+        showHeartsPromo: function() {
+            this.map.hearts.block.show(); 
+        },
+
+        hideHeartsPromo: function() {
+            this.map.hearts.block.hide(); 
         },
 
         fill: function(list, len) {
@@ -453,11 +602,17 @@ function loadViews() {
             this.map.friends_sel.friends_block.show();
         },
 
-        fill: function(list, len) {
+        fill: function(list, len, params) {
             this.map.friends_sel.friends.html('');
 
             $.each(list, function(i, e) {
-                this.map.friends_sel.friends.append("<article><div class='photo'><a href='#' onclick='cntrl_purchase.setFriend(\""+e.uid+"\")'><img src='"+e.pic_128+"' width='120' height='120' alt=' '></a></div>"+e.name+"</article>");
+                var action = "cntrl_purchase.setFriend(\""+e.uid+"\")";
+
+                if (typeof(params) != 'undefined' && params.content == 'hearts') {
+                    action = "cntrl_heart.setFriend(\""+e.uid+"\")";
+                }
+
+                this.map.friends_sel.friends.append("<article><div class='photo'><a href='#' onclick='"+action+"'><img src='"+e.pic_128+"' width='120' height='120' alt=' '></a></div>"+e.name+"</article>");
             }.bind(this));
 
             if (len <= util.show_friends) {
@@ -551,6 +706,14 @@ function loadViews() {
                this.showError(input);
             }.bind(this));
 
+            ev.emitter.on('send_heart_done_block.show', function (e, input) { 
+               this.showHeartDone(input);
+            }.bind(this));
+
+            ev.emitter.on('send_heart_error_block.show', function (e, input) { 
+               this.showHeartError(input);
+            }.bind(this));
+
             ev.emitter.on('send_done_block.load.start', function (e, input) { 
                this.startLoading();
             }.bind(this));
@@ -574,11 +737,30 @@ function loadViews() {
             ev.emitter.on('send_done_block.friends.invite', function (e, input) { 
                this.inviteFriends(input);
             }.bind(this));
+
+            ev.emitter.on('send_done_block.request.send', function (e, input) { 
+               this.request(input);
+            }.bind(this));
+
+            // Hearts
+            ev.emitter.on('send_done_block.guestbook.postHeart', function (e, input) { 
+               this.postGuestbookHeart(input);
+            }.bind(this));
+
+            ev.emitter.on('send_done_block.request.sendHeart', function (e, input) { 
+               this.requestHeart(input);
+            }.bind(this));
+
+            ev.emitter.on('send_done_block.message.sendHeart', function (e, input) { 
+               this.sendMessageHeart(input);
+            }.bind(this));
         },
 
         startLoading: function() {
             this.map.done.block.ok.hide();
             this.map.done.block.error.hide();
+            this.map.done.block.ok_heart.hide();
+            this.map.done.block.error_heart.hide();
             this.map.done.loader.show();
         },
 
@@ -605,23 +787,58 @@ function loadViews() {
             this.map.done.ok.for.text(p.friend.getName()); 
             this.map.done.ok.gift.attr('src', util.thumbs_path+"/"+gift.id+".png");
 
-            if (p.friend.getSex() == 1) {
-                this.map.done.ok.text.text('она его скорее получила');
-                this.map.done.ok.text2.text('Напишите ей об этом сообщение!');
-            } else {
-                this.map.done.ok.text.text('он его скорее получил');
-                this.map.done.ok.text2.text('Напишите ему об этом сообщение!');
-            }
-
             this.map.done.block.ok.show();
+        },
+
+        showHeartError: function(p) {
+            d = new Date();
+
+            this.map.done.heart_error.ava.attr('src', p.friend.getAvatar(190)+"?"+d.getTime()); 
+            this.map.done.heart_error.text.text(p.need + ' ' + declOfNum(p.need, ['монета', 'монеты', 'монет']));
+
+            this.map.done.block.error_heart.show();
+        },
+
+        showHeartDone: function(p) {
+            d = new Date();
+
+            this.map.done.heart_ok.ava.attr('src', p.friend.getAvatar(190)+"?"+d.getTime()); 
+            this.map.done.heart_ok.for.text(p.friend.getName()); 
+
+            this.map.done.block.ok_heart.show();
+        },
+
+        postGuestbookHeart: function(p) {
+            mailru.common.guestbook.post({
+               'uid': p.friend.uid,
+               'title': 'Сердечко для тебя!', 
+               'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
+               'img_url': util.abs_path + "images/heart.png"
+            }); 
+        },
+
+        request: function(p) {
+            mailru.app.friends.request({
+               'friends': [ p.purchase.friend_selected ],
+               'text': 'Отправляю тебе валентинку! И жду твою в ответ ;-)',
+               'image_url': util.abs_path + "/" + util.images_path+"/"+p.purchase.gift_selected+".png"
+            }); 
+        },
+
+        requestHeart: function(p) {
+            mailru.app.friends.request({
+               'friends': [ p.friend.uid ],
+               'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
+               'image_url': util.abs_path + "images/heart.png"
+            }); 
         },
 
         postGuestbook: function(p) {
             mailru.common.guestbook.post({
                'uid': p.purchase.friend_selected,
-               'title': 'У меня для тебя подарок', 
+               'title': 'У меня для тебя валентинка!', 
                'text': 'Тебе подарок! Посмотри скорее! '+p.purchase.text,
-               'img_url': util.abs_path + util.images_path+"/"+p.purchase.gift_selected+".png"
+               'img_url': util.abs_path + "/" + util.images_path+"/"+p.purchase.gift_selected+".png"
             }); 
         },
 
@@ -631,6 +848,14 @@ function loadViews() {
                 'text': 'Тебе подарок! Посмотри скорее! '+p.purchase.text
             });
         },
+
+        sendMessageHeart: function(p) {
+            mailru.common.messages.send({
+                'uid': p.friend.uid,
+                'text': 'Отправляю тебе сердечко! Поддержи меня и пришли мне тоже :-) Это бесплатно!'
+            });
+        },
+
 
         postStream: function(p) {
             mailru.common.stream.post({
@@ -736,9 +961,6 @@ function loadViews() {
                 }
 
                 var path = util.thumbs_path+'/'+e.gift_id+'.png';
-                if (!e.is_open) {
-                    path = util.covers_path+'/'+e.cover_id+'.png';
-                }
 
                 this.map.friend.gifts_list.append( "<article><img src='"+path+"' width='90' height='90' alt=''><div class='descr'><img src='"+path+" 'width='90' height='90' alt=''>"+user_name+"<div class='grey'>"+e.created_date+"</div></div></article>" );
             }.bind(this));
@@ -826,6 +1048,8 @@ function mapElementsViews() {
     elms_map.done.block = {};
     elms_map.done.block.ok = $("#done_ok"); // done block 
     elms_map.done.block.error = $("#done_error"); // error block
+    elms_map.done.block.ok_heart = $("#heart_send_ok"); // done heart block 
+    elms_map.done.block.error_heart = $("#heart_send_error"); // error heart block
 
     elms_map.done.ok = {};
     elms_map.done.ok.ava = $("#done_ava_for"); // avatar
@@ -839,6 +1063,14 @@ function mapElementsViews() {
     elms_map.done.error.gift = $("#error_gift"); // gift
     elms_map.done.error.for = $("#error_for"); // for
     elms_map.done.error.text = $("#error_text"); // text 
+
+    elms_map.done.heart_ok = {};
+    elms_map.done.heart_ok.ava = $("#heart_done_ava_for"); // avatar
+    elms_map.done.heart_ok.for = $("#heart_done_for"); // for
+
+    elms_map.done.heart_error = {};
+    elms_map.done.heart_error.ava = $("#heart_error_ava_for"); // avatar
+    elms_map.done.heart_error.text = $("#heart_error_text"); // text 
 
     // Friends
     elms_map.friends = {};
@@ -872,6 +1104,28 @@ function mapElementsViews() {
     elms_map.holidays.date_bdays = 'date_bdays_'; // bdays in date element prefix 
     elms_map.holidays.date_bdays_list = 'date_bdays_list_'; // bdays list in date element prefix 
 
+    // Attention
+    elms_map.attention_top = {};
+    elms_map.attention_top.block = $('#attention_heart_top'); // block
+
+    // Hearts 
+    elms_map.hearts = {};
+    elms_map.hearts.block = $('#heart_promo'); // block
+    elms_map.hearts.text_ok = $('#hearts_text_ok'); // text without limit 
+    elms_map.hearts.text_limit = $('#hearts_text_limit'); // text with limit 
+    elms_map.hearts.text_limit_interval = $('#hearts_limit_interval'); // time limit 
+    elms_map.hearts.send_button = $('#send_hearts_button'); // button 
+    elms_map.hearts.count = $('#main_heart_count'); // counter
+
+    // Friends Hearts Top
+    elms_map.friends_hearts_top = {};
+    elms_map.friends_hearts_top.block = $('#friends_hearts_top'); // block
+    elms_map.friends_hearts_top.list = $('#friends_top_list'); // list 
+
+    // Hearts Top
+    elms_map.hearts_top = {};
+    elms_map.hearts_top.block = $('#hearts_top'); // block
+    elms_map.hearts_top.list = $('#hearts_top_list'); // list 
 }
 
 function initViews() {
@@ -926,6 +1180,16 @@ function initViews() {
     );
 
     view_holidays.init(
+        events,
+        elms_map
+    );
+
+    view_friends_hearts_top.init(
+        events,
+        elms_map
+    );
+
+    view_hearts_top.init(
         events,
         elms_map
     );

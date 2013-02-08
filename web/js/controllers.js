@@ -6,6 +6,7 @@ var cntrl_desc        = {};
 var cntrl_covers      = {};
 var cntrl_friends     = {};
 var cntrl_friend      = {};
+var cntrl_heart       = {};
 
 // Functions
 function loadControllers() {
@@ -63,11 +64,14 @@ function loadControllers() {
 
             // clean
             cntrl_purchase.purge();
+            cntrl_heart.purge();
 
             // show avatar
             this.v_global.showAvatar(
                 this.mdl_user.getAvatar(180)
             );
+
+            this.v_global.updateHearts(util.user_hearts);  
 
             // set menu
             this.ev.emitter.trigger('menu.select', 'index');
@@ -78,33 +82,60 @@ function loadControllers() {
             // show "My gifts" block
             this.scrollMyGifts().done(function() {
                 
-                // show holidays
-                this.showHolidays().done(function() {
+                // show friends top
+                this.showFriendsHeartsTop().done(function() {
 
-                    // show catalog
-                    this.setCatalogCategory(util.default_gift_cat).done(function() {
-                        this.ev.emitter.trigger('block_gifts_cat.show');
-                        this.ev.emitter.trigger('loading.finish');
-                        this.ev.emitter.trigger('page.show', 'index');
+                    // show global top
+                    this.showHeartsTop().done(function() {
 
-                        // show welcome
-                        if (util.is_install > 0) {
-                            this.ev.emitter.trigger('welcome.show');
-                        }
+                        // show catalog
+                        this.setCatalogCategory(util.default_gift_cat).done(function() {
+                            this.ev.emitter.trigger('block_gifts_cat.show');
+                            this.ev.emitter.trigger('attention_top.show');
+                            this.ev.emitter.trigger('hearts_promo.show');
 
-                        // preload friends
-                        this.mdl_user.getFriends().done(function(input) {
+                            this.ev.emitter.trigger('hearts_limit.check');
+
+                            this.ev.emitter.trigger('loading.finish');
+                            this.ev.emitter.trigger('page.show', 'index');
+
+                            // preload friends
+                            this.mdl_user.getFriends().done(function(input) {
+                            }.bind(this));
                         }.bind(this));
+
                     }.bind(this));
 
                 }.bind(this));
 
             }.bind(this));
 
-            // stat
-            _kmq.push(['record', 'view index', {
-                'ref': util.ref, 
-            }]);
+        },
+
+        showFriendsHeartsTop: function() {
+            dfd = $.Deferred();
+
+            this.ev.emitter.trigger('friends_hearts_top.hide');
+
+            $.getJSON(util.api_url.friends_hearts_top, function(data) {
+                this.ev.emitter.trigger('friends_hearts_top.show', data);
+                dfd.resolve();
+            }.bind(this));
+
+            return dfd.promise();
+        },
+
+        showHeartsTop: function() {
+            dfd = $.Deferred();
+
+            this.ev.emitter.trigger('hearts_top.hide');
+
+            $.getJSON(util.api_url.hearts_top, function(data) {
+                this.ev.emitter.trigger('hearts_top.show', data);
+                dfd.resolve();
+            }.bind(this));
+
+            return dfd.promise();
         },
 
         showHolidays: function() {
@@ -125,6 +156,10 @@ function loadControllers() {
         showGiftsCatalog: function() {
             this.ev.emitter.trigger('block_mygifts.hide');
             this.ev.emitter.trigger('holidays.hide');
+            this.ev.emitter.trigger('attention_top.hide');
+            this.ev.emitter.trigger('hearts_promo.hide');
+            this.ev.emitter.trigger('friends_hearts_top.hide');
+            this.ev.emitter.trigger('hearts_top.hide');
 
             // loading 
             this.ev.emitter.trigger('pages.hide');
@@ -194,7 +229,6 @@ function loadControllers() {
                     function(data) { 
                         if (data.first_time) {
                             // stat
-                            _kmq.push(['record', 'open new gift']);
                         }
                     },
                     "json"
@@ -267,6 +301,110 @@ function loadControllers() {
             }.bind(this));
 
             return dfd.promise();
+        },
+
+        // API Call
+        pleaseHearts: function() {
+            this.ev.emitter.trigger('index.pleaseHearts');
+        },
+
+    };
+
+    // Heart 
+    // ======================================================
+    cntrl_heart = {
+        init: function(ev, mdl_user, mdl_friend) {
+            this.ev = ev;
+            this.mdl_user = mdl_user;
+            this.mdl_friend = mdl_friend;
+
+            // Listener 
+            ev.emitter.on('heart.process', function (e, input) { 
+                this.process();
+            }.bind(this));
+
+            ev.emitter.on('heart.try_again', function (e, input) { 
+                if (this.error_money == 1) {
+                    this.process();
+                }
+            }.bind(this));
+        },
+
+        purge: function() {
+            delete this.friend_id;
+            delete this.error_money;
+        },
+
+        set: function() {
+            this.ev.emitter.trigger('friends_selector.show', { 'content': 'hearts' });
+        },
+
+        setFriend: function(friend_id) {
+            this.ev.emitter.trigger('pages.hide');
+            this.ev.emitter.trigger('loading.start');
+
+            this.friend_id = friend_id;       
+            this.mdl_friend.lookup(this.friend_id).done(function() {
+                this.ev.emitter.trigger('loading.finish');
+                this.ev.emitter.trigger('heart.process');
+            }.bind(this));
+
+        },
+
+        process: function() {
+            // loading 
+            this.ev.emitter.trigger('pages.hide');
+            this.ev.emitter.trigger('send_done_block.load.start');
+            this.ev.emitter.trigger('page.show', 'done');
+
+            // process
+            $.post(util.api_url.send_heart, {
+                    receiver: this.friend_id 
+                },
+
+                function(data) {
+                    this.ev.emitter.trigger('send_done_block.load.finish');
+                    friend = this.mdl_friend.users[ this.friend_id ];
+
+                    if (data.done == 'heart_sended') {
+                        this.ev.emitter.trigger('send_heart_done_block.show', {
+                            friend: friend
+                        });
+
+                        this.mdl_user.balance = data.balance;
+
+                        this.ev.emitter.trigger('user_balance.update', data.balance);
+
+                        // API Call
+                        this.ev.emitter.trigger('send_done_block.request.sendHeart', { 'friend': friend });
+
+                        if (data.free == 1) {
+                            util.hearts_limit = new Date();
+                            util.hearts_limit.setHours( util.hearts_limit.getHours() + util.heart_interval );
+                        }
+
+                        delete this.error_money;
+
+                    } else if (data.balance_error == 'need more money') {
+                        this.error_money = 1;
+                        this.ev.emitter.trigger('send_heart_error_block.show', {
+                            friend: friend,
+                            need: data.need
+                        });
+                    } 
+                }.bind(this),
+                "json"
+            );
+        },
+
+        sendMessage: function() {
+            friend = this.mdl_friend.users[ this.friend_id ];
+            this.ev.emitter.trigger('send_done_block.message.sendHeart', { 'friend': friend });
+        },
+
+        postGuestbook: function() {
+            friend = this.mdl_friend.users[ this.friend_id ];
+            this.ev.emitter.trigger('send_done_block.guestbook.postHeart', { 'friend': friend });
         }
     };
 
@@ -303,9 +441,6 @@ function loadControllers() {
 
         setGift: function(gift_id) {
             this.gift_selected = gift_id;  
-
-            // stat
-            _kmq.push(['record', 'set gift']);
 
             if (typeof this.friend_selected != 'undefined') {
                 gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
@@ -350,9 +485,6 @@ function loadControllers() {
             // get friend id
             this._set_friend(friend_id, type).done(function() {
                 if (this.friend_selected) {
-                    // stat
-                    _kmq.push(['record', 'set friend']);
-
                     // friend init and get info about them
                     this.mdl_friend.lookup(this.friend_selected).done(function() {
                         this.ev.emitter.trigger('loading.finish');
@@ -378,17 +510,12 @@ function loadControllers() {
             this.incognito = p.incognito;
             this.privacy   = p.privacy
 
-            // stat
-            _kmq.push(['record', 'set description']);
-
-            this.ev.emitter.trigger('covers.show');
+            //this.ev.emitter.trigger('covers.show');
+            this.process();
         },
 
         setCover: function(id) {
             this.cover = id;  
-
-            // stat
-            _kmq.push(['record', 'set cover']);
 
             this.process();
         },
@@ -401,25 +528,17 @@ function loadControllers() {
 
             this.ev.emitter.trigger('page.show', 'done');
 
-            // stat
-            _kmq.push(['record', 'process purchase', { 
-                'gift':      this.gift_selected,
-                'privacy':   this.privacy,
-                'incognito': this.incognito,
-                'cover':     this.cover,
-            }]);
-
             // process
             $.post(util.api_url.purchase, {
                     gift:      this.gift_selected,
                     receiver:  this.friend_selected,
                     text:      this.text,
                     privacy:   this.privacy,
-                    incognito: this.incognito,
-                    cover:     this.cover
+                    incognito: this.incognito
                 },
 
                 function(data) {
+
                     this.ev.emitter.trigger('send_done_block.load.finish');
                     gift = this.mdl_gifts_cat.gifts_all[ this.gift_selected ];
                     friend = this.mdl_friend.users[ this.friend_selected ];
@@ -434,11 +553,10 @@ function loadControllers() {
 
                         this.ev.emitter.trigger('user_balance.update', data.balance);
 
-                        delete this.error_money;
+                        // API Call
+                        this.ev.emitter.trigger('send_done_block.guestbook.post', { purchase: this });
 
-                        // stat
-                        _kmq.push(['record', 'finish purchase', { 'result': 'done' }]);
-                        _kmq.push(['record', 'send gift']);
+                        delete this.error_money;
 
                     } else if (data.balance_error == 'need more money') {
                         this.error_money = 1;
@@ -449,8 +567,6 @@ function loadControllers() {
                             need: data.need
                         });
 
-                        // stat
-                        _kmq.push(['record', 'finish purchase', { 'result': 'need_money' }]);
                     }
                 }.bind(this),
                 "json"
@@ -466,6 +582,12 @@ function loadControllers() {
         sendMessage: function() {
             this.ev.emitter.trigger('send_done_block.message.send', {
                 purchase: this
+            });
+        },
+
+        sendRequest: function() {
+            this.ev.emitter.trigger('send_done_block.request.send', { 
+                purchase: this 
             });
         },
 
@@ -501,7 +623,7 @@ function loadControllers() {
 
             // Listener 
             ev.emitter.on('friends_selector.show', function (e, input) { 
-                this.show();
+                this.show(input);
             }.bind(this));
 
             ev.emitter.on('friend.search', function (e, input) { 
@@ -516,7 +638,7 @@ function loadControllers() {
             }.bind(this));
         },
 
-        show: function() {
+        show: function(params) {
             // loading 
             this.ev.emitter.trigger('pages.hide');
             this.ev.emitter.trigger('loading.start');
@@ -524,20 +646,25 @@ function loadControllers() {
             // show friends selector
             this.mdl_user.clearActualFriends();
 
+            // keep options
+            this.options = params; 
+
             this.scrollFriends('').done(function() {
                 this.ev.emitter.trigger('loading.finish');
                 this.ev.emitter.trigger('page.show', 'friends_sel');
             }.bind(this));
         },
 
-        scrollFriends: function(direction) {
+        scrollFriends: function(direction, params) {
             dfd = $.Deferred();
+
             this.mdl_user.getFriends().done(function(input) {
                 scroll(
                     this.slide_params, 
                     input, 
                     direction, 
-                    this.v_friends_sel.fill.bind( this.v_friends_sel )
+                    this.v_friends_sel.fill.bind( this.v_friends_sel ),
+                    this.options
                 );
 
                 dfd.resolve();
@@ -629,8 +756,11 @@ function loadControllers() {
                 this.mdl_user.getAvatar(180)
             );
 
+            this.v_global.updateHearts(util.user_hearts);  
+
             // clean
             cntrl_purchase.purge();
+            cntrl_heart.purge();
 
             // loading 
             this.ev.emitter.trigger('pages.hide');
@@ -644,8 +774,6 @@ function loadControllers() {
                 this.ev.emitter.trigger('page.show', 'friends');
             }.bind(this));
 
-            // stat
-            _kmq.push(['record', 'view friends page']);
         },
 
         scrollFriends: function(direction) {
@@ -699,20 +827,22 @@ function loadControllers() {
                     this.mdl_friend.users[uid].getAvatar(180)
                 );
 
-                this.scrollFriendGifts().done(function() {
-                    this.ev.emitter.trigger('friend.block.show', { 
-                        friend: this.mdl_friend.users[uid]
-                    });
+                this.mdl_friend.getHearts(uid).done(function(count) {
+                    this.v_global.updateHearts(count);  
 
-                    this.ev.emitter.trigger('loading.finish');
-                    this.ev.emitter.trigger('page.show', 'friend');
+                    this.scrollFriendGifts().done(function() {
+                        this.ev.emitter.trigger('friend.block.show', { 
+                            friend: this.mdl_friend.users[uid]
+                        });
 
+                        this.ev.emitter.trigger('loading.finish');
+                        this.ev.emitter.trigger('page.show', 'friend');
+
+                    }.bind(this));
                 }.bind(this));
             
             }.bind(this)); 
 
-            // stat
-            _kmq.push(['record', 'view friend page']);
         },
 
         scrollFriendGifts: function(direction) {
@@ -759,6 +889,12 @@ function initControllers() {
         model_gifts_catalog
     );
 
+    cntrl_heart.init(
+        events, 
+        model_user,
+        model_friend
+    );
+
     cntrl_friends_sel.init(
         events, 
         view_friends_sel,
@@ -791,7 +927,7 @@ function initControllers() {
 
 // UTIL
 
-function scroll(vars, list, direction, cb) {
+function scroll(vars, list, direction, cb, params) {
     if (direction == 'forward') {
         vars.pos += vars.count;
 
@@ -809,6 +945,6 @@ function scroll(vars, list, direction, cb) {
 
     show_list = list.slice(vars.pos, vars.pos + vars.count);
 
-    cb(show_list, list.length);
+    cb(show_list, list.length, params);
 }
 

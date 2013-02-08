@@ -17,6 +17,8 @@ use Gift\GeneralBundle\Entity\BillingConfig;
 use Gift\GeneralBundle\Entity\UserFriendBonus;
 use Gift\GeneralBundle\Entity\Notify;
 use Gift\GeneralBundle\Entity\Holiday;
+use Gift\GeneralBundle\Entity\UserHeart;
+use Gift\GeneralBundle\Entity\UserHeartCount;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -24,6 +26,11 @@ use Gift\GeneralBundle\KissMetrics;
 
 class DefaultController extends Controller
 {
+    public function decline($n, $forms) {
+      return $n%10==1&&$n%100!=11?$forms[0]:($n%10>=2&&$n%10<=4&&($n%100<10||$n%100>=20)?$forms[1]:$forms[2]);
+    }
+
+
     public function addFriendInviteBonus($uid, $fid) {
         # Lookup user by uid
         $em = $this->getDoctrine()->getEntityManager();
@@ -86,6 +93,7 @@ class DefaultController extends Controller
             $user = $rep->find($uid);
 
             if (!$user) {
+                $mc->delete("sk_u-$sk");
                 throw new \Exception('User from session not correct');
             }
 
@@ -164,6 +172,21 @@ class DefaultController extends Controller
                     $em->persist($user);
                     $em->flush();
 
+                    // Check if HeartCount exists
+                    $hc = $this->getDoctrine()->getEntityManager()
+                        ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p where p.uid = :uid')
+                        ->setParameter('uid', $uid)
+                        ->getResult();
+                    
+                    if (count($hc) == 0) {
+                        $uh_count = new UserHeartCount; 
+                        $uh_count->setUid( $uid );
+                        $uh_count->setCount( $config['hearts_start_count'] );
+
+                        $em->persist($uh_count);
+                        $em->flush();
+                    }
+
                     $is_install = 1;
 
                     # Check friend invite bonus
@@ -221,6 +244,66 @@ class DefaultController extends Controller
         # Fetch user
         list($user, $is_install) = $this->fetchUser($r, $config);
 
+        # Get hearts count
+        $hc = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p where p.uid = :uid')
+            ->setParameter('uid', $user->getUid())
+            ->getResult();
+        
+        $hearts_count = 0;
+        if (count($hc) > 0) {
+            $hearts_count = $hc[0]->getCount(); 
+        }
+        
+        # Get hearts count for Today
+        $hc_today_cnt = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select count(p) FROM GiftGeneralBundle:UserHeart p where p.created_at > :dt and p.receiver = :uid')
+            ->setParameter('uid', $user->getUid())
+            ->setParameter('dt', $today)
+            ->getSingleScalarResult();
+
+        # Get hearts limit
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:UserHeart');
+
+        $q = $rep->createQueryBuilder('p')
+            ->where('p.user_id = :uid and p.type = :type')
+            ->setParameters(array(
+                'uid' => $user->getId(),
+                'type' => 0 // free
+            ))
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery();
+            
+        $user_hearts = $q->getResult();
+
+        $now = new \DateTime;
+        $now->modify("-1 hour");
+
+        $hearts_limit = array();
+        $hearts_limit['y'] = $now->format('Y');
+        $hearts_limit['m'] = $now->format('n');
+        $hearts_limit['d'] = $now->format('j');
+        $hearts_limit['h'] = $now->format('G');
+        $hearts_limit['i'] = round($now->format('i'));
+
+        if (count($user_hearts) > 0) {
+            $now = new \DateTime;
+            $created = $user_hearts[0]->getCreatedAt();
+            
+            $diff = round($now->format('U')) - round($created->format('U'));
+            if ($diff <= $config['heart_interval']) {
+                $created->modify("+".($config['heart_interval'] / (60 * 60))." hours");
+
+                $hearts_limit['y'] = $created->format('Y');
+                $hearts_limit['m'] = $created->format('n');
+                $hearts_limit['d'] = $created->format('j');
+                $hearts_limit['h'] = $created->format('G');
+                $hearts_limit['i'] = round($created->format('i'));
+            }
+        }
+
         # Get covers 
         $rep = $this->getDoctrine()
             ->getRepository('GiftGeneralBundle:Cover');
@@ -263,6 +346,10 @@ class DefaultController extends Controller
             'is_install'   => $is_install,
             'ref'          => $ref,
             'today'        => $today,
+            'hearts_count' => $hearts_count,
+            'hc_today_cnt' => $hc_today_cnt,
+            'hc_today_wrd' => $this->decline($hc_today_cnt, array('сердечко', 'сердечка', 'сердечек')),
+            'hearts_limit' => $hearts_limit,
         ));
     }
 
@@ -489,7 +576,6 @@ class DefaultController extends Controller
         }
 
         $response = new Response(json_encode($answer));
-        #$response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
@@ -539,6 +625,10 @@ class DefaultController extends Controller
         }
 
         // Check cover
+        // no cover, sorry :-)
+        $cvid = 0;
+
+        /*
         $cvid = $request->get('cover'); 
 
         if (!$cvid) {
@@ -557,6 +647,7 @@ class DefaultController extends Controller
             $response = new Response(json_encode($answer));
             return $response;
         }
+        */
 
         // Check receiver 
         $rid = $request->get('receiver'); 
@@ -603,7 +694,7 @@ class DefaultController extends Controller
             $cost += $config['incognito_cost'];
         }
 
-        $cost += $cover->getCost(); 
+        //$cost += $cover->getCost(); 
 
         // Check balance
         if ($user->getBalance() >= $cost) {
@@ -634,6 +725,11 @@ class DefaultController extends Controller
             $em->persist($ug);
 
             $em->flush();
+
+            // Increase hearts count
+            for ($i = 0; $i < $config['gift_hearts_count']; $i++) {  
+                $this->sendHeart($user, $rid, 1);
+            }
 
             $answer = array('no_app_user' => $no_app_user, 'done' => 'gift sended', 'balance' => $user->getBalance());
 
@@ -1201,5 +1297,268 @@ class DefaultController extends Controller
             return $response;
         }
 
+    }
+
+    public function sendHeartAction(Request $request) {
+        // Check user 
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        // Check receiver 
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $rid = $request->get('receiver'); 
+
+        $q = $rep_user->createQueryBuilder('p')
+            ->where('p.uid = :uid')
+            ->setParameters(array(
+                'uid' => $rid
+            ))
+            ->getQuery();
+
+        $receiver = $q->getResult();
+
+        $no_app_user = 0;
+        if (!$receiver) {
+            $no_app_user = 1;
+        }
+
+        // 1. Check: have user sent gift today?
+        // Get hearts, tha user sent
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:UserHeart');
+
+        $q = $rep->createQueryBuilder('p')
+            ->where('p.user_id = :uid and p.type = :type')
+            ->setParameters(array(
+                'uid' => $user->getId(),
+                'type' => 0 // free
+            ))
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery();
+            
+        $user_hearts = $q->getResult();
+        $config = $this->getConfig();         
+        $free = 1;
+
+        if (count($user_hearts) > 0) {
+            $now = new \DateTime;
+            $created = $user_hearts[0]->getCreatedAt();
+
+            $diff = round($now->format('U')) - round($created->format('U'));
+            if ($diff > $config['heart_interval']) {
+                // OK
+                $this->sendHeart($user, $rid, 0);
+            } else {
+                // 2. Check balance
+                $cost = $config['heart_cost'];
+                if ($user->getBalance() >= $cost) {
+                    // Decrease balance
+                    $user->setBalance( $user->getBalance() - $cost );
+                    $this->sendHeart($user, $rid, 1);
+                    $free = 0;
+                } else {
+                    // Need more money
+                    $answer = array('no_app_user' => $no_app_user, 'balance_error' => 'need more money', 'need' => abs($cost - $user->getBalance()));
+                    $response = new Response(json_encode($answer));
+                    return $response;
+                }
+            }
+        } else {
+            // OK
+            $this->sendHeart($user, $rid, 0);
+        }
+
+        $answer = array( 'done' => 'heart_sended', 'free' => $free, 'no_app_user' => $no_app_user, 'balance' => $user->getBalance() );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    private function sendHeart($user, $rid, $type) {
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $name = $user->getFirstName().' '.$user->getLastName();
+        if (strlen($name) < 3) {
+            $name = $user->getNick();
+        }
+
+        $hc = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p where p.uid = :uid')
+            ->setParameter('uid', $rid)
+            ->getResult();
+        
+        $recv_hc = '';
+        if (count($hc) > 0) {
+            $recv_hc = $hc[0]; 
+            $recv_hc->setCount( $recv_hc->getCount() + 1 );
+        } else {
+            $recv_hc = new UserHeartCount; 
+            $recv_hc->setUid( $rid );
+            $recv_hc->setCount( 1 );
+        }
+
+        $uh = new UserHeart();
+        $uh->setUserId($user->getId());
+        $uh->setUserName($name);
+        $uh->setUserBox($user->getBox());
+        $uh->setUserLogin($user->getLogin());
+        $uh->setType($type);
+        $uh->setReceiver($rid);
+
+        $em->persist($recv_hc);
+        $em->persist($uh);
+
+        $em->flush();
+    }
+
+    public function getFriendsHeartsTopAction(Request $request) {
+        // Check user 
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        // Get friends
+        # Fetch friends  via API
+        $api = $this->get('social_api');
+        $api->setNetwork('mm');
+        $api->setCache($mc);
+        $friends = $api->getUserFriendsBySk( $sk );
+
+        if (count($friends) == 0) {
+            $result = array();
+            $response = new Response(json_encode($result));
+            return $response;
+        }
+
+        $friend_arr = array();
+        $friend_str = '';
+        foreach ($friends as $f) {
+            $name = $f->first_name.' '.$f->last_name;
+            if (strlen($name) < 3) {
+                $name = $f->nick;
+            }
+            $f->name = $name;
+
+            $friend_arr[ $f->uid ] = $f;
+            $friend_str .= "'".$f->uid."', ";
+        }
+
+        $friend_str = substr($friend_str, 0, -2);
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $users = $em->createQuery("select p from GiftGeneralBundle:UserHeartCount p where p.uid in ($friend_str)")
+            ->getResult();
+
+        usort($users, function($a, $b) {
+            return $b->getCount()-$a->getCount(); 
+        }); 
+
+        // Prepare answer
+        $config = $this->getConfig();         
+
+        $i = 0;
+        $result = array();
+        foreach ($users as $u) {
+            $result[ $u->getUid() ]['count'] = $u->getCount();
+            $result[ $u->getUid() ]['user'] = $friend_arr[ $u->getUid() ];
+
+            $i++;
+            if ($i == $config['top_people_count']) {
+                break; 
+            }
+        }
+
+        $response = new Response(json_encode($result));
+        return $response;
+    }
+
+
+    public function getHeartsAction(Request $request) {
+        // Check user 
+        $uid = $request->get('uid');
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $hc = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p where p.uid = :uid')
+            ->setParameter('uid', $uid)
+            ->getResult();
+
+        $hearts = 0;
+        if (count($hc) > 0) {
+            $hearts = $hc[0]->getCount();
+        } 
+
+        $answer = array( 'hearts' => $hearts );
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function getTopHeartsAction(Request $request) {
+        $res = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p order by p.count desc')
+            ->getResult();
+        
+        $friends_uids = array();
+        $uhash = array();
+        foreach ($res as $uh) {
+            $uhash[ $uh->getUid() ] = $uh->getCount();
+            array_push($friends_uids, $uh->getUid());
+        }
+        
+        # Fetch user via API
+        $mc = $this->get('beryllium_cache');
+        $api = $this->get('social_api');
+        $api->setNetwork('mm');
+        $api->setCache($mc);
+        $uinfo = $api->getMultiUserInfo( join(',', $friends_uids) );
+
+
+        // Prepare answer
+        $config = $this->getConfig();         
+
+        $i = 0;
+        $result = array();
+        foreach ($uinfo as $u) {
+            $name = $u->first_name.' '.$u->last_name;
+            if (strlen($name) < 3) {
+                $name = $u->nick;
+            }
+
+            $result[$u->uid]['count'] = $uhash[ $u->uid ];
+            $result[$u->uid]['user'] = $u;
+
+            $i++;
+            if ($i == $config['top_people_count']) {
+                break; 
+            }
+        }
+
+        $response = new Response(json_encode($result));
+        return $response;
     }
 }

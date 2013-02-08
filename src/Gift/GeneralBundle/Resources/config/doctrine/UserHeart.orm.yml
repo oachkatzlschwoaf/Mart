@@ -1,7 +1,6 @@
-Gift\GeneralBundle\Entity\UserGift:
+Gift\GeneralBundle\Entity\UserHeart:
     type: entity
     table: null
-    repositoryClass: Gift\GeneralBundle\Entity\UserGiftRepository
     indexes:
         user_id_idx:
             columns: [user_id]
@@ -27,19 +26,8 @@ Gift\GeneralBundle\Entity\UserGift:
         receiver:
             type: string
             length: 255
-        gift_id:
+        type:
             type: integer
-        privacy:
-            type: integer
-        incognito:
-            type: boolean
-        text:
-            type: string
-            length: 255
-        cover_id:
-            type: integer
-        is_open:
-            type: boolean
         created_at:
             type: datetime
     lifecycleCallbacks: 

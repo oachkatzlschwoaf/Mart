@@ -97,6 +97,8 @@ apiUserFriends:
 apiPurchase:
     pattern: /api/user/{sk}/purchase
     defaults: { _controller: GiftGeneralBundle:Default:purchase }
+    requirements:
+        _method:  POST
 
 apiUserGifts:
     pattern: /api/user/{sk}/gifts
@@ -163,3 +165,21 @@ apiGetHolidays:
 apiGetUserInfo:
     pattern: /api/user
     defaults: { _controller: GiftGeneralBundle:Default:getUserInfo }
+
+apiSendHeart:
+    pattern: /api/user/{sk}/heart/send
+    defaults: { _controller: GiftGeneralBundle:Default:sendHeart }
+    requirements:
+        _method:  POST
+
+apiGetTopFriendsHearts:
+    pattern: /api/user/{sk}/heart/top/friends
+    defaults: { _controller: GiftGeneralBundle:Default:getFriendsHeartsTop }
+
+apiGetHearts:
+    pattern: /api/hearts
+    defaults: { _controller: GiftGeneralBundle:Default:getHearts }
+
+apiGetTopHearts:
+    pattern: /api/hearts/top
+    defaults: { _controller: GiftGeneralBundle:Default:getTopHearts }

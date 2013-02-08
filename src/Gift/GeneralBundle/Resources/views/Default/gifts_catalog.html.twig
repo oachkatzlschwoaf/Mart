@@ -1,19 +1,33 @@
-<div class="block gft_block" id="gifts_catalog">
+<div class="block attention_block" id="attention_heart_top">
+    <img src="{{ asset('images/heart_small.png') }}" style="display: inline-block" />
+    <span style="display: inline-block; margin-top: 5px; font-size: 14px; margin-left: 7px;">
+        Сегодня вы получили: <b style="color: red">{{ hc_today_cnt }} {{ hc_today_wrd }}</b>. Хотите больше сердечек?
+        <button onclick="cntrl_index.pleaseHearts();" class="button rosy small">Попросить друзей сердечки!</button>  
+    </span>
+</div>
 
-    <div class="info grey">Цена: {{ config.gift_price }} монет, Премиум: {{ config.gift_price_premium }} монет</div>
-    <header class="title2">Подарить</header>
+<div id="gifts_my_block" class="gft_block">
+    <header class="title">Мои валентинки</header>
+    <div class="slider">
+        <div class="hold">
+            <section id="gifts_my" class="catalog">
+            </section>
+            <!-- end .catalog--> 
+        </div>
 
-    <ul class="tabs">
-        {% for c in categories %}
-           <li><a href="#" id="category_{{ c.id }}" onclick="cntrl_index.setCatalogCategory('{{ c.id }}'); return false;"><span><span>{{ c.name }}</span></span></a></li>
-        {% endfor %}
-    </ul>
+        <div id="open_navi">
+            <div onclick="cntrl_index.scrollMyGifts('back')" class="prev"></div>
+            <div onclick="cntrl_index.scrollMyGifts('forward')" class="next"></div>
+        </div>
+    </div>
+</div>
 
-    <ul class="tabs">
-        <li style="width: 90px">Сортировать:</li>
-        <li><a href="#" id="sort_popularity" onclick="cntrl_index.setCatalogSort('popularity'); return false;"><span><span>Популярные</span></span></a></li> 
-        <li><a href="#" id="sort_created_at" onclick="cntrl_index.setCatalogSort('created_at'); return false;"><span><span>Новые</span></span></a></li>
-    </ul>
+<div class="block gft_block" id="gifts_catalog" style="margin-bottom: 20px;">
+    <div class="big_title">Покажите как сильно вы любите!<br/>Отправьте валентинку!</div>
+    <div class="info grey" style="text-align: right">
+        Цена валентинки: {{ config.gift_price }} монет
+        <p>Каждая валентинка приносит получателю <b style="color:#620d0f">+{{ config.gift_hearts_count }} сердечек</b></p>
+    </div>
 
     <div id="gifts_block" class="slider2">
 
@@ -21,10 +35,47 @@
 
         <section id="gifts_list" class="catalog">
         </section>
+    </div>
+</div>
 
-        <div id="gifts_catalog_navi">
-            <div class="prev" onclick="cntrl_index.scrollGiftsCat('back')"></div>
-            <div class="next" onclick="cntrl_index.scrollGiftsCat('forward')"></div>
+<div class="block heart_block" id="heart_promo">
+    <div class="heart_wings"></div>
+    <h1>Дари бесплатные сердечки!</h1>
+    <p>
+        <span id="hearts_text_limit"><b>Вы уже отправили бесплатное сердечко!</b> <br /> Подождите <b style="color:#620d0f" id="hearts_limit_interval"></b> или:</span>
+        <span id="hearts_text_ok"><b>Вы можете отправить сердечко бесплатно!</b> Отправляйте бесплатные сердечки каждые <b>{{ config.heart_interval / (60 * 60 ) }} часа</b>! <br /> Дарите любовь чаще!</span>
+        <br />
+
+        <button style="margin: 9px" id="send_hearts_button" onclick="cntrl_heart.set()" class="button red">Отправить сердечко!</button>  
+    </p>
+</div>
+
+
+<div class="block gft_block" id="friends_hearts_top" style="margin-bottom: 20px;">
+    <header class="title">Топ друзей</header>
+    <div class="slider2 people-slider" style="padding: 0px">
+        <div class="hold" style="height: 110px">
+            <ul>
+                <li>
+                    <section id="friends_top_list" class="people2">
+                    </section>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
+
+<div class="block gft_block" id="hearts_top" style="margin-bottom: 20px;">
+    <header class="title">Топ самых любимых</header>
+    <div class="slider2 people-slider" style="padding: 0px">
+        <div class="hold" style="height: 110px">
+            <ul>
+                <li>
+                    <section id="hearts_top_list" class="people2">
+                    </section>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
