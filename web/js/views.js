@@ -821,7 +821,7 @@ function loadViews() {
             mailru.app.friends.request({
                'friends': [ p.purchase.friend_selected ],
                'text': 'Отправляю тебе валентинку! И жду твою в ответ ;-)',
-               'image_url': util.abs_path + "/" + util.images_path+"/"+p.purchase.gift_selected+".png"
+               'image_url': util.abs_path + "../uploads/images/"+p.purchase.gift_selected+".png"
             }); 
         },
 
@@ -838,7 +838,7 @@ function loadViews() {
                'uid': p.purchase.friend_selected,
                'title': 'У меня для тебя валентинка!', 
                'text': 'Тебе подарок! Посмотри скорее! '+p.purchase.text,
-               'img_url': util.abs_path + "/" + util.images_path+"/"+p.purchase.gift_selected+".png"
+               'img_url': util.abs_path + "../uploads/images/"+p.purchase.gift_selected+".png"
             }); 
         },
 
@@ -861,7 +861,7 @@ function loadViews() {
             mailru.common.stream.post({
                 'title': 'Сделал подарок для ' + p.friend.getName(),
                 'text': 'Это тебе! '+p.purchase.text,
-                'img_url': util.abs_path + util.images_path+"/"+p.purchase.gift_selected+".png",
+                'img_url': util.abs_path + "../uploads/images/"+p.purchase.gift_selected+".png",
                 'action_links': [
                     {'text': 'Посмотреть', 'href': 'showFriend=' + p.friend.uid},
                 ]
