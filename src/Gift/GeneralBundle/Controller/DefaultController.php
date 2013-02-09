@@ -22,7 +22,6 @@ use Gift\GeneralBundle\Entity\UserHeartCount;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
-use Gift\GeneralBundle\KissMetrics;
 
 class DefaultController extends Controller
 {
@@ -193,10 +192,6 @@ class DefaultController extends Controller
                     if ($user->getRefType() == 'invitation' && $user->getRefId()) {
                         # Add bonus to inviter
                         if ( $this->addFriendInviteBonus($user->getRefId(), $user->getId()) ) {
-                            // Kiss metrics trac
-                            $km_api = $this->get('kiss_metrics');
-                            $km_api::identify($user->getEmail());
-                            $res = $km_api::record('bonus invite');
                         }
                     }
 
@@ -1016,15 +1011,6 @@ class DefaultController extends Controller
         $em->persist($user);
         $em->persist($t);
         $em->flush();
-
-        // Kiss metrics trac
-        $km_api = $this->get('kiss_metrics');
-        $km_api::identify($user->getEmail());
-        $res = $km_api::record('billed', array(
-            'mailiki'    => $price, 
-            'money'      => ($bc->getMoney() + $bc->getBonus()), 
-            'service_id' => $sid
-        ));
 
         $answer = array( 'status' => 1 );
         $response = new Response(json_encode($answer));
