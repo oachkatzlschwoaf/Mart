@@ -72,3 +72,8 @@ function preloadImages(aoi) {
         $('<img/>')[0].src = this;
     });
 }
+
+$('#send_hearts_button').click(function(){
+    $("html, body").animate({ scrollTop: 0 }, 600);
+    return false;
+});
