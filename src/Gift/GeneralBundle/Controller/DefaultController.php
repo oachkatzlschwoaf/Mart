@@ -1424,6 +1424,8 @@ class DefaultController extends Controller
     }
 
     public function getFriendsHeartsTopAction(Request $request) {
+        $config = $this->getConfig();         
+
         // Check user 
         $sk = $request->get('sk');
 
@@ -1466,16 +1468,11 @@ class DefaultController extends Controller
 
         $em = $this->getDoctrine()->getEntityManager();
 
-        $users = $em->createQuery("select p from GiftGeneralBundle:UserHeartCount p where p.uid in ($friend_str)")
+        $users = $em->createQuery("select p from GiftGeneralBundle:UserHeartCount p where p.uid in ($friend_str) order by p.count desc")
+            ->setMaxResults($config['top_people_count'])
             ->getResult();
 
-        usort($users, function($a, $b) {
-            return $b->getCount()-$a->getCount(); 
-        }); 
-
         // Prepare answer
-        $config = $this->getConfig();         
-
         $i = 0;
         $result = array();
         foreach ($users as $u) {
@@ -1519,8 +1516,11 @@ class DefaultController extends Controller
     }
 
     public function getTopHeartsAction(Request $request) {
+        $config = $this->getConfig();         
+
         $res = $this->getDoctrine()->getEntityManager()
             ->createQuery('select p FROM GiftGeneralBundle:UserHeartCount p order by p.count desc')
+            ->setMaxResults($config['top_people_count'])
             ->getResult();
         
         $friends_uids = array();
@@ -1539,8 +1539,6 @@ class DefaultController extends Controller
 
 
         // Prepare answer
-        $config = $this->getConfig();         
-
         $i = 0;
         $result = array();
         foreach ($uinfo as $u) {
