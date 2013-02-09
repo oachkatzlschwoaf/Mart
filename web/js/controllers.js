@@ -634,6 +634,8 @@ function loadControllers() {
         search: function(query) {
             x = this.mdl_user.searchFriend(query);
 
+            this.slide_params.pos = 0;
+
             this.scrollFriends('').done(function() {
             }.bind(this));
         },
@@ -744,6 +746,8 @@ function loadControllers() {
 
         search: function(query) {
             x = this.mdl_user.searchFriend(query);
+
+            this.slide_params.pos = 0;
 
             this.scrollFriends('').done(function() {
             }.bind(this));
