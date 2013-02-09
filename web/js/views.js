@@ -154,7 +154,7 @@ function loadViews() {
             mailru.common.stream.post({
                 'title': 'Ребята, пришлите мне сердечек!',
                 'text': 'Подарите мне сердечек, чтобы победить! Это бесплатно! И всех с праздниками!',
-                'img_url': util.abs_path + "/images/heart.png",
+                'img_url': util.abs_path + "../images/heart.png",
                 'action_links': [
                     {'text': 'Посмотреть' },
                 ]
@@ -813,7 +813,7 @@ function loadViews() {
                'uid': p.friend.uid,
                'title': 'Сердечко для тебя!', 
                'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'img_url': util.abs_path + "images/heart.png"
+               'img_url': util.abs_path + "../images/heart.png"
             }); 
         },
 
@@ -829,7 +829,7 @@ function loadViews() {
             mailru.app.friends.request({
                'friends': [ p.friend.uid ],
                'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'image_url': util.abs_path + "images/heart.png"
+               'image_url': util.abs_path + "../images/heart.png"
             }); 
         },
 
