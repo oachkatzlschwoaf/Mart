@@ -73,7 +73,3 @@ function preloadImages(aoi) {
     });
 }
 
-$('#send_hearts_button').click(function(){
-    $("html, body").animate({ scrollTop: 0 }, 600);
-    return false;
-});
