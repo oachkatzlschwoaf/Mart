@@ -173,6 +173,7 @@ function loadViews() {
 
         showPageLoader: function() {
             this.map.loader.show();
+            mailru.app.utils.scrollTo(0);
         },
 
         hidePageLoader: function() {
