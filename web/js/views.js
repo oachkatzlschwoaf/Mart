@@ -813,7 +813,7 @@ function loadViews() {
                'uid': p.friend.uid,
                'title': 'Сердечко для тебя!', 
                'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'img_url': util.abs_path + "../images/heart.png"
+               'img_url': util.abs_path + "../images/heart128.png"
             }); 
         },
 
