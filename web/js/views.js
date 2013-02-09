@@ -829,7 +829,7 @@ function loadViews() {
             mailru.app.friends.request({
                'friends': [ p.friend.uid ],
                'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'image_url': util.abs_path + "../images/heart120.png"
+               'image_url': util.abs_path + "../images/heart100.png"
             }); 
         },
 
