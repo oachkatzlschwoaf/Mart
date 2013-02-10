@@ -22,7 +22,7 @@ function loadModels() {
         },
 
         getAvatar: function(size) {
-            return util.avatar_host + this.box + '/' + this.login + '/_avatar' + size;
+            return getAvatarLink(this.box, this.login, size);
         },
 
         getBalance: function() {

@@ -183,3 +183,13 @@ apiGetHearts:
 apiGetTopHearts:
     pattern: /api/hearts/top
     defaults: { _controller: GiftGeneralBundle:Default:getTopHearts }
+
+apiAddInCircle:
+    pattern: /api/user/{sk}/circle/add
+    defaults: { _controller: GiftGeneralBundle:Default:addInCircle }
+    requirements:
+        _method:  POST
+
+apiGetCircle:
+    pattern: /api/circle
+    defaults: { _controller: GiftGeneralBundle:Default:getCircle }

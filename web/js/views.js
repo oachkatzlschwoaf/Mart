@@ -13,6 +13,7 @@ var view_friend      = {};
 var view_holidays    = {};
 var view_friends_hearts_top = {};
 var view_hearts_top  = {};
+var view_circle      = {};
 
 // Functions
 
@@ -73,6 +74,7 @@ function loadViews() {
 
                 if (event.status == 'opened') {
                     $.fancybox.close();
+                    this.ev.emitter.trigger('circle.refresh');
                 }
 
                 if (event.status == 'closed') {
@@ -494,6 +496,77 @@ function loadViews() {
         hide: function() {
         },
     };
+
+    // Circle 
+    // ======================================================
+    view_circle = {
+        init: function(ev, map) {
+            this.ev  = ev;
+            this.map = map; 
+
+            // Listener 
+            ev.emitter.on('circle.show', function (e, input) { 
+                this.show(input);
+            }.bind(this));
+
+            ev.emitter.on('circle.hide', function (e, input) { 
+                this.hide();
+            }.bind(this));
+
+            ev.emitter.on('circle.show_loader', function (e, input) { 
+                this.showLoader(input);
+            }.bind(this));
+
+            ev.emitter.on('circle.hide_loader', function (e, input) { 
+                this.hideLoader(input);
+            }.bind(this));
+
+            ev.emitter.on('circle.show_error', function (e, input) { 
+                this.showError(input);
+            }.bind(this));
+        },
+
+        show: function(data) {
+            data = data.users;
+
+            this.map.circle.error.hide();
+
+            if (data.length > 0) {
+                this.map.circle.list.html('');
+                $.each(data, function(id, e) {
+                    this.map.circle.list.append("<article class='article80'><div class='photo80' style='border:none'><a href='#' onclick='cntrl_friend.show(\""+e.uid+"\")'><img src='"+getAvatarLink(e.box, e.login, 128)+"' width='80' height='80' alt=' '></a></div></article>");
+                }.bind(this));
+
+                this.map.circle.content.show();
+                this.map.circle.block.show();
+            } else {
+                this.map.circle.block.hide();
+            }
+        },
+
+        showError: function() {
+            this.map.circle.content.hide();
+            this.map.circle.loader.hide();
+            this.map.circle.error.show();
+        },
+
+        showLoader: function() {
+            this.map.circle.error.hide();
+            this.map.circle.content.hide();
+            this.map.circle.loader.show();
+        },
+
+        hideLoader: function() {
+            this.map.circle.error.hide();
+            this.map.circle.loader.hide();
+            this.map.circle.content.show();
+        },
+
+        hide: function() {
+            this.map.circle.block.hide();
+        },
+    };
+
 
     // Gifts Catalog 
     // ======================================================
@@ -1153,6 +1226,14 @@ function mapElementsViews() {
     // Hearts Top
     elms_map.hearts_top = {};
     elms_map.hearts_top.list = $('#hearts_top_list'); // list 
+
+    // Circle 
+    elms_map.circle = {};
+    elms_map.circle.block = $('#want_gift'); // block
+    elms_map.circle.list  = $('#want_gift_list'); // list 
+    elms_map.circle.loader = $('#circle_loader'); // loader 
+    elms_map.circle.content = $('#circle_content'); // content 
+    elms_map.circle.error = $('#circle_error'); // balance error 
 }
 
 function initViews() {
@@ -1217,6 +1298,11 @@ function initViews() {
     );
 
     view_hearts_top.init(
+        events,
+        elms_map
+    );
+
+    view_circle.init(
         events,
         elms_map
     );

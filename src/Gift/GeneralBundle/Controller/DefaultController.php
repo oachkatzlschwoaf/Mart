@@ -19,6 +19,7 @@ use Gift\GeneralBundle\Entity\Notify;
 use Gift\GeneralBundle\Entity\Holiday;
 use Gift\GeneralBundle\Entity\UserHeart;
 use Gift\GeneralBundle\Entity\UserHeartCount;
+use Gift\GeneralBundle\Entity\UserCircle;
 
 # Services
 use Gift\GeneralBundle\SocialApi;
@@ -1543,6 +1544,76 @@ class DefaultController extends Controller
         }
 
         $response = new Response(json_encode($result));
+        return $response;
+    }
+
+    public function addInCircleAction(Request $request) {
+        // Check user 
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        if (!$uid) {
+            $answer = array( 'error' => 'no user id' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        // 2. Check balance
+        $config = $this->getConfig();         
+
+        $cost = $config['circle_cost'];
+        if ($user->getBalance() >= $cost) {
+            // Decrease balance
+            $user->setBalance( $user->getBalance() - $cost );
+
+            // Add in circle
+            $name = $user->getFirstName().' '.$user->getLastName();
+            if (strlen($name) < 3) {
+                $name = $user->getNick();
+            }
+
+            $uc = new UserCircle;
+            $uc->setUid( $user->getUid() );
+            $uc->setName( $name );
+            $uc->setBox( $user->getBox() );
+            $uc->setLogin( $user->getLogin() );
+
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $em->persist($user);
+            $em->persist($uc);
+
+            $em->flush();
+
+        } else {
+            // Need more money
+            $answer = array('balance_error' => 'need more money', 'need' => abs($cost - $user->getBalance()));
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $answer = array('done' => 'added', 'balance' => $user->getBalance());
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
+
+    public function getCircleAction(Request $request) {
+        $config = $this->getConfig();         
+
+        $users = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserCircle p order by p.id desc')
+            ->setMaxResults($config['top_people_count'])
+            ->getResult();
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($users, 'json');
+
+        $response = new Response($json);
         return $response;
     }
 }

@@ -48,6 +48,10 @@ function loadControllers() {
             ev.emitter.on('user_balance.update_force', function (e, input) { 
                 this.updateBalance();
             }.bind(this));
+
+            ev.emitter.on('circle.refresh', function (e, input) { 
+                this.showCircle();
+            }.bind(this));
         },
 
         // General 
@@ -88,19 +92,22 @@ function loadControllers() {
                     // show global top
                     this.showHeartsTop().done(function() {
 
-                        // show catalog
-                        this.setCatalogCategory(util.default_gift_cat).done(function() {
-                            this.ev.emitter.trigger('block_gifts_cat.show');
-                            this.ev.emitter.trigger('attention_top.show');
-                            this.ev.emitter.trigger('hearts_promo.show');
+                        // show circle
+                        this.showCircle().done(function() {
+                            // show catalog
+                            this.setCatalogCategory(util.default_gift_cat).done(function() {
+                                this.ev.emitter.trigger('block_gifts_cat.show');
+                                this.ev.emitter.trigger('attention_top.show');
+                                this.ev.emitter.trigger('hearts_promo.show');
 
-                            this.ev.emitter.trigger('hearts_limit.check');
+                                this.ev.emitter.trigger('hearts_limit.check');
 
-                            this.ev.emitter.trigger('loading.finish');
-                            this.ev.emitter.trigger('page.show', 'index');
+                                this.ev.emitter.trigger('loading.finish');
+                                this.ev.emitter.trigger('page.show', 'index');
 
-                            // preload friends
-                            this.mdl_user.getFriends().done(function(input) {
+                                // preload friends
+                                this.mdl_user.getFriends().done(function(input) {
+                                }.bind(this));
                             }.bind(this));
                         }.bind(this));
 
@@ -138,6 +145,42 @@ function loadControllers() {
             return dfd.promise();
         },
 
+        addInCircle: function() {
+            dfd = $.Deferred();
+
+            this.ev.emitter.trigger('circle.show_loader');
+
+            $.post(util.api_url.add_circle,
+                function(data) { 
+
+                    this.ev.emitter.trigger('circle.hide_loader');
+
+                    if (data.done == 'added') {
+                        this.ev.emitter.trigger('circle.refresh');
+                        this.ev.emitter.trigger('user_balance.update', data.balance);
+                    } else {
+                        this.ev.emitter.trigger('circle.show_error');
+                    }
+
+                    dfd.resolve();
+                }.bind(this),
+                "json"
+            );
+
+            return dfd.promise();
+        },
+
+        showCircle: function() {
+            dfd = $.Deferred();
+
+            $.getJSON(util.api_url.circle, function(data) {
+                this.ev.emitter.trigger('circle.show', {'users': data});
+                dfd.resolve();
+            }.bind(this));
+
+            return dfd.promise();
+        },
+
         showHolidays: function() {
             dfd = $.Deferred();
 
@@ -160,6 +203,7 @@ function loadControllers() {
             this.ev.emitter.trigger('hearts_promo.hide');
             this.ev.emitter.trigger('friends_hearts_top.hide');
             this.ev.emitter.trigger('hearts_top.hide');
+            this.ev.emitter.trigger('circle.hide');
 
             // loading 
             this.ev.emitter.trigger('pages.hide');

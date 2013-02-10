@@ -19,6 +19,29 @@
     </div>
 </div>
 
+<div class="block gft_block want_gift" id="want_gift" style="margin-bottom: 20px; padding: 0px;">
+    <h3>Хочу сердечек и валентинок!</h3>
+    <div id="circle_loader" class="loader_circle" style="display:none"></div>
+
+    <div id="circle_content" class="slider2 people-slider" style="padding: 0px;">
+        <button onclick="cntrl_index.addInCircle()" class="button green want_button">Хочу сюда!</button>
+        <div class="hold" style="height: 90px; width: 650px;  margin-left: 8px; float: left;">
+            <section id="want_gift_list" class="people2">
+            </section>
+        </div>
+    </div>
+
+    <div id="circle_error" class="circle_error" style="display: none">
+        Упс! Вам не хватает <span id="circle_error_text"></span> на счете!
+        <div style="margin-top: 5px;" >
+            <button href="#balance_window" class="button green increase_balance">Пополните баланс!</button>
+        </div>
+    </div>
+    <div class="info2 grey" style='text-align: right; clear: both; padding: 0px 10px 5px 10px;'>
+        Стоимость: {{ config.circle_cost }} монет
+    </div>
+</div>
+
 <div class="block gft_block back_orange" id="friends_hearts_top" style="margin-bottom: 20px; padding: 0px;">
     <div class="top_block back_yellow" style="width: 290px; border-right: 1px solid #cd9c6a">
         <h3>Топ друзей</h3>

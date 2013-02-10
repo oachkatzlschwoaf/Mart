@@ -73,3 +73,7 @@ function preloadImages(aoi) {
     });
 }
 
+function getAvatarLink(box, login, size) {
+    return util.avatar_host + box + '/' + login + '/_avatar' + size;
+}
+

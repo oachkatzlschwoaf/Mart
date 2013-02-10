@@ -1,0 +1,30 @@
+Gift\GeneralBundle\Entity\UserCircle:
+    type: entity
+    table: null
+    indexes:
+        uid_idx:
+            columns: [uid]
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        uid:
+            type: string
+            length: 255
+        name:
+            type: string
+            length: 255
+        box:
+            type: string
+            length: 255
+        login:
+            type: string
+            length: 255
+        created_at:
+            type: datetime
+    lifecycleCallbacks: 
+        prePersist: [ processPrePersist ]
+        postPersist: [ processPostPersist ]
+        postUpdate: [ processPostUpdate ]

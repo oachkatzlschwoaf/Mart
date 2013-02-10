@@ -874,7 +874,7 @@ p {
 	height:80px;
 	position:relative;
 	overflow:hidden;
-	border:1px solid #cd9c6a;
+	border: 1px solid #cd9c6a;
 }
 
 .people2 .subtitle {
@@ -1374,6 +1374,12 @@ p {
     height: 90px;
 }
 
+.loader_circle {
+	background:url(../images/preloader_circle_32.gif) no-repeat scroll 350px 30px transparent;
+    width: 100%;
+    height: 95px;
+}
+
 .mr_btn {border: 0; background: none; overflow: hidden; padding: 0; margin: 0 10px 0 0; cursor: pointer; display: inline-block; white-space: nowrap}
 .mr_btn span, .mr_btn em {background: url("http://img4.imgsmail.ru/r/my/app/connect/button-sprite.png") no-repeat; display: inline-block; height: 26px; font-size: 12px; line-height:18px;}
 .mr_btn span {background-position: 0 0;}
@@ -1626,3 +1632,23 @@ p {
     text-align: center;
 }
 
+.want_gift h3 {
+    padding: 5px 0px 7px 0px;
+    margin: 0px;
+    color: #1b1d50;
+    text-align: center;
+}
+
+.want_gift .want_button {
+    height: 80px; 
+    width: 80px; 
+    float: left;
+    margin-left: 10px;
+}
+
+.circle_error {
+    padding-top: 15px;
+    text-align: center;
+    height: 90px;
+	font:italic 20px Georgia, "Times New Roman", Times, serif;
+}
