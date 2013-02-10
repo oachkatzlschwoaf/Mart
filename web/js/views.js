@@ -929,6 +929,10 @@ function loadViews() {
             ev.emitter.on('friend.block.show_empty_gifts', function (e, input) { 
                 this.showEmptyGifts();
             }.bind(this));
+
+            ev.emitter.on('friend.message.send', function (e, input) { 
+                this.sendMessage(input);
+            }.bind(this));
         },
 
         show: function(p) {
@@ -952,6 +956,14 @@ function loadViews() {
 
             this.map.friend.button.send_gift.click(function() {
                 cntrl_purchase.setFriend(friend.uid);
+            }.bind(this));
+
+            this.map.friend.button.send_heart.click(function() {
+                cntrl_heart.setFriend(friend.uid);
+            }.bind(this));
+
+            this.map.friend.button.send_message.click(function() {
+                cntrl_friend.sendMessage(friend.uid);
             }.bind(this));
         },
 
@@ -982,7 +994,15 @@ function loadViews() {
         showEmptyGifts: function() {
             this.map.friend.gifts_block.hide();
             this.map.friend.no_gifts.show();
-        }
+        },
+
+        sendMessage: function(p) {
+            mailru.common.messages.send({
+                'uid': p.friend,
+                'text': 'Привет!'
+            });
+        },
+
     };
 }
 
@@ -1097,6 +1117,8 @@ function mapElementsViews() {
     elms_map.friend.title = $('#friend_title'); // her/his gifts
     elms_map.friend.button = {};
     elms_map.friend.button.send_gift = $('#friend_send_gift'); // button: send gift
+    elms_map.friend.button.send_heart = $('#friend_send_heart'); // button: send heart 
+    elms_map.friend.button.send_message = $('#friend_send_message'); // button: send message 
     
     // Holidays
     elms_map.holidays = {};

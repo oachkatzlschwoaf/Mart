@@ -871,8 +871,11 @@ function loadControllers() {
             }.bind(this));
 
             return dfd.promise();
-        }
+        },
 
+        sendMessage: function(fid) {
+            this.ev.emitter.trigger('friend.message.send', { 'friend': fid });
+        },
     };
 }
 

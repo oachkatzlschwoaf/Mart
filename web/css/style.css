@@ -1414,6 +1414,14 @@ p {
 	background:url(../images/icon_make_gift.png) no-repeat;
 }
 
+.make_heart {
+	background:url(../images/tiny_heart.png) no-repeat;
+}
+
+.make_message {
+	background:url(../images/pencil_16.png) no-repeat;
+}
+
 .bb {
     vertical-align: top;
 }
