@@ -157,6 +157,7 @@ function loadControllers() {
 
                     if (data.done == 'added') {
                         this.ev.emitter.trigger('circle.refresh');
+                        this.mdl_user.balance = data.balance;
                         this.ev.emitter.trigger('user_balance.update', data.balance);
                     } else {
                         this.ev.emitter.trigger('circle.show_error', data);
