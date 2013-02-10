@@ -1640,10 +1640,18 @@ p {
 }
 
 .want_gift .want_button {
-    height: 80px; 
+    height: 78px; 
     width: 80px; 
     float: left;
     margin-left: 10px;
+    text-align: center;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.want_button span {
+    display: inline-block;
+    margin-top: 20px;
 }
 
 .circle_error {
