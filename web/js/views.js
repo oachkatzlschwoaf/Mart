@@ -544,7 +544,9 @@ function loadViews() {
             }
         },
 
-        showError: function() {
+        showError: function(p) {
+            this.map.circle.error_text.text(p.need + ' ' + declOfNum(p.need, ['монета', 'монеты', 'монет']));
+
             this.map.circle.content.hide();
             this.map.circle.loader.hide();
             this.map.circle.error.show();
@@ -1234,6 +1236,7 @@ function mapElementsViews() {
     elms_map.circle.loader = $('#circle_loader'); // loader 
     elms_map.circle.content = $('#circle_content'); // content 
     elms_map.circle.error = $('#circle_error'); // balance error 
+    elms_map.circle.error_text = $('#circle_error_text'); // balance error 
 }
 
 function initViews() {

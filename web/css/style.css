@@ -1652,6 +1652,7 @@ p {
 .want_button span {
     display: inline-block;
     margin-top: 20px;
+    color: #fff !important;
 }
 
 .circle_error {
