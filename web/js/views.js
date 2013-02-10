@@ -446,8 +446,14 @@ function loadViews() {
                     this.map.friends_hearts_top.list.append("<article class='article80'><div class='photo80'><a href='#' onclick='cntrl_friend.show(\""+e.uid+"\")'><img src='"+e.pic_128+"' width='80' height='80' alt=' '></a></div><div class='subtitle'><span class='ava_heart'></span><span class='text'>"+el.count+"</span></article></div>");
                 }.bind(this));
 
-                this.map.friends_hearts_top.block.show();
+                this.map.friends_hearts_top.list.show();
+                this.map.friends_hearts_top.no_list.hide();
+            } else {
+                this.map.friends_hearts_top.list.hide();
+                this.map.friends_hearts_top.no_list.show();
             }
+
+            this.map.friends_hearts_top.block.show();
         },
 
         hide: function() {
@@ -482,12 +488,10 @@ function loadViews() {
                     this.map.hearts_top.list.append("<article class='article80'><div class='photo80'><a href='#' onclick='cntrl_friend.show(\""+e.uid+"\")'><img src='"+e.pic_128+"' width='80' height='80' alt=' '></a></div><div class='subtitle'><span class='ava_heart'></span><span class='text'>"+el.count+"</span></article></div>");
                 }.bind(this));
 
-                this.map.hearts_top.block.show();
             }
         },
 
         hide: function() {
-            this.map.hearts_top.block.hide();
         },
     };
 
@@ -1122,10 +1126,10 @@ function mapElementsViews() {
     elms_map.friends_hearts_top = {};
     elms_map.friends_hearts_top.block = $('#friends_hearts_top'); // block
     elms_map.friends_hearts_top.list = $('#friends_top_list'); // list 
+    elms_map.friends_hearts_top.no_list = $('#no_friends_top'); // list 
 
     // Hearts Top
     elms_map.hearts_top = {};
-    elms_map.hearts_top.block = $('#hearts_top'); // block
     elms_map.hearts_top.list = $('#hearts_top_list'); // list 
 }
 
