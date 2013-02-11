@@ -75,6 +75,7 @@ function loadControllers() {
                 this.mdl_user.getAvatar(180)
             );
 
+            // hearts
             this.v_global.updateHearts(util.user_hearts);  
 
             // set menu
@@ -94,21 +95,29 @@ function loadControllers() {
 
                         // show circle
                         this.showCircle().done(function() {
-                            // show catalog
-                            this.setCatalogCategory(util.default_gift_cat).done(function() {
-                                this.ev.emitter.trigger('block_gifts_cat.show');
-                                this.ev.emitter.trigger('attention_top.show');
-                                this.ev.emitter.trigger('hearts_promo.show');
 
-                                this.ev.emitter.trigger('hearts_limit.check');
+                            // show last givers 
+                            this.showLastGivers().done(function() {
 
-                                this.ev.emitter.trigger('loading.finish');
-                                this.ev.emitter.trigger('page.show', 'index');
+                                // show catalog
+                                this.setCatalogCategory(util.default_gift_cat).done(function() {
+                                    this.ev.emitter.trigger('block_gifts_cat.show');
+                                    this.ev.emitter.trigger('attention_top.show');
+                                    this.ev.emitter.trigger('hearts_promo.show');
 
-                                // preload friends
-                                this.mdl_user.getFriends().done(function(input) {
+                                    this.ev.emitter.trigger('hearts_limit.check');
+
+                                    this.ev.emitter.trigger('loading.finish');
+                                    this.ev.emitter.trigger('page.show', 'index');
+
+                                    // preload friends
+                                    this.mdl_user.getFriends().done(function(input) {
+                                    }.bind(this));
+
                                 }.bind(this));
+
                             }.bind(this));
+
                         }.bind(this));
 
                     }.bind(this));
@@ -131,6 +140,18 @@ function loadControllers() {
 
             return dfd.promise();
         },
+
+        showLastGivers: function() {
+            dfd = $.Deferred();
+
+            $.getJSON(util.api_url.last_givers, function(data) {
+                this.ev.emitter.trigger('last_givers.show', data);
+                dfd.resolve();
+            }.bind(this));
+
+            return dfd.promise();
+        },
+
 
         showHeartsTop: function() {
             dfd = $.Deferred();
@@ -858,9 +879,35 @@ function loadControllers() {
                 pos:   0,
                 count: util.show_gifts_friend,
             };
+
+            // Listener 
+            ev.emitter.on('cntrl_friend.show', function (e, input) { 
+                this.show(input.uid);
+            }.bind(this));
+        },
+
+        showById: function(id) {
+            dfd = $.Deferred();
+
+            $.post(util.api_url.get_uid, { id: id },
+                function(data) {
+                    if (data && data.uid) {
+                        this.show(data.uid).done(function() {
+                            dfd.resolve();
+                        }.bind(this));
+                    } else {
+                        dfd.resolve();
+                    }
+                }.bind(this),
+                "json"
+            );
+
+            return dfd.promise();
         },
 
         show: function(uid) {
+            dfd = $.Deferred();
+
             // set menu
             this.ev.emitter.trigger('menu.select', 'friends');
 
@@ -887,11 +934,14 @@ function loadControllers() {
                         this.ev.emitter.trigger('loading.finish');
                         this.ev.emitter.trigger('page.show', 'friend');
 
+                        dfd.resolve();
+
                     }.bind(this));
                 }.bind(this));
             
             }.bind(this)); 
 
+            return dfd.promise();
         },
 
         scrollFriendGifts: function(direction) {

@@ -201,3 +201,7 @@ apiGetConfig:
 apiSendHeartEasy:
     pattern: /api/heart/send
     defaults: { _controller: GiftGeneralBundle:Default:sendHeartEasy }
+
+apiGetLastGivers:
+    pattern: /api/user/{sk}/givers
+    defaults: { _controller: GiftGeneralBundle:Default:getLastGivers }

@@ -1659,4 +1659,41 @@ class DefaultController extends Controller
         $response = new Response(json_encode($answer));
         return $response;
     }
+
+    public function getLastGiversAction(Request $request) {
+        // Check user 
+        $sk = $request->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        # Get hearts count for Today
+        $hcs = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:UserHeart p where p.receiver = :uid order by p.id desc')
+            ->setParameter('uid', $user->getUid())
+            ->getResult();
+
+        $users = array();
+        foreach ($hcs as $hc) {
+            if (!isset($users[$hc->getUserId()])) {
+                $users[$hc->getUserId()] = array();
+            }
+
+            $users[$hc->getUserId()]['name'] = $hc->getUserName();
+            $users[$hc->getUserId()]['login'] = $hc->getUserLogin();
+            $users[$hc->getUserId()]['box'] = $hc->getUserBox();
+        }
+
+        $response = new Response(json_encode($users));
+        return $response;
+    }
 }

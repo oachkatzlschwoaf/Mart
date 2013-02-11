@@ -173,7 +173,6 @@ p {
     line-height: 17px; 
     padding: 12px 0px 2px 0px; 
     border-top: 1px solid #bbad7a; 
-    border-bottom: 1px solid #bbad7a;
     min-height: 30px;
 }
 
@@ -860,6 +859,12 @@ p {
 	margin:0 10px 0 0;
 }
 
+.article50 {
+	float:left;
+	width:50px;
+	height:50px;
+    margin: 5px;
+}
 
 .people2 .photo {
 	width:120px;
@@ -872,6 +877,15 @@ p {
 .people2 .photo80 {
 	width:80px;
 	height:80px;
+	position:relative;
+	overflow:hidden;
+	border: 1px solid #cd9c6a;
+}
+
+
+.photo50 {
+	width:50px;
+	height:50px;
 	position:relative;
 	overflow:hidden;
 	border: 1px solid #cd9c6a;
@@ -1664,4 +1678,26 @@ p {
     text-align: center;
     height: 90px;
 	font:italic 20px Georgia, "Times New Roman", Times, serif;
+}
+
+.givers {
+	border:1px solid #d9ba84;
+	border-radius:3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	box-shadow:2px 2px 4px rgba(228, 198, 153, 0.37);
+	-moz-box-shadow:2px 2px 4px rgba(228, 198, 153, 0.37);
+	-webkit-box-shadow:2px 2px 4px rgba(228, 198, 153, 0.37);
+	behavior: url(js/PIE.htc);
+	zoom:1;
+	position:relative;
+	background: #f3ebc0 url('../images/back3.png') repeat-x 0 0;
+    padding: 0px 0px 7px 0px;
+}
+
+.givers h3 {
+    color: #1b1d50;
+    margin: 5px 0px 5px 0px;
+    padding: 0px;
+    text-align: center;
 }

@@ -14,6 +14,7 @@ var view_holidays    = {};
 var view_friends_hearts_top = {};
 var view_hearts_top  = {};
 var view_circle      = {};
+var view_last_givers = {};
 
 // Functions
 
@@ -566,6 +567,39 @@ function loadViews() {
 
         hide: function() {
             this.map.circle.block.hide();
+        },
+    };
+
+    // Last Givers 
+    // ======================================================
+    view_last_givers = {
+        init: function(ev, map) {
+            this.ev  = ev;
+            this.map = map; 
+
+            // Listener 
+            ev.emitter.on('last_givers.show', function (e, input) { 
+                this.show(input);
+            }.bind(this));
+
+            ev.emitter.on('last_givers.hide', function (e, input) { 
+                this.hide();
+            }.bind(this));
+        },
+
+        show: function(data) {
+            if (Object.size(data) > 0) {
+                this.map.last_givers.list.html('');
+                $.each(data, function(id, e) {
+                    this.map.last_givers.list.append("<article class='article50'><div class='photo50'><a href='#' onclick='cntrl_friend.showById(\""+id+"\")'><img src='"+getAvatarLink(e.box, e.login, 50)+"' width='50' height='50' alt=' '></a></div></article>");
+                }.bind(this));
+
+                this.map.last_givers.block.show();
+            }
+        },
+
+        hide: function() {
+            this.map.last_givers.block.hide();
         },
     };
 
@@ -1240,6 +1274,11 @@ function mapElementsViews() {
     elms_map.circle.content = $('#circle_content'); // content 
     elms_map.circle.error = $('#circle_error'); // balance error 
     elms_map.circle.error_text = $('#circle_error_text'); // balance error 
+
+    // Last Givers 
+    elms_map.last_givers = {};
+    elms_map.last_givers.block = $('#last_givers_block'); // block
+    elms_map.last_givers.list = $('#last_givers_list'); // list 
 }
 
 function initViews() {
@@ -1309,6 +1348,11 @@ function initViews() {
     );
 
     view_circle.init(
+        events,
+        elms_map
+    );
+
+    view_last_givers.init(
         events,
         elms_map
     );
