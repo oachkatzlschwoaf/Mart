@@ -1040,6 +1040,8 @@ function loadViews() {
             this.map.friend.button.send_message.click(function() {
                 cntrl_friend.sendMessage(friend.uid);
             }.bind(this));
+
+            this.map.friend.button.see_profile.attr("href", friend.link);
         },
 
         fill: function(list, len) {
@@ -1194,6 +1196,7 @@ function mapElementsViews() {
     elms_map.friend.button.send_gift = $('#friend_send_gift'); // button: send gift
     elms_map.friend.button.send_heart = $('#friend_send_heart'); // button: send heart 
     elms_map.friend.button.send_message = $('#friend_send_message'); // button: send message 
+    elms_map.friend.button.see_profile = $('#friend_see_profile'); // button: see profile 
     
     // Holidays
     elms_map.holidays = {};
