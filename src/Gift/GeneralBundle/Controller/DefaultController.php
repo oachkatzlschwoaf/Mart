@@ -1616,4 +1616,47 @@ class DefaultController extends Controller
         $response = new Response($json);
         return $response;
     }
+
+    public function getConfigAction(Request $request) {
+        $config = $this->getConfig();         
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($config, 'json');
+
+        $response = new Response($json);
+        return $response;
+    }
+
+    public function sendHeartEasyAction(Request $request) {
+        $from = $request->get('from');
+        $to   = $request->get('to');
+
+        # Lookup from
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($from);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no from user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        # Lookup to
+        $em = $this->getDoctrine()->getEntityManager();
+        $to_user = $em->createQuery("select p from GiftGeneralBundle:User p WHERE p.uid = :uid")
+            ->setParameter('uid', $to)
+            ->getResult();
+        
+        if (count($to_user) == 0) {
+            $answer = array( 'error' => 'no to user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        $this->sendHeart($user, $to, 1);
+
+        $answer = array('done' => 'sended');
+        $response = new Response(json_encode($answer));
+        return $response;
+    }
 }

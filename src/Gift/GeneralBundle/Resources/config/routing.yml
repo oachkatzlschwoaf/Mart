@@ -193,3 +193,11 @@ apiAddInCircle:
 apiGetCircle:
     pattern: /api/circle
     defaults: { _controller: GiftGeneralBundle:Default:getCircle }
+
+apiGetConfig:
+    pattern: /api/config
+    defaults: { _controller: GiftGeneralBundle:Default:getConfig }
+
+apiSendHeartEasy:
+    pattern: /api/heart/send
+    defaults: { _controller: GiftGeneralBundle:Default:sendHeartEasy }
