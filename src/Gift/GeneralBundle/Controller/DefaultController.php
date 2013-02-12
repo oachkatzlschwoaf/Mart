@@ -1696,4 +1696,23 @@ class DefaultController extends Controller
         $response = new Response(json_encode($users));
         return $response;
     }
+
+
+    public function getLastUsersAction(Request $request) {
+        $limit = $request->get('last');
+
+        if (!$limit) {
+            $limit = 100;
+        }
+
+        $users = $this->getDoctrine()->getEntityManager()
+            ->createQuery('select p FROM GiftGeneralBundle:User p order by p.id desc')
+            ->setMaxResults($limit)
+            ->getResult();
+
+        $serializer = $this->get('serializer');
+        $json = $serializer->serialize($users, 'json');
+        $response = new Response($json);
+        return $response;
+    }
 }

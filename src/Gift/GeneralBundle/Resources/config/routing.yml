@@ -205,3 +205,7 @@ apiSendHeartEasy:
 apiGetLastGivers:
     pattern: /api/user/{sk}/givers
     defaults: { _controller: GiftGeneralBundle:Default:getLastGivers }
+
+apiGetLastUsers:
+    pattern: /api/users/last
+    defaults: { _controller: GiftGeneralBundle:Default:getLastUsers }
