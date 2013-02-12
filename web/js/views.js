@@ -1227,7 +1227,7 @@ function mapElementsViews() {
     elms_map.friend.no_gifts_text = $('#friend_gifts_none_text'); // text: he hasn't gifts
     elms_map.friend.title = $('#friend_title'); // her/his gifts
     elms_map.friend.button = {};
-    elms_map.friend.button.send_gift = $('#friend_send_gift'); // button: send gift
+    elms_map.friend.button.send_gift = $('#friend_send_gift_btn'); // button: send gift
     elms_map.friend.button.send_heart = $('#friend_send_heart'); // button: send heart 
     elms_map.friend.button.send_message = $('#friend_send_message'); // button: send message 
     elms_map.friend.button.see_profile = $('#friend_see_profile'); // button: see profile 
