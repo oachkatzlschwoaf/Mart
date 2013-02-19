@@ -23,11 +23,17 @@
         <a href="#balance_window" class="increase_balance">пополнить</a> 
     </div>
 
+    <div class="givers" id="attention_heart_top" style="padding: 0px 7px 7px 7px;">
+        <h3>Медалей сегодня: <b style="color: #bb285e">{{ hc_today_cnt }}</b></h3>
+        <div style="text-align: center; margin-top: 5px;">
+        <button onclick="cntrl_index.pleaseHearts();" class="button orange small">Попросить!</button>  
+        </div>
+    </div>
+
     <div id="last_givers_block" class="givers" style="display:none">
-        <h3>Кто дарил мне сердечки</h3>
+        <h3>Кто прислал медали</h3>
         <div id="last_givers_list" style="margin-left: 2px;">
         </div>
         <div style="clear: both"></div>
-
     </div>
 </nav>

@@ -1,26 +1,5 @@
-<div class="block heart_block" id="heart_promo">
-    <div style="min-height: 60px;">
-        <div class="heart_wings_small"></div>
-        <div class="text">
-            <span id="hearts_text_limit" style="display: inline-block; margin-top:-7px; line-height: 20px;">Бесплатное сердечко будет доступно через 
-            <br /><b style="color:#bb285e" id="hearts_limit_interval"></b></span>
-            <span id="hearts_text_ok" style="color: #bb285e">Вы можете отправить сердечко бесплатно!</span>
-        </div>
-        <div style="margin-top: 5px; overflow: hidden;">
-            <button style="margin: 9px" id="send_hearts_button" onclick="cntrl_heart.set()" class="button rosy">Отправить сердечко!</button>  
-        </div>
-    </div>
-    <div class="attention_block" id="attention_heart_top">
-        <img src="{{ asset('images/heart_small.png') }}" style="display: inline-block" />
-        <span style="display: inline-block; margin-top: 5px; font-size: 14px; margin-left: 7px;">
-            Сегодня вы получили: <b style="color: #bb285e">{{ hc_today_cnt }} {{ hc_today_wrd }}</b>. Хотите больше сердечек?
-            <button onclick="cntrl_index.pleaseHearts();" class="button rosy small">Попросить друзей сердечки!</button>  
-        </span>
-    </div>
-</div>
-
 <div class="block gft_block want_gift" id="want_gift" style="margin-bottom: 20px; padding: 0px;">
-    <h3>Хочу сердечек и валентинок!</h3>
+    <h3>Пообщаемся? Пришли медаль!</h3>
     <div id="circle_loader" class="loader_circle" style="display:none"></div>
 
     <div id="circle_content" class="slider2 people-slider" style="padding: 0px;">
@@ -40,14 +19,13 @@
         </div>
     </div>
 
-    <h3 style="color: #bb285e; clear: both; padding: 0px; margin: 5px 0px 0px 0px;">Попади сюда и набери сотни сердечек!</h3>
     <div class="info2 grey" style='text-align: right; clear: both; padding: 0px 10px 5px 10px;'>
         Стоимость: {{ config.circle_cost }} монет
     </div>
 </div>
 
 <div class="block gft_block back_orange" id="friends_hearts_top" style="margin-bottom: 20px; padding: 0px;">
-    <div class="top_block back_yellow" style="width: 290px; border-right: 1px solid #cd9c6a">
+    <div class="top_block back_yellow" style="width: 290px; border-right: 1px solid #a08b75">
         <h3>Топ друзей</h3>
         <div class="slider2 people-slider" style="padding: 0px">
             <div class="hold" style="height: 105px; margin-left: 10px;">
@@ -64,7 +42,7 @@
         </div>
     </div>
     <div class="top_block back_orange" style="width: 460px;">
-        <h3>Топ самых любимых</h3>
+        <h3>Топ самых крутых</h3>
         <div class="slider2 people-slider" style="padding: 0px">
             <div class="hold" style="height: 105px; margin-left: 8px;">
                 <section id="hearts_top_list" class="people2">
@@ -74,8 +52,20 @@
     </div>
 </div>
 
+<div class="block heart_block" id="heart_promo">
+    <div class="heart_wings_small"></div>
+    <div class="text" style="margin-top: 17px;">
+        <span id="hearts_text_limit" style="display: inline-block; margin-top:-7px; line-height: 20px;">Бесплатное сердечко будет доступно через <b style="color: #721704" id="hearts_limit_interval"></b></span>
+        <span id="hearts_text_ok">Вы можете отправить другу медаль бесплатно!</span>
+    </div>
+    <div style="float: left; margin-top: 7px;">
+        <button id="send_hearts_button" onclick="cntrl_heart.set()" class="button green">Отправить!</button>  
+    </div>
+</div>
+
+
 <div id="gifts_my_block" class="gft_block">
-    <header class="title">Мои валентинки</header>
+    <header class="title">Мои награды</header>
     <div class="slider">
         <div class="hold">
             <section id="gifts_my" class="catalog">
@@ -91,10 +81,10 @@
 </div>
 
 <div class="block gft_block" id="gifts_catalog" style="margin-bottom: 20px;">
-    <div class="big_title">Покажите как сильно вы любите!<br/>Отправьте валентинку!</div>
+    <div class="big_title">Поздравь друзей c 23 февраля! Отправляй подарки!</div>
     <div class="info grey" style="text-align: right">
-        Цена валентинки: {{ config.gift_price }} монет
-        <p>Каждая валентинка приносит получателю <b style="color:#bb285e">+{{ config.gift_hearts_count }} сердечек</b></p>
+        Цена : {{ config.gift_price }} монет
+        <p>Каждый подарок приносит получателю <b style="color: #721704">+{{ config.gift_hearts_count }} монет</b></p>
     </div>
 
     <div id="gifts_block" class="slider2">

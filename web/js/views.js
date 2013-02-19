@@ -140,16 +140,15 @@ function loadViews() {
                     min + ' ' + declOfNum(min, ['минуту', 'минуты', 'минут'])
                 );
 
-                this.map.hearts.send_button.text('Отправить сердечко за ' + util.heart_cost + ' монет');
+                this.map.hearts.send_button.text('Отправить за ' + util.heart_cost + ' м.');
 
                 this.map.hearts.text_ok.hide();
                 this.map.hearts.text_limit.show();
 
             } else {
-                this.map.hearts.send_button.text('Отправить сердечко!');
+                this.map.hearts.send_button.text('Отправить!');
                 this.map.hearts.text_ok.show();
                 this.map.hearts.text_limit.hide();
-
             }
         },
 

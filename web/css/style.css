@@ -11,7 +11,7 @@ body {
 	padding:0;
 	font:normal 12px/14px Arial, Helvetica, sans-serif;
 	color:#343333;
-    background: #252956 url('../images/Bokeh4.jpeg') no-repeat fixed 50% 0;
+    background: #15180d url('../images/Bokeh4.jpeg') no-repeat fixed 50% 0;
 }
 
 form,
@@ -102,17 +102,17 @@ p {
 	margin:0 auto;
 	overflow:hidden;
 
-    border: 1px solid #866d71;
+    border: 1px solid #2f3028;
     min-height: 1000px;
-    background: #f5f1d8;
+    background: #e6e6cb;
     padding: 7px;
 
 	border-radius:3px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
-	box-shadow:0 2px 4px #b0b0b0;
-	-moz-box-shadow:0 2px 4px #b0b0b0;
-	-webkit-box-shadow:0 2px 4px #b0b0b0;
+	box-shadow:0 2px 4px #2f3028;
+	-moz-box-shadow:0 2px 4px #2f3028;
+	-webkit-box-shadow:0 2px 4px #2f3028;
 	behavior: url(js/PIE.htc);
 }
 
@@ -510,7 +510,7 @@ p {
 
 .block {
 	background:#fff;
-	border:1px solid #d9ba84;
+	border:1px solid #a08b75;
 	border-radius:3px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -879,7 +879,7 @@ p {
 	height:80px;
 	position:relative;
 	overflow:hidden;
-	border: 1px solid #cd9c6a;
+	border:1px solid #a08b75;
 }
 
 
@@ -888,7 +888,7 @@ p {
 	height:50px;
 	position:relative;
 	overflow:hidden;
-	border: 1px solid #cd9c6a;
+	border:1px solid #a08b75;
 }
 
 .people2 .subtitle {
@@ -1435,7 +1435,7 @@ p {
 }
 
 .make_heart {
-	background:url(../images/tiny_heart.png) no-repeat;
+	background:url(../images/medal_gold_1.png) no-repeat;
 }
 
 .make_message {
@@ -1549,33 +1549,34 @@ p {
 
 .ava_heart_count {
     position: absolute;
-    top: 150px;
+    top: 100px;
     left: 140px;
-	background:url(../images/heart.png) no-repeat 0 0;
-    width: 64px;
-    height: 64px;
-    color: white;
+	background:url(../images/medal80.png) no-repeat 0 0;
+    width: 80px;
+    height: 113px;
     font-weight: bold;
     text-align: center;
     font-size: 25px;
-    padding-top: 25px;
+	text-shadow:0 1px 0 #301816;
+    overflow: hidden;
+    padding-top: 63px;
+    color: #fff4bb;
 }
 
 .heart_block {
     padding: 0px;
 	background: #f2ebbd url('../images/back1.png') repeat-x 0 0;
-    margin-bottom: 10px;
+    margin-bottom: 35px;
+    margin-top: 15px;
+    height: 50px;
 }
 
 .heart_block .text {
-    overflow: hidden; 
-    font-size: 18px;
-    text-align: center;
     float: left;
-    padding-top: 20px;
-    padding-bottom: 5px;
-    width: 390px;
-    color: #1b1d50;
+    font-size: 16px;
+    text-align: center;
+    width: 490px;
+    color: #452413;
 }
 
 .heart_block h1 {
@@ -1590,20 +1591,9 @@ p {
     text-align: center;
 }
 
-.heart_wings {
-    position: relative;
-    margin-top: -50px;
-    margin-left: 260px;
-    height: 130px;
-    width: 200px;
-	background:url(../images/heart_wings.png) no-repeat 0 0;
-    overflow: hidden;
-}
-
 .attention_block {
-    color: #1b1d50;
-    border-top: 1px solid #cd9c6a;
-    background: #f2d0ab;
+    border-top: 1px solid #a08b75;
+    background: #dad2ad;
     padding: 5px 10px 5px 10px;
 }
 
@@ -1611,15 +1601,16 @@ p {
     display: inline-block;
     height: 16px;
     width: 16px;
-	background:url(../images/tiny_heart.png) no-repeat 0 0;
+	background:url(../images/medal_gold_1.png) no-repeat 0 0;
     margin-right: 7px;
 }
 
 .heart_wings_small {
-    margin-left:-10px;
-    width: 150px;
-    height: 60px;
-	background:url(../images/heart_wings_small.png) no-repeat 0 0;
+    margin-top: -15px;
+    margin-left: -10px;
+    width: 90px;
+    height: 90px;
+	background:url(../images/medal90.png) no-repeat 0 0;
     overflow: hidden;
     float:left;
 }
@@ -1631,17 +1622,17 @@ p {
 }
 
 .back_yellow {
-	background: #f2ebbd url('../images/back3.png') repeat-x 0 0;
+	background: #d5cda6 url('../images/back3.png') repeat-x 0 0;
 }
 
 .back_orange {
-	background: #f2ebbd url('../images/back2.png') repeat-x 0 0;
+	background: #d5cda6 url('../images/back4.png') repeat-x 0 0;
 }
 
 .top_block h3 {
     padding: 5px 0px 5px 0px;
     margin: 0px;
-    color: #1b1d50;
+    color: #452413;
     text-align: center;
 }
 
@@ -1653,7 +1644,7 @@ p {
 .want_gift h3 {
     padding: 5px 0px 7px 0px;
     margin: 0px;
-    color: #1b1d50;
+    color: #452413;
     text-align: center;
 }
 
@@ -1681,7 +1672,7 @@ p {
 }
 
 .givers {
-	border:1px solid #d9ba84;
+	border:1px solid #a08b75;
 	border-radius:3px;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -1691,13 +1682,16 @@ p {
 	behavior: url(js/PIE.htc);
 	zoom:1;
 	position:relative;
-	background: #f3ebc0 url('../images/back3.png') repeat-x 0 0;
+	background: #d5cda6 url('../images/back3.png') repeat-x 0 0;
     padding: 0px 0px 7px 0px;
+    margin-bottom: 7px;
+    color: #452413;
+    font-size: 12px;
 }
 
 .givers h3 {
-    color: #1b1d50;
-    margin: 5px 0px 5px 0px;
+    margin: 5px 0px 3px 0px;
     padding: 0px;
+    font-size: 12px;
     text-align: center;
 }
