@@ -154,9 +154,9 @@ function loadViews() {
 
         pleaseHearts: function() {
             mailru.common.stream.post({
-                'title': 'Ребята, пришлите мне сердечек!',
-                'text': 'Подарите мне сердечек, чтобы победить! Это бесплатно! И всех с праздниками!',
-                'img_url': util.abs_path + "../images/heart.png",
+                'title': 'Ребята, пришлите мне медаль!',
+                'text': 'Жду ваших медалей на 23-е февраля! И отправлю вам в ответ!))',
+                'img_url': util.abs_path + "../images/medal90.png",
                 'action_links': [
                     {'text': 'Посмотреть' },
                 ]
@@ -924,16 +924,16 @@ function loadViews() {
         postGuestbookHeart: function(p) {
             mailru.common.guestbook.post({
                'uid': p.friend.uid,
-               'title': 'Сердечко для тебя!', 
-               'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'img_url': util.abs_path + "../images/heart256.png"
+               'title': 'Медаль для тебя!', 
+               'text': 'Награждаю тебя медалью! Пришли мне тоже!))',
+               'img_url': util.abs_path + "../images/medal256.png"
             }); 
         },
 
         request: function(p) {
             mailru.app.friends.request({
                'friends': [ p.purchase.friend_selected ],
-               'text': 'Отправляю тебе валентинку! И жду твою в ответ ;-)',
+               'text': 'Держи подарок от меня! :-)',
                'image_url': util.abs_path + "../uploads/images/"+p.purchase.gift_selected+".png"
             }); 
         },
@@ -941,15 +941,15 @@ function loadViews() {
         requestHeart: function(p) {
             mailru.app.friends.request({
                'friends': [ p.friend.uid ],
-               'text': 'Отправляю тебе сердечко! И жду твое в ответ ;-)',
-               'image_url': util.abs_path + "../images/heart100.png"
+               'text': 'Награждаю тебя медалью! Пришли мне тоже!))',
+               'image_url': util.abs_path + "../images/medal128.png"
             }); 
         },
 
         postGuestbook: function(p) {
             mailru.common.guestbook.post({
                'uid': p.purchase.friend_selected,
-               'title': 'У меня для тебя валентинка!', 
+               'title': 'У меня для тебя подарок!', 
                'text': 'Тебе подарок! Посмотри скорее! '+p.purchase.text,
                'img_url': util.abs_path + "../uploads/images/"+p.purchase.gift_selected+".png"
             }); 
@@ -965,7 +965,7 @@ function loadViews() {
         sendMessageHeart: function(p) {
             mailru.common.messages.send({
                 'uid': p.friend.uid,
-                'text': 'Отправляю тебе сердечко! Поддержи меня и пришли мне тоже :-) Это бесплатно!'
+                'text': 'Награждаю тебя медалью! Присылай мне тоже!)'
             });
         },
 
