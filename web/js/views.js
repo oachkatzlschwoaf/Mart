@@ -155,7 +155,7 @@ function loadViews() {
             mailru.common.stream.post({
                 'title': 'Друзья, пришлите мне цветов!',
                 'text': 'Жду ваших цветов! И отправлю вам в ответ подарки!))',
-                'img_url': util.abs_path + "../images/medal90.png",
+                'img_url': util.abs_path + "../images/rose80.png",
                 'action_links': [
                     {'text': 'Посмотреть' },
                 ]
@@ -925,7 +925,7 @@ function loadViews() {
                'uid': p.friend.uid,
                'title': 'Цветок для тебя!', 
                'text': 'Дарю тебе чудесный цветок! Пришли мне тоже!))',
-               'img_url': util.abs_path + "../images/medal256.png"
+               'img_url': util.abs_path + "../images/rose256.png"
             }); 
         },
 
@@ -941,7 +941,7 @@ function loadViews() {
             mailru.app.friends.request({
                'friends': [ p.friend.uid ],
                'text': 'Дарю тебе цветок! Пришли мне тоже!))',
-               'image_url': util.abs_path + "../images/medal128.png"
+               'image_url': util.abs_path + "../images/rose80.png"
             }); 
         },
 
