@@ -30,7 +30,6 @@ class DefaultController extends Controller
       return $n%10==1&&$n%100!=11?$forms[0]:($n%10>=2&&$n%10<=4&&($n%100<10||$n%100>=20)?$forms[1]:$forms[2]);
     }
 
-
     public function addFriendInviteBonus($uid, $fid) {
         # Lookup user by uid
         $em = $this->getDoctrine()->getEntityManager();
@@ -502,6 +501,8 @@ class DefaultController extends Controller
                         return $b->getPopularity7()-$a->getPopularity7(); 
                     }); 
                 }
+
+                shuffle($res);
 
                 $serializer = $this->get('serializer');
                 $json = $serializer->serialize($res, 'json');
