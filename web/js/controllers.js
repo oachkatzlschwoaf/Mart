@@ -52,6 +52,10 @@ function loadControllers() {
             ev.emitter.on('circle.refresh', function (e, input) { 
                 this.showCircle();
             }.bind(this));
+
+            ev.emitter.on('hearts_limit.check', function (e, input) { 
+                this.checkHeartsLimit();
+            }.bind(this));
         },
 
         // General 
@@ -59,6 +63,15 @@ function loadControllers() {
 
         checkHash: function() {
             mailru.app.utils.hash.read();
+        },
+
+        checkHeartsLimit: function() {
+            this.ev.emitter.trigger('hearts_promo.hide');
+
+            $.getJSON(util.api_url.check_send, function(data) {
+                this.ev.emitter.trigger('hearts_limit.show', { 'data': data } );
+                this.ev.emitter.trigger('hearts_promo.show');
+            }.bind(this));
         },
 
         show: function() {
@@ -103,7 +116,6 @@ function loadControllers() {
                                 this.setCatalogCategory(util.default_gift_cat).done(function() {
                                     this.ev.emitter.trigger('block_gifts_cat.show');
                                     this.ev.emitter.trigger('attention_top.show');
-                                    this.ev.emitter.trigger('hearts_promo.show');
 
                                     this.ev.emitter.trigger('hearts_limit.check');
 

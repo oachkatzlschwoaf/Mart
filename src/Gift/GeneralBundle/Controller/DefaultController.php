@@ -284,9 +284,13 @@ class DefaultController extends Controller
         $hearts_limit['h'] = $now->format('G');
         $hearts_limit['i'] = round($now->format('i'));
 
+        $can_send = 0;
+
         if (count($user_hearts) > 0) {
             $now = new \DateTime;
             $created = $user_hearts[0]->getCreatedAt();
+
+            $can_send = 1;
             
             $diff = round($now->format('U')) - round($created->format('U'));
             if ($diff <= $config['heart_interval']) {
@@ -297,7 +301,12 @@ class DefaultController extends Controller
                 $hearts_limit['d'] = $created->format('j');
                 $hearts_limit['h'] = $created->format('G');
                 $hearts_limit['i'] = round($created->format('i'));
+
+                $can_send = 0;
             }
+
+        } else {
+            $can_send = 1;
         }
 
         # Get covers 
@@ -346,6 +355,7 @@ class DefaultController extends Controller
             'hc_today_cnt' => $hc_today_cnt,
             'hc_today_wrd' => $this->decline($hc_today_cnt, array('сердечко', 'сердечка', 'сердечек')),
             'hearts_limit' => $hearts_limit,
+            'can_send'     => $can_send,
         ));
     }
 
@@ -1714,5 +1724,67 @@ class DefaultController extends Controller
         $json = $serializer->serialize($users, 'json');
         $response = new Response($json);
         return $response;
+    }
+
+    public function checkSendAction(Request $r) {
+        // Check user 
+        $config = $this->getConfig();         
+        $sk = $r->get('sk');
+
+        $mc  = $this->get('beryllium_cache');
+        $uid = $mc->get("sk_u-$sk");
+
+        $rep_user = $this->getDoctrine()->getRepository('GiftGeneralBundle:User');
+        $user = $rep_user->find($uid);
+
+        if (!$user) {
+            $answer = array( 'error' => 'no user' );
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
+
+        # Get hearts limit
+        $rep = $this->getDoctrine()
+            ->getRepository('GiftGeneralBundle:UserHeart');
+
+        $q = $rep->createQueryBuilder('p')
+            ->where('p.user_id = :uid and p.type = :type')
+            ->setParameters(array(
+                'uid' => $user->getId(),
+                'type' => 0 // free
+            ))
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery();
+            
+        $user_hearts = $q->getResult();
+
+        $now = new \DateTime;
+        $now->modify("-1 hour");
+
+        if (count($user_hearts) > 0) {
+            $now = new \DateTime;
+            $created = $user_hearts[0]->getCreatedAt();
+
+            $can_send = 1;
+            
+            $diff = round($now->format('U')) - round($created->format('U'));
+            if ($diff <= $config['heart_interval']) {
+                $created->modify("+".($config['heart_interval'] / (60 * 60))." hours");
+
+                $can_send = 0;
+            }
+
+            $answer = array( 'can_send' => $can_send, 'diff' => $diff );
+
+            $response = new Response(json_encode($answer));
+            return $response;
+
+        } else {
+            $answer = array( 'can_send' => 1 );
+
+            $response = new Response(json_encode($answer));
+            return $response;
+        }
     }
 }

@@ -65,8 +65,8 @@ function loadViews() {
                 this.pleaseHearts();
             }.bind(this));
 
-            ev.emitter.on('hearts_limit.check', function (e, input) { 
-                this.checkHeartsLimit();
+            ev.emitter.on('hearts_limit.show', function (e, input) { 
+                this.checkHeartsLimit(input);
             }.bind(this));
 
             // API Listener
@@ -126,12 +126,11 @@ function loadViews() {
             });
         },
 
-        checkHeartsLimit: function() {
-            var now = new Date();
-            var interval = now - util.hearts_limit;
+        checkHeartsLimit: function(input) {
+            data = input.data;
 
-            if (interval < 0) {
-                interval = Math.abs(Math.round(interval / 1000));
+            if (data.can_send == 0) {
+                interval = Math.abs(Math.round(util.heart_interval * 60 * 60 - data.diff));
                 var hours = Math.floor(interval / (60 * 60));
                 var min = Math.round((interval - hours * 60 * 60) / 60);
 
@@ -154,8 +153,8 @@ function loadViews() {
 
         pleaseHearts: function() {
             mailru.common.stream.post({
-                'title': 'Ребята, пришлите мне медаль!',
-                'text': 'Жду ваших медалей на 23-е февраля! И отправлю вам в ответ!))',
+                'title': 'Друзья, пришлите мне цветов!',
+                'text': 'Жду ваших цветов! И отправлю вам в ответ подарки!))',
                 'img_url': util.abs_path + "../images/medal90.png",
                 'action_links': [
                     {'text': 'Посмотреть' },
@@ -924,8 +923,8 @@ function loadViews() {
         postGuestbookHeart: function(p) {
             mailru.common.guestbook.post({
                'uid': p.friend.uid,
-               'title': 'Медаль для тебя!', 
-               'text': 'Награждаю тебя медалью! Пришли мне тоже!))',
+               'title': 'Цветок для тебя!', 
+               'text': 'Дарю тебе чудесный цветок! Пришли мне тоже!))',
                'img_url': util.abs_path + "../images/medal256.png"
             }); 
         },
@@ -941,7 +940,7 @@ function loadViews() {
         requestHeart: function(p) {
             mailru.app.friends.request({
                'friends': [ p.friend.uid ],
-               'text': 'Награждаю тебя медалью! Пришли мне тоже!))',
+               'text': 'Дарю тебе цветок! Пришли мне тоже!))',
                'image_url': util.abs_path + "../images/medal128.png"
             }); 
         },
@@ -965,7 +964,7 @@ function loadViews() {
         sendMessageHeart: function(p) {
             mailru.common.messages.send({
                 'uid': p.friend.uid,
-                'text': 'Награждаю тебя медалью! Присылай мне тоже!)'
+                'text': 'Дарю тебе волшебный цветок! Жду твой!)'
             });
         },
 

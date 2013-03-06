@@ -62,6 +62,7 @@
     util.api_url.circle         = "{{ path("apiGetCircle") }}";
     util.api_url.add_circle     = "{{ path("apiAddInCircle", {'sk': sk }) }}";
     util.api_url.last_givers    = "{{ path("apiGetLastGivers", {'sk': sk }) }}";
+    util.api_url.check_send     = "{{ path("apiCheckSend", {'sk': sk }) }}";
 
     // Paths & Hosts
     // ---------------------------------------
@@ -146,6 +147,7 @@
     util.heart_cost = {{ config.heart_cost }};
     util.heart_interval = {{ config.heart_interval / (60 * 60) }}
     util.hearts_limit = new Date({{ hearts_limit.y }}, {{ hearts_limit.m - 1 }}, {{ hearts_limit.d }}, {{ hearts_limit.h }}, {{ hearts_limit.i }});
+    util.can_send = {{ can_send }};
 </script>
 
 {% endblock %}

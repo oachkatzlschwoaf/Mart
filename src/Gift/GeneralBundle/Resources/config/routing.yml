@@ -209,3 +209,7 @@ apiGetLastGivers:
 apiGetLastUsers:
     pattern: /api/users/last
     defaults: { _controller: GiftGeneralBundle:Default:getLastUsers }
+
+apiCheckSend:
+    pattern: /api/user/{sk}/heart/check
+    defaults: { _controller: GiftGeneralBundle:Default:checkSend }
